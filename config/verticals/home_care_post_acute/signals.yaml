@@ -1,0 +1,43 @@
+# Per-signal run settings read by the enrichment step:
+#   mode: parallel | sequential (default sequential)
+#   delay: seconds between calls, sequential only (default 1.2)
+signals:
+  indeed_jobs:
+    module: src.signals.indeed_jobs
+    description: Open job postings — proxy for active recruiting pain
+    mode: sequential
+    delay: 1.2
+    # Keywords used to classify job titles into role buckets.
+    # Vertical-specific: what roles this buyer hires for.
+    role_keywords:
+      care_worker:
+        - aide
+        - caregiver
+        - hha
+        - cna
+        - pca
+        - personal care
+        - home attendant
+      scheduling_ops:
+        - scheduler
+        - coordinator
+        - staffing
+        - dispatch
+      admin_compliance:
+        - administrator
+        - compliance
+        - intake
+        - billing
+        - director
+        - supervisor
+
+  http_check:
+    module: src.signals.http_check
+    description: Website liveness and SSL as proxy for tech posture
+    mode: parallel
+
+  npi_age:
+    module: src.signals.npi_age
+    description: NPI enrollment date — newer agencies are in growth mode
+    mode: sequential
+    delay: 1.2

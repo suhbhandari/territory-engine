@@ -1,0 +1,24 @@
+# Vertical glossary — human-readable labels for display in briefs and the web app.
+# Core code never reads this directly; it is loaded by brief.py and the web app.
+
+vertical_name: Home Care & Post-Acute
+account_types:
+  - Home Health Agency
+  - Hospice Agency
+  - Personal Care Agency
+  - Staffing Agency
+
+buyer_titles:
+  - Administrator
+  - Executive Director
+  - Director of Operations
+  - Owner/Operator
+  - Franchise Owner
+  - Chief Operating Officer
+
+pain_points:
+  - Caregiver recruiting and retention
+  - Compliance and licensing overhead
+  - Scheduling and shift management
+  - Intake and intake paperwork
+  - Onboarding new aides and nurses

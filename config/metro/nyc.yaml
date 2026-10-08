@@ -1,0 +1,26 @@
+metro: NYC
+state: NY
+city: New York
+
+# Additional cities for multi-city search expansion (used by google_maps source)
+search_cities:
+  - New York
+  - Brooklyn
+  - Queens
+  - Bronx
+  - Staten Island
+
+# Zip prefix filter applied post-query to constrain results to the 5 boroughs
+# 100-102: Manhattan | 103: Staten Island | 104: Bronx | 110-114,116: Queens/Brooklyn
+zip_prefixes:
+  - "100"
+  - "101"
+  - "102"
+  - "103"
+  - "104"
+  - "110"
+  - "111"
+  - "112"
+  - "113"
+  - "114"
+  - "116"

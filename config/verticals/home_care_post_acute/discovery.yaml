@@ -1,0 +1,30 @@
+sources:
+  nppes:
+    # NUCC taxonomy descriptions to search. Matched as substrings by the NPPES API.
+    taxonomies:
+      - "Home Health"
+      - "Hospice"
+      - "In Home Supportive Care"
+    # Keep only orgs whose PRIMARY taxonomy is one of these (exact match).
+    # Drops physician groups, pharmacies, etc. that merely list one as a secondary.
+    primary_taxonomies:
+      - "Home Health"
+      - "Home Health Aide"
+      - "Hospice Care, Community Based"
+      - "In Home Supportive Care"
+
+  google_maps:
+    # {city} and {state} are substituted from metro config.
+    # Expanded once per entry in metro.search_cities.
+    search_templates:
+      - "home care agency {city} {state}"
+      - "home health agency {city} {state}"
+      - "hospice agency {city} {state}"
+
+# After discovery, look up each account that is still missing these fields.
+# One paid lookup per account; results are cached in outputs/raw/backfill_cache.csv.
+backfill:
+  google_maps:
+    fields:
+      - website
+    query_template: "{name}, {address}, {city}, {state} {zip}"
