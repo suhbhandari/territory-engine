@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample check-generic
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export check-generic
 
 discover:
 	python3 src/discover.py
@@ -26,6 +26,9 @@ sequence:
 
 sequence-sample:
 	python3 src/sequence.py --limit 5
+
+export:
+	python3 src/export.py
 
 check-generic:
 	python3 scripts/check_generic.py
