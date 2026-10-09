@@ -2,14 +2,15 @@
 
 How to set up, run, extend, and recover the territory engine. This describes the code as of 2026-10-08. Run all commands from the project root.
 
-Four steps work today:
+Five steps are built:
 
 1. **Discover** builds the account list for one metro and one vertical from two public sources: the national provider registry (NPPES) and Google Maps.
 2. **Backfill** looks up each registry-only account on Google Maps to fill in its website.
 3. **Enrich** looks up public signals for each account: job postings, website status, and registration age.
 4. **Score** ranks and tiers the accounts using the vertical's rubric.
+5. **Brief** writes a one-page, source-linked brief for each top-tier account group. It is built but has not yet been run against the live model.
 
-Briefs, outreach, and CRM export are not built yet (section 7).
+Outreach and CRM export are not built yet (section 7).
 
 ## 1. Setup
 
@@ -29,7 +30,7 @@ Four packages: `requests` (web calls), `pandas` (tables and CSVs), `python-doten
 cp .env.example .env
 ```
 
-Open `.env` and replace `your_key_here` with your key. The only variable is `GOOGLE_MAPS_API_KEY`.
+Open `.env` and replace each `your_key_here`. `GOOGLE_MAPS_API_KEY` is needed for discover and backfill. `ANTHROPIC_API_KEY` is needed only for briefs.
 
 **Enable the right Google API.** In Google Cloud Console, the project that owns the key must have **Places API (New)** enabled, with billing on. This is easy to get wrong: Google lists an older API called simply "Places API" beside it. The engine does not use the older one (calling it without enabling it returns `REQUEST_DENIED`), and a key with only the older one enabled is rejected by the new one. If the key is restricted to specific APIs, add Places API (New) to its allowed list.
 
@@ -46,6 +47,7 @@ Run in this order. Backfill and enrich read the file that discover writes.
 | 3 | `make enrich-sample` | Enriches the first 10 accounts only. A cheap check that the signals work before a full run. | `outputs/raw/accounts_raw.csv`, `config/verticals/home_care_post_acute/signals.yaml` | `outputs/raw/signals_raw.csv` |
 | 4 | `make enrich` | Runs every signal in `signals.yaml` for every account that still needs it. Saves after every 20 accounts. | same as above, plus the existing `signals_raw.csv` | `outputs/raw/signals_raw.csv`, updated in place |
 | 5 | `make score` | Joins accounts with signals, applies the rubric, and writes a ranked list with a tier, a score out of 100, the points per criterion, and a plain-language reason for each. Calls no external service, so re-run it freely after editing the rubric. | `accounts_raw.csv`, `signals_raw.csv`, `config/verticals/home_care_post_acute/rubric.yaml` | `outputs/raw/accounts_scored.csv` |
+| 6 | `make brief-sample` then `make brief` | Writes one brief per account group in the tiers named in `brief.yaml` (`brief-sample` writes the first 5). Code builds a numbered fact list with a source link for each fact; the model may only arrange and phrase those facts and must cite a fact id for every statement. A code check then fails any brief with an uncited statement or a number that is not in its cited facts. Skips briefs already written. `python3 src/brief.py --dry-run` prints the facts and calls nothing. | `accounts_scored.csv`, `brief.yaml` and `brief_prompt.md` in the vertical folder, `.env` | `outputs/raw/briefs/*.md`, `outputs/raw/briefs/briefs_index.csv` (check result, tokens and cost per brief) |
 | any time | `make check-generic` | Scans core code and docs for vertical-specific terms and prints PASS or FAIL. Calls no external service. | text and code files outside `config/verticals/` and `outputs/` | nothing |
 
 Worth knowing:
@@ -137,7 +139,7 @@ To add a vertical, create the folder, write those files, and pass `--vertical <n
 | Job-postings and website signals | Free. No key. They read the accounts' own websites. |
 | Google Maps discovery | Paid, per request. |
 | Google Maps backfill | Paid, one request per account missing a website. Free on re-runs (cached). |
-| LLM usage | None. The brief-writing phase is not built. |
+| Briefs | Paid, per brief, on the Anthropic API. Not yet measured: no brief has been generated. Each run logs tokens and cost per brief to `briefs_index.csv`. |
 
 The Google call is Places Text Search. Because the engine asks for website and phone in the same call, Google bills it at its higher "Enterprise" tier, list price roughly $35 per 1,000 requests. One NYC discovery run is 15 searches (5 place names × 3 search phrases), each up to 3 pages, so at most 45 requests: about $1.50 at list price, before any free monthly allowance.
 
@@ -151,7 +153,6 @@ Backfill is the larger cost: one request per registry-only account at the same t
 
 No commands exist for any of these:
 
-- Account briefs
 - Outreach sequences
 - CRM export
 - Web app

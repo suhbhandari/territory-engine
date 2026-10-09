@@ -46,7 +46,7 @@ def _num(value):
         return None
 
 
-def _matches(cond: dict, row: dict) -> bool:
+def matches(cond: dict, row: dict) -> bool:
     value = str(row.get(cond["column"], ""))
     op = cond["op"]
     target = cond.get("value")
@@ -78,7 +78,7 @@ def score_criterion(criterion: dict, row: dict):
         conditions = rule.get("when", [])
         if isinstance(conditions, dict):
             conditions = [conditions]
-        if all(_matches(c, row) for c in conditions):
+        if all(matches(c, row) for c in conditions):
             return rule["points"], rule.get("known", True), rule.get("reason", "").format(**row)
     return 0, False, ""
 
