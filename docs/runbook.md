@@ -13,7 +13,7 @@ Eight steps work today:
 7. **Export** writes import-ready CSV files for the CRM and the sales engagement tool.
 8. **Public** builds the anonymized dataset, report card and cost summary that the demo site reads.
 
-The weekly refresh and the objection library are not built yet (section 7).
+The weekly refresh is not built yet (section 7).
 
 ## 1. Setup
 
@@ -168,5 +168,6 @@ Backfill is the larger cost: one request per registry-only account at the same t
 
 No commands exist for any of these:
 
-- Objection library
 - Weekly refresh
+
+**Dropped from v1: the objection library.** It was planned as a set of objections drawn from real conversations with operators. No such conversations have been recorded, and a library written without them would be invented, so it is left out.
