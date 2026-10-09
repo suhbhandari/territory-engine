@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich check-generic
+.PHONY: discover backfill enrich enrich-sample score check-generic
 
 discover:
 	python3 src/discover.py
@@ -11,6 +11,9 @@ enrich:
 
 enrich-sample:
 	python3 src/enrich.py --limit 10
+
+score:
+	python3 src/score.py
 
 check-generic:
 	python3 scripts/check_generic.py

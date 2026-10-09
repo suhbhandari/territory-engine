@@ -2,13 +2,14 @@
 
 How to set up, run, extend, and recover the territory engine. This describes the code as of 2026-10-08. Run all commands from the project root.
 
-Three steps work today:
+Four steps work today:
 
 1. **Discover** builds the account list for one metro and one vertical from two public sources: the national provider registry (NPPES) and Google Maps.
 2. **Backfill** looks up each registry-only account on Google Maps to fill in its website.
 3. **Enrich** looks up public signals for each account: job postings, website status, and registration age.
+4. **Score** ranks and tiers the accounts using the vertical's rubric.
 
-Scoring, briefs, outreach, and CRM export are not built yet (section 7).
+Briefs, outreach, and CRM export are not built yet (section 7).
 
 ## 1. Setup
 
@@ -44,6 +45,7 @@ Run in this order. Backfill and enrich read the file that discover writes.
 | 2 | `make backfill` | For each account with no website that Google Maps did not already find, searches Google Maps for its name and address. Accepts a listing only if the phone matches, or the zip matches and the name is near-identical; otherwise the website stays blank. | `outputs/raw/accounts_raw.csv`, the `backfill:` block in `discovery.yaml`, `.env`, `outputs/raw/backfill_cache.csv` | `outputs/raw/accounts_raw.csv` (websites filled in), `outputs/raw/backfill_cache.csv` |
 | 3 | `make enrich-sample` | Enriches the first 10 accounts only. A cheap check that the signals work before a full run. | `outputs/raw/accounts_raw.csv`, `config/verticals/home_care_post_acute/signals.yaml` | `outputs/raw/signals_raw.csv` |
 | 4 | `make enrich` | Runs every signal in `signals.yaml` for every account that still needs it. Saves after every 20 accounts. | same as above, plus the existing `signals_raw.csv` | `outputs/raw/signals_raw.csv`, updated in place |
+| 5 | `make score` | Joins accounts with signals, applies the rubric, and writes a ranked list with a tier, a score out of 100, the points per criterion, and a plain-language reason for each. Calls no external service, so re-run it freely after editing the rubric. | `accounts_raw.csv`, `signals_raw.csv`, `config/verticals/home_care_post_acute/rubric.yaml` | `outputs/raw/accounts_scored.csv` |
 | any time | `make check-generic` | Scans core code and docs for vertical-specific terms and prints PASS or FAIL. Calls no external service. | text and code files outside `config/verticals/` and `outputs/` | nothing |
 
 Worth knowing:
@@ -54,6 +56,8 @@ Worth knowing:
 - **Backfill cache.** `backfill_cache.csv` records every lookup, hit or miss, with the listing it matched. Lookups already in it are never repeated, so re-running backfill is free. Discover overwrites the account file and wipes the filled-in websites; run `make backfill` again afterwards to restore them from the cache. Do not delete the cache unless you mean to pay for the lookups again.
 - **Signals file.** One row per account. Each signal adds its data columns plus its own error column (`careers_page_error`, `http_check_error`, `npi_age_error`). An empty error cell means that signal finished for that account. Anything else is tried again on the next run, and only the signals that need it are re-run.
 - **Job postings come from each account's own website.** The `careers_page` signal finds the careers page, identifies the applicant-tracking system behind it, and counts postings where that system publishes a readable feed (Greenhouse, Lever, Workday today). It never fetches external job boards, and it honours each site's robots.txt. Always read `jobs_status` before `jobs_total`: `no_website` means not checked, `counted` means a full feed was read, `listings_found` means `jobs_total` is a floor, and the other values mean a careers page or system was seen but no count was possible. The full list is at the top of `src/signals/careers_page.py`.
+- **Locations of one operator are grouped.** Accounts that share a website domain get the same `group_rank` and sit together in the scored file, best location first (`rank_in_group`), so one operator takes one place in the ranking. Work the list by `group_rank`. Franchise locations share the franchisor's domain, so they group together even when the owners differ.
+- **Read `data_coverage` next to the score.** It is the share of the rubric judged on real data. A low score with low coverage means "we could not find out", not "poor fit". Weights and tier cut-offs live in `rubric.yaml` and are a starting hypothesis; no outcome data has been used to fit them.
 - **Enrich is slow on purpose.** Signals marked `sequential` in `signals.yaml` pause 1.2 seconds between accounts to stay polite to the service they call. For the NYC list that is about half an hour of waiting per sequential signal.
 - **`outputs/raw/` holds real business names** and is meant to stay uncommitted.
 
@@ -96,8 +100,9 @@ Files in the shipped vertical's folder today:
 | `discovery.yaml` | Which sources to run and their parameters: registry category names to search and keep, and Google search phrases with `{city}` and `{state}` placeholders. Also the `backfill:` block: which fields to fill and the search text used to find an account's listing. |
 | `signals.yaml` | Which signals to run, the code module for each, how it runs (`mode: parallel` or `sequential`, and `delay` in seconds), and the keywords that sort job titles into role groups. |
 | `glossary.yaml` | Display labels (account types, buyer titles, pain points) for briefs and the web app. Nothing reads it yet. |
+| `rubric.yaml` | Scoring criteria, their weights, the rules that award points, and the tier cut-offs. |
 
-`CLAUDE.md` also plans `rubric.yaml`, `personas.yaml`, and a brief prompt per vertical. They do not exist yet because the phases that use them are not built.
+`CLAUDE.md` also plans `personas.yaml` and a brief prompt per vertical. They do not exist yet because the phases that use them are not built.
 
 To add a vertical, create the folder, write those files, and pass `--vertical <name>` to both scripts. Each key under `sources:` in `discovery.yaml` must match a module in `src/sources/` (today `nppes` and `google_maps`). A source that does not exist yet is new code for a developer, and it must follow the shared `fetch(params, geo)` interface and stay generic.
 
@@ -146,7 +151,6 @@ Backfill is the larger cost: one request per registry-only account at the same t
 
 No commands exist for any of these:
 
-- Scoring accounts against a rubric
 - Account briefs
 - Outreach sequences
 - CRM export

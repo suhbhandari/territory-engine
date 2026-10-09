@@ -1,0 +1,182 @@
+# Scoring rubric — home care, home health and hospice agencies.
+#
+# Read by src/score.py. Each criterion has max_points and an ordered list of rules;
+# the FIRST rule that matches wins. A rule marked `known: false` means "we could not
+# judge this": it awards its points but lowers the account's data_coverage instead of
+# counting as evidence against the account.
+#
+# Condition ops: eq, in, contains, gte, lte, between, blank, not_blank.
+# Reasons may reference any column in braces, e.g. "{jobs_total} open roles".
+#
+# These weights are a starting hypothesis, not a fitted model. No outcome data
+# (meetings booked, deals won) exists yet. docs/closing-the-loop.md will describe how to
+# re-weight them once it does.
+
+tiers:
+  - {name: A, min_score: 60}
+  - {name: B, min_score: 42}
+  - {name: C, min_score: 25}
+  - {name: D, min_score: 0}
+
+# Websites that are public directories, not the agency's own site. Ignored when
+# grouping accounts by domain.
+directory_domains:
+  - profiles.health.ny.gov
+
+criteria:
+
+  # Why: an agency that is actively hiring is feeling the recruiting and onboarding
+  # workload right now. This is the "why now" for outreach.
+  hiring_activity:
+    max_points: 35
+    rules:
+      - when: {column: jobs_total, op: gte, value: 20}
+        points: 35
+        reason: "{jobs_total} open roles in area"
+      - when: {column: jobs_total, op: between, value: [5, 19]}
+        points: 29
+        reason: "{jobs_total} open roles in area"
+      - when: {column: jobs_total, op: between, value: [1, 4]}
+        points: 23
+        reason: "{jobs_total} open role(s) posted"
+      - when: {column: jobs_status, op: eq, value: ats_unsupported}
+        points: 18
+        reason: "Runs hiring through {jobs_ats} (open-role count not readable)"
+      - when: {column: jobs_status, op: eq, value: offsite_listings}
+        points: 15
+        reason: "Careers page sends applicants to an external job board"
+      - when: {column: jobs_status, op: eq, value: careers_page_no_listings}
+        points: 10
+        reason: "Has a careers page (no structured listings)"
+      - when: {column: jobs_status, op: in, value: [counted, listings_found]}
+        points: 6
+        reason: "Job board live, no open roles in area right now"
+      - when: {column: jobs_status, op: eq, value: no_careers_page}
+        points: 2
+        reason: "Website has no careers page"
+      - when: {column: jobs_status, op: in, value: [no_website, site_unreachable, robots_disallowed]}
+        points: 0
+        known: false
+
+  # Why: hiring schedulers, coordinators or compliance staff means the back office is
+  # stretched, which is the workload an operations product takes on.
+  back_office_hiring:
+    max_points: 10
+    rules:
+      - when:
+          - {column: jobs_scheduling_ops, op: gte, value: 1}
+          - {column: jobs_admin_compliance, op: gte, value: 1}
+        points: 10
+        reason: "Hiring scheduling and admin/compliance staff"
+      - when: {column: jobs_scheduling_ops, op: gte, value: 1}
+        points: 8
+        reason: "Hiring scheduling/coordination staff"
+      - when: {column: jobs_admin_compliance, op: gte, value: 1}
+        points: 6
+        reason: "Hiring admin/compliance staff"
+      - when: {column: jobs_total, op: gte, value: 1}
+        points: 2
+        reason: "Open roles are care staff only"
+      - when: {column: jobs_total, op: eq, value: 0}
+        points: 0
+      - points: 0
+        known: false
+
+  # Why: a live website means a real, operating business a rep can research and reach.
+  # Many registry entries are shell or dormant entities with no presence at all.
+  web_presence:
+    max_points: 15
+    rules:
+      - when:
+          - {column: website, op: not_blank}
+          - {column: website_live, op: eq, value: "True"}
+        points: 15
+        reason: "Live website"
+      # The liveness check is a bare ping that some sites refuse; if the careers
+      # lookup loaded the site, it is live.
+      - when:
+          - {column: website, op: not_blank}
+          - column: jobs_status
+            op: in
+            value: [counted, listings_found, ats_unsupported, offsite_listings, careers_page_no_listings, no_careers_page]
+        points: 15
+        reason: "Live website"
+      - when: {column: website, op: not_blank}
+        points: 8
+        reason: "Website listed but did not respond to our check"
+      - when: {column: source, op: contains, value: Google Maps}
+        points: 6
+        reason: "Google Maps listing, no website"
+      - points: 0
+        reason: "No website or Google Maps listing found"
+
+  # Why: multi-site operators have more staff to recruit and schedule, and one deal
+  # covers several locations.
+  multi_site:
+    max_points: 10
+    rules:
+      - when: {column: domain_account_count, op: gte, value: 3}
+        points: 10
+        reason: "{domain_account_count} locations in this territory share {website_domain}"
+      - when: {column: domain_account_count, op: eq, value: 2}
+        points: 7
+        reason: "2 locations in this territory share {website_domain}"
+      - when: {column: domain_account_count, op: eq, value: 1}
+        points: 2
+      - points: 0
+        known: false
+
+  # Why: confirms the account is the kind of agency the product is built for, not
+  # an adjacent business the search happened to return.
+  agency_type:
+    max_points: 10
+    rules:
+      - when:
+          column: license_type
+          op: in
+          value: ["Home Health", "Hospice Care, Community Based", "In Home Supportive Care", "Home Health Aide"]
+        points: 10
+        reason: "Registered as: {license_type}"
+      - when: {column: license_type, op: in, value: ["Health", "Services"]}
+        points: 6
+      - when: {column: license_type, op: in, value: ["Unknown", ""]}
+        points: 0
+        known: false
+      - points: 0
+        reason: "Listed as {license_type}, likely not an agency"
+
+  # Why: agencies a few years in are established enough to have budget and still
+  # adding staff. Brand-new entities are often not operating yet.
+  maturity:
+    max_points: 10
+    rules:
+      - when: {column: npi_age_years, op: between, value: [3, 12]}
+        points: 10
+        reason: "Registered {npi_age_years} years (established, still growing)"
+      - when: {column: npi_age_years, op: gte, value: 13}
+        points: 7
+        reason: "Registered {npi_age_years} years (long-established)"
+      - when: {column: npi_age_years, op: between, value: [1, 2]}
+        points: 4
+        reason: "Registered {npi_age_years} year(s) ago (early stage)"
+      - when: {column: npi_age_years, op: eq, value: 0}
+        points: 1
+        reason: "Registered this year"
+      - points: 0
+        known: false
+
+  # Why: an agency already paying for hiring software buys tools to solve
+  # operational problems, so a software conversation is not a first.
+  tech_posture:
+    max_points: 10
+    rules:
+      - when: {column: jobs_ats, op: not_blank}
+        points: 10
+        reason: "Uses {jobs_ats} for hiring"
+      - when: {column: website_has_ssl, op: eq, value: "True"}
+        points: 5
+      - when: {column: website_live, op: eq, value: "True"}
+        points: 2
+        reason: "Website has no secure connection"
+      - points: 0
+        known: false
