@@ -2,15 +2,16 @@
 
 How to set up, run, extend, and recover the territory engine. This describes the code as of 2026-10-08. Run all commands from the project root.
 
-Five steps are built:
+Six steps work today:
 
 1. **Discover** builds the account list for one metro and one vertical from two public sources: the national provider registry (NPPES) and Google Maps.
 2. **Backfill** looks up each registry-only account on Google Maps to fill in its website.
 3. **Enrich** looks up public signals for each account: job postings, website status, and registration age.
 4. **Score** ranks and tiers the accounts using the vertical's rubric.
-5. **Brief** writes a one-page, source-linked brief for each top-tier account group. It is built but has not yet been run against the live model.
+5. **Brief** writes a one-page, source-linked brief for each top-tier account group.
+6. **Sequence** drafts a three-touch outreach sequence for each of those groups, built on the same facts.
 
-Outreach and CRM export are not built yet (section 7).
+CRM export is not built yet (section 7).
 
 ## 1. Setup
 
@@ -30,7 +31,7 @@ Four packages: `requests` (web calls), `pandas` (tables and CSVs), `python-doten
 cp .env.example .env
 ```
 
-Open `.env` and replace each `your_key_here`. `GOOGLE_MAPS_API_KEY` is needed for discover and backfill. `ANTHROPIC_API_KEY` is needed only for briefs.
+Open `.env` and replace each `your_key_here`. `GOOGLE_MAPS_API_KEY` is needed for discover and backfill. `ANTHROPIC_API_KEY` is needed for briefs and sequences. If the API answers that the key is not scoped to a workspace, also set `ANTHROPIC_WORKSPACE_ID`.
 
 **Enable the right Google API.** In Google Cloud Console, the project that owns the key must have **Places API (New)** enabled, with billing on. This is easy to get wrong: Google lists an older API called simply "Places API" beside it. The engine does not use the older one (calling it without enabling it returns `REQUEST_DENIED`), and a key with only the older one enabled is rejected by the new one. If the key is restricted to specific APIs, add Places API (New) to its allowed list.
 
@@ -48,6 +49,7 @@ Run in this order. Backfill and enrich read the file that discover writes.
 | 4 | `make enrich` | Runs every signal in `signals.yaml` for every account that still needs it. Saves after every 20 accounts. | same as above, plus the existing `signals_raw.csv` | `outputs/raw/signals_raw.csv`, updated in place |
 | 5 | `make score` | Joins accounts with signals, applies the rubric, and writes a ranked list with a tier, a score out of 100, the points per criterion, and a plain-language reason for each. Calls no external service, so re-run it freely after editing the rubric. | `accounts_raw.csv`, `signals_raw.csv`, `config/verticals/home_care_post_acute/rubric.yaml` | `outputs/raw/accounts_scored.csv` |
 | 6 | `make brief-sample` then `make brief` | Writes one brief per account group in the tiers named in `brief.yaml` (`brief-sample` writes the first 5). Code builds a numbered fact list with a source link for each fact; the model may only arrange and phrase those facts and must cite a fact id for every statement. A code check then fails any brief with an uncited statement or a number that is not in its cited facts. Skips briefs already written. `python3 src/brief.py --dry-run` prints the facts and calls nothing. | `accounts_scored.csv`, `brief.yaml` and `brief_prompt.md` in the vertical folder, `.env` | `outputs/raw/briefs/*.md`, `outputs/raw/briefs/briefs_index.csv` (check result, tokens and cost per brief) |
+| 7 | `make sequence-sample` then `make sequence` | Drafts the touches defined in `sequence.yaml` (today: email, follow-up email, call opener) for each group in its tiers, written for the role chosen by `personas.yaml`. Uses the same numbered facts as the brief. Code checks each touch for a cited fact, unsupported numbers, word and subject limits, and stray merge fields; failures are flagged "do not send without review". `--redo-failed` regenerates flagged ones; `--dry-run` calls nothing. | `accounts_scored.csv`; `sequence.yaml`, `personas.yaml`, `sequence_prompt.md`, `seller_context.md`, `brief.yaml` in the vertical folder; `.env` | `outputs/raw/sequences/*.md`, `sequences.csv` (one row per touch), `sequences_index.csv` (check result, tokens, cost) |
 | any time | `make check-generic` | Scans core code and docs for vertical-specific terms and prints PASS or FAIL. Calls no external service. | text and code files outside `config/verticals/` and `outputs/` | nothing |
 
 Worth knowing:
@@ -103,8 +105,10 @@ Files in the shipped vertical's folder today:
 | `signals.yaml` | Which signals to run, the code module for each, how it runs (`mode: parallel` or `sequential`, and `delay` in seconds), and the keywords that sort job titles into role groups. |
 | `glossary.yaml` | Display labels (account types, buyer titles, pain points) for briefs and the web app. Nothing reads it yet. |
 | `rubric.yaml` | Scoring criteria, their weights, the rules that award points, and the tier cut-offs. |
+| `seller_context.md` | One paragraph describing what the seller offers. Inserted into both prompts, so edit it in one place. |
+| `brief.yaml`, `brief_prompt.md` | Which tiers get briefs, the fact templates and their source links, the "what we don't know" lines, and the instructions the model follows. |
+| `sequence.yaml`, `sequence_prompt.md`, `personas.yaml` | The touches in a sequence and their limits, the writing instructions, and the rules that pick which role a sequence is written for. |
 
-`CLAUDE.md` also plans `personas.yaml` and a brief prompt per vertical. They do not exist yet because the phases that use them are not built.
 
 To add a vertical, create the folder, write those files, and pass `--vertical <name>` to both scripts. Each key under `sources:` in `discovery.yaml` must match a module in `src/sources/` (today `nppes` and `google_maps`). A source that does not exist yet is new code for a developer, and it must follow the shared `fetch(params, geo)` interface and stay generic.
 
@@ -129,6 +133,8 @@ To add a vertical, create the folder, write those files, and pass `--vertical <n
 | Registration-age columns are empty for some accounts | The lookup needs a registry number, and Google-Maps-only accounts do not have one. | Expected. A real lookup failure shows in `npi_age_error` and is retried next run. |
 | Enrich was interrupted partway | Closed laptop, lost network, Ctrl-C. | Re-run `make enrich`. Progress is saved after every 20 accounts (`--batch-size` changes this), so at most one batch is lost and the run picks up where it stopped. |
 | Some accounts show a value in a `<signal>_error` column after a full run | That signal failed for those accounts (timeout, service error). | Re-run `make enrich`; only failed signals are retried. To redo everything, move or delete `signals_raw.csv` first. |
+| Brief or sequence run reports `error` with `credit balance is too low` | The Anthropic account behind the key has no credit. Nothing is charged for these. | Add credit to the same organization the key belongs to, then re-run; only missing items are written. |
+| A brief or sequence file opens with a "check failed" banner | The draft cited no fact, used a number that is not in its cited facts, or broke a length rule. | Re-run with `--redo-failed`. The check only covers digits, citations and length; it does not catch a wrong word, so drafts still need a human read before sending. |
 | `make check-generic` prints FAIL | A vertical-specific term is in core code or a doc. The output lists file and line. | Move the term into `config/verticals/<name>/`, or reword. |
 
 ## 6. Costs
@@ -139,7 +145,8 @@ To add a vertical, create the folder, write those files, and pass `--vertical <n
 | Job-postings and website signals | Free. No key. They read the accounts' own websites. |
 | Google Maps discovery | Paid, per request. |
 | Google Maps backfill | Paid, one request per account missing a website. Free on re-runs (cached). |
-| Briefs | Paid, per brief, on the Anthropic API. Not yet measured: no brief has been generated. Each run logs tokens and cost per brief to `briefs_index.csv`. |
+| Briefs | Paid, on the Anthropic API. Measured on the NYC run: about $0.02 per brief, $5.50 for 276. Logged per brief in `briefs_index.csv`. |
+| Sequences | Paid, on the Anthropic API. Measured on the NYC run: about $0.02 per sequence, $5.15 for 276. Logged in `sequences_index.csv`. |
 
 The Google call is Places Text Search. Because the engine asks for website and phone in the same call, Google bills it at its higher "Enterprise" tier, list price roughly $35 per 1,000 requests. One NYC discovery run is 15 searches (5 place names × 3 search phrases), each up to 3 pages, so at most 45 requests: about $1.50 at list price, before any free monthly allowance.
 
@@ -153,7 +160,6 @@ Backfill is the larger cost: one request per registry-only account at the same t
 
 No commands exist for any of these:
 
-- Outreach sequences
 - CRM export
 - Web app
 - Weekly refresh

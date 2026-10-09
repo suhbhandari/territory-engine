@@ -1,0 +1,35 @@
+# Who each sequence is written for. The first persona whose `when` holds is used
+# (same condition syntax as rubric.yaml); the last one has no `when` and is the default.
+#
+# These are role-level guesses from the kind of agency. The engine does not collect
+# contact names or confirm who holds the role.
+
+personas:
+  - title: Director of Operations or COO
+    when: {column: domain_account_count, op: gte, value: 2}
+    cares_about: >
+      Running several locations consistently: shift coverage, scheduler workload,
+      and how fast new aides get from application to first shift.
+
+  - title: Director of Operations or COO
+    when: {column: jobs_total, op: gte, value: 20}
+    cares_about: >
+      Keeping up with a large volume of hiring: scheduler workload, onboarding
+      throughput, and coverage while roles are open.
+
+  - title: Executive Director
+    when: {column: license_type, op: contains, value: Hospice}
+    cares_about: >
+      Staffing clinical and aide roles reliably, and keeping credentials and
+      compliance documentation current without pulling clinicians off care.
+
+  - title: Administrator
+    when: {column: license_type, op: eq, value: Home Health}
+    cares_about: >
+      Compliance and licensing paperwork, caregiver recruiting and retention, and
+      the time office staff spend on onboarding and scheduling.
+
+  - title: Owner or Operator
+    cares_about: >
+      Finding and keeping caregivers, and the hours the owner and a small office
+      team spend on scheduling, intake and paperwork.

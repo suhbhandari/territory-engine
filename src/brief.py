@@ -22,8 +22,6 @@ Design:
 """
 
 import argparse
-import json
-import os
 import re
 import sys
 import yaml
@@ -32,15 +30,11 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
-import anthropic
-from dotenv import load_dotenv
-
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.llm import cost_usd, generate_json, load_prompt, make_client  # noqa: E402
 from src.score import matches  # noqa: E402
-
-load_dotenv(ROOT / ".env")
 
 SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
 BRIEFS_DIR = ROOT / "outputs" / "raw" / "briefs"
@@ -104,13 +98,18 @@ def _numbers(text: str) -> list:
 
 
 def source_check(brief: dict, facts: list, name: str = "") -> list:
+    statements = [("headline", brief["headline"]), ("opening_angle", brief["opening_angle"])]
+    statements += [(f"snapshot[{i}]", s) for i, s in enumerate(brief["snapshot"])]
+    statements += [(f"why_now[{i}]", s) for i, s in enumerate(brief["why_now"])]
+    return check_statements(statements, facts, name)
+
+
+def check_statements(statements: list, facts: list, name: str = "") -> list:
+    """statements: [(label, {"text": str, "fact_ids": [str]})]. Returns a list of problems."""
     by_id = {f["id"]: f["text"] for f in facts}
     # Digits that are part of the account's own name are not claims.
     name_numbers = set(_numbers(name))
     problems = []
-    statements = [("headline", brief["headline"]), ("opening_angle", brief["opening_angle"])]
-    statements += [(f"snapshot[{i}]", s) for i, s in enumerate(brief["snapshot"])]
-    statements += [(f"why_now[{i}]", s) for i, s in enumerate(brief["why_now"])]
 
     for where, statement in statements:
         ids = statement["fact_ids"]
@@ -162,22 +161,6 @@ def user_prompt(row: dict, members: list, facts: list) -> str:
     return "\n".join(lines)
 
 
-def generate(client, cfg: dict, system: str, prompt: str):
-    response = client.beta.messages.create(
-        model=cfg["model"],
-        max_tokens=16000,
-        system=system,
-        messages=[{"role": "user", "content": prompt}],
-        output_config={"effort": cfg["effort"], "format": {"type": "json_schema", "schema": BRIEF_SCHEMA}},
-        betas=["server-side-fallback-2026-07-01"],
-        fallbacks="default",
-    )
-    if response.stop_reason != "end_turn":
-        raise RuntimeError(f"model stopped with {response.stop_reason}")
-    text = next(b.text for b in response.content if b.type == "text")
-    return json.loads(text), response.usage, response.model
-
-
 def slug(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:80]
 
@@ -185,7 +168,7 @@ def slug(text: str) -> str:
 def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
     vdir = ROOT / "config" / "verticals" / vertical
     cfg = yaml.safe_load(open(vdir / "brief.yaml"))
-    system = (vdir / "brief_prompt.md").read_text()
+    system = load_prompt(vdir, "brief_prompt.md")
 
     scored = pd.read_csv(SCORED_PATH, dtype=str, keep_default_na=False)
     groups = {g: d.to_dict("records") for g, d in scored.groupby("account_group", sort=False)}
@@ -211,17 +194,15 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
         if dry_run:
             return dict(entry, _prompt=prompt, _unknowns=unknowns)
         try:
-            brief, usage, model = generate(client, cfg, system, prompt)
+            brief, usage, model = generate_json(client, cfg, system, prompt, BRIEF_SCHEMA)
         except Exception as exc:
             return dict(entry, check_status="error", check_notes=f"{type(exc).__name__}: {exc}"[:300])
         problems = source_check(brief, facts, row["name"])
         path = BRIEFS_DIR / f"{int(row['group_rank']):04d}-{slug(row['name'])}.md"
         path.write_text(render(row, members, brief, facts, unknowns, problems))
-        price = cfg["price_per_mtok"]
-        cost = (usage.input_tokens * price["input"] + usage.output_tokens * price["output"]) / 1_000_000
         return dict(entry, file=path.name, model=model, check_status="failed" if problems else "passed",
                     check_notes=" | ".join(problems), input_tokens=usage.input_tokens,
-                    output_tokens=usage.output_tokens, cost_usd=round(cost, 4))
+                    output_tokens=usage.output_tokens, cost_usd=cost_usd(usage, cfg["price_per_mtok"]))
 
     if dry_run:
         for result in map(work, todo[:limit or 2]):
@@ -230,9 +211,7 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
     if not todo:
         return
 
-    # Keys that are not tied to one workspace must name the workspace on every request.
-    workspace = os.getenv("ANTHROPIC_WORKSPACE_ID")
-    client = anthropic.Anthropic(default_headers={"anthropic-workspace-id": workspace} if workspace else None)
+    client = make_client()
     BRIEFS_DIR.mkdir(parents=True, exist_ok=True)
     results = []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
