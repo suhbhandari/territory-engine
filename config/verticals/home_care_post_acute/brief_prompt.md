@@ -17,7 +17,7 @@ What to return:
 
 - `headline`: one sentence saying who this is and the single strongest reason to contact them.
 - `snapshot`: two to four statements describing the agency: what it is registered as, how long it has operated, where, and how many locations, as far as the facts support.
-- `why_now`: one to three statements on current evidence of hiring or operational load. If the facts contain no such evidence, give one statement that says so plainly and cites the fact that shows it (for example, a careers page with no listings).
+- `why_now`: one to three statements on current evidence of hiring or operational load. If the facts contain no such evidence, give one statement that says so plainly and cites the fact that shows it. Keep "we found no evidence of hiring" distinct from "they are not hiring": when a fact says something is unknown or could not be read, report it as unknown, and never tell the rep the agency has no open roles unless a fact gives a count of zero.
 - `opening_angle`: one or two sentences the rep could adapt as the opening of a call or email. It should reference something specific and true about this agency, and connect it to one of the pains above without pitching features. Write it as guidance to the rep, in plain language, not as marketing copy.
 
 Write plainly. No superlatives, no exclamation marks, no flattery of the prospect.
