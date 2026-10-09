@@ -2,11 +2,10 @@
 #   mode: parallel | sequential (default sequential)
 #   delay: seconds between calls, sequential only (default 1.2)
 signals:
-  indeed_jobs:
-    module: src.signals.indeed_jobs
-    description: Open job postings — proxy for active recruiting pain
-    mode: sequential
-    delay: 1.2
+  careers_page:
+    module: src.signals.careers_page
+    description: Open job postings on the account's own careers page — proxy for active recruiting pain
+    mode: parallel
     # Keywords used to classify job titles into role buckets.
     # Vertical-specific: what roles this buyer hires for.
     role_keywords:
