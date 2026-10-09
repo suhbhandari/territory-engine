@@ -1,0 +1,32 @@
+# Statements the report card prints alongside its measurements. Read by src/evals.py.
+# Keep these honest: they are the part of the card a reader will trust most.
+
+checks_cover:
+  - "Briefs: every statement cites at least one numbered fact, every cited fact exists, and every number written in digits appears in a cited fact."
+  - "Sequences: the same citation and number rules, plus word limits, subject rules and allowed merge fields."
+  - "Public dataset: each published record is searched for that account's own name words, domain, phone number and IDs; a hit fails the build."
+
+not_measured:
+  - "Whether the top tiers are actually the best accounts. No human has labelled a sample, and no meetings-booked or closed-won data exists to test the rubric against."
+  - "Reply rates or meetings from the outreach drafts. Nothing has been sent."
+  - "Unsupported wording that is not a number. A brief or email can add a detail from the model's own knowledge (a neighbourhood name, for example) or spell a number out in words, and the checks will not catch it."
+  - "Non-agencies in the list. The rubric trusts the registry's self-reported classification; at least one pest-control company registered as in-home supportive care sits in tier B."
+  - "Recall of discovery: how many real agencies in the territory are missing from the list."
+  - "Job-posting accuracy. Counts were read from each employer's own job feed once and not cross-checked; most accounts have no readable feed at all."
+  - "First-pass failure rates. The pass rates above are after re-running drafts that failed a check; how many failed on the first attempt is not logged (it was a handful per run of 276)."
+  - "Whether the export files import cleanly. They have not been loaded into a live CRM or sales engagement workspace."
+  - "Whether the public dataset can be re-identified. Names and contact details are removed, but an account's combination of facts may still point to it."
+
+other_costs:
+  - item: "Google Places discovery searches"
+    requests: "up to 45 per run"
+    estimate: "about $1.50"
+    basis: "Text Search with website and phone fields, list price about $35 per 1,000 requests"
+  - item: "Google Places website lookups (one-time backfill, cached)"
+    requests: "1,238"
+    estimate: "about $43"
+    basis: "Same price tier; before any free monthly allowance; not confirmed against a billing statement"
+  - item: "Provider registry and agency websites"
+    requests: "several thousand"
+    estimate: "$0"
+    basis: "Free public sources, no key"

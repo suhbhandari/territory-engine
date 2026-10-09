@@ -1,0 +1,212 @@
+"""
+Phase 7: Eval Report Card
+Measures what the pipeline produced, from its own output files, and states plainly what
+has not been measured. Writes the report card and the cost summary to outputs/public/.
+
+Usage:
+  python3 src/evals.py [--vertical home_care_post_acute]
+
+Design:
+  - Every number is computed from files on disk; nothing is typed in by hand
+  - No letter grades: without outcome data or human labels a grade would be invented.
+    Each line is a measurement, and the "not measured" list is part of the card
+  - Calls no external service
+"""
+
+import argparse
+import json
+import re
+import sys
+import yaml
+import pandas as pd
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT))
+
+RAW = ROOT / "outputs" / "raw"
+PUBLIC = ROOT / "outputs" / "public"
+
+
+def pct(part, whole) -> float:
+    return round(100 * part / whole, 1) if whole else 0.0
+
+
+def main(vertical: str) -> None:
+    vdir = ROOT / "config" / "verticals" / vertical
+    rubric = yaml.safe_load(open(vdir / "rubric.yaml"))
+    seq_cfg = yaml.safe_load(open(vdir / "sequence.yaml"))
+    evals_cfg = yaml.safe_load(open(vdir / "evals.yaml"))
+
+    scored = pd.read_csv(RAW / "accounts_scored.csv", dtype=str, keep_default_na=False)
+    signals = pd.read_csv(RAW / "signals_raw.csv", dtype=str, keep_default_na=False)
+    briefs = pd.read_csv(RAW / "briefs" / "briefs_index.csv", dtype=str, keep_default_na=False)
+    seqs = pd.read_csv(RAW / "sequences" / "sequences_index.csv", dtype=str, keep_default_na=False)
+    touches = pd.read_csv(RAW / "sequences" / "sequences.csv", dtype=str, keep_default_na=False)
+    n = len(scored)
+    leads = scored[scored["rank_in_group"] == "1"]
+
+    discovery = {
+        "accounts": n,
+        "groups": len(leads),
+        "by_source": scored["source"].value_counts().to_dict(),
+        "with_website_pct": pct((scored["website"] != "").sum(), n),
+        "with_phone_pct": pct((scored["phone"] != "").sum(), n),
+    }
+
+    error_cols = [c for c in signals.columns if c.endswith("_error")]
+    data_cols = [c for c in signals.columns if c not in error_cols and c not in ("entity_id", "signals_fetched_at")]
+    signal_stats = {
+        "accounts_enriched": len(signals),
+        "errors": {c[:-6]: int((signals[c] != "").sum()) for c in error_cols},
+        "filled_pct": {c: pct((signals[c] != "").sum(), len(signals)) for c in data_cols},
+        "status_breakdown": {c: signals[c].value_counts().to_dict() for c in data_cols if c.endswith("_status")},
+    }
+
+    score = pd.to_numeric(scored["score"])
+    coverage = pd.to_numeric(scored["data_coverage"])
+    scoring = {
+        "tiers": [{"tier": t["name"], "min_score": t["min_score"],
+                   "accounts": int((scored["tier"] == t["name"]).sum()),
+                   "groups": int((leads["tier"] == t["name"]).sum()),
+                   "avg_data_coverage_pct": round(100 * coverage[scored["tier"] == t["name"]].mean(), 1)}
+                  for t in rubric["tiers"]],
+        "avg_data_coverage_pct": round(100 * coverage.mean(), 1),
+        "median_score": float(score.median()),
+        "criteria": [{"key": k, "label": c.get("label", k), "max_points": c["max_points"],
+                      "avg_points": round(pd.to_numeric(scored[f"pts_{k}"]).mean(), 1),
+                      "accounts_scoring_above_zero_pct": pct((pd.to_numeric(scored[f"pts_{k}"]) > 0).sum(), n)}
+                     for k, c in rubric["criteria"].items()],
+        "weights_fitted_to_outcomes": False,
+    }
+
+    statements, facts_cited, facts_total = 0, 0, 0
+    for name in briefs.loc[briefs["check_status"] == "passed", "file"]:
+        text = (RAW / "briefs" / name).read_text()
+        body = text.split("## What we don't know")[0]
+        cited = re.findall(r"\[(F\d+(?:, F\d+)*)\]", body)
+        statements += len(cited)
+        facts_cited += len({f for group in cited for f in group.split(", ")})
+        facts_total += len(re.findall(r"^- \*\*F\d+\*\*", text, flags=re.M))
+    brief_cost = pd.to_numeric(briefs["cost_usd"], errors="coerce")
+    brief_stats = {
+        "written": len(briefs),
+        "passed_source_check_pct": pct((briefs["check_status"] == "passed").sum(), len(briefs)),
+        "statements": statements,
+        "statements_per_brief": round(statements / max(len(briefs), 1), 1),
+        "facts_per_brief": round(facts_total / max(len(briefs), 1), 1),
+        "facts_used_pct": pct(facts_cited, facts_total),
+        "avg_cost_usd": round(brief_cost.mean(), 4),
+        "total_cost_usd": round(brief_cost.sum(), 2),
+        "avg_input_tokens": int(pd.to_numeric(briefs["input_tokens"], errors="coerce").mean()),
+        "avg_output_tokens": int(pd.to_numeric(briefs["output_tokens"], errors="coerce").mean()),
+        "model": briefs["model"].mode().iat[0],
+    }
+
+    limits = {i + 1: t["max_words"] for i, t in enumerate(seq_cfg["touches"])}
+    words = pd.to_numeric(touches["word_count"])
+    last_question = touches["body"].str.findall(r"[^.?!\n]*\?").str[-1].fillna("").str.strip().str.lower()
+    first_touch = touches["touch"] == "1"
+    seq_cost = pd.to_numeric(seqs["cost_usd"], errors="coerce")
+    sequence_stats = {
+        "written": len(seqs),
+        "touches": len(touches),
+        "passed_checks_pct": pct((seqs["check_status"] == "passed").sum(), len(seqs)),
+        "touch_lengths": [{"touch": t, "limit_words": limit,
+                           "avg_words": round(words[touches["touch"] == str(t)].mean(), 1),
+                           "max_words": int(words[touches["touch"] == str(t)].max())}
+                          for t, limit in limits.items()],
+        "distinct_first_email_questions_pct": pct(last_question[first_touch].nunique(), int(first_touch.sum())),
+        "most_repeated_first_email_question_count": int(last_question[first_touch].value_counts().iat[0]),
+        "personas": seqs["persona"].value_counts().to_dict(),
+        "avg_cost_usd": round(seq_cost.mean(), 4),
+        "total_cost_usd": round(seq_cost.sum(), 2),
+        "avg_input_tokens": int(pd.to_numeric(seqs["input_tokens"], errors="coerce").mean()),
+        "avg_output_tokens": int(pd.to_numeric(seqs["output_tokens"], errors="coerce").mean()),
+        "model": seqs["model"].mode().iat[0],
+    }
+
+    card = {
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "discovery": discovery,
+        "signals": signal_stats,
+        "scoring": scoring,
+        "briefs": brief_stats,
+        "sequences": sequence_stats,
+        "checks_cover": evals_cfg["checks_cover"],
+        "not_measured": evals_cfg["not_measured"],
+        "other_costs": evals_cfg.get("other_costs", []),
+    }
+    PUBLIC.mkdir(parents=True, exist_ok=True)
+    (PUBLIC / "report_card.json").write_text(json.dumps(card, indent=2))
+    (PUBLIC / "report_card.js").write_text("window.REPORT_CARD = " + json.dumps(card) + ";\n")
+    (PUBLIC / "report_card.md").write_text(render_card(card))
+    (PUBLIC / "costs.md").write_text(render_costs(card))
+    print(f"[evals] Written → {PUBLIC.relative_to(ROOT)}/report_card.json, report_card.js, report_card.md, costs.md")
+    print(f"[evals] briefs passed {brief_stats['passed_source_check_pct']}% | sequences passed {sequence_stats['passed_checks_pct']}% | "
+          f"avg data coverage {scoring['avg_data_coverage_pct']}% | {len(card['not_measured'])} things not measured")
+
+
+def render_card(c: dict) -> str:
+    d, s, b, q = c["discovery"], c["scoring"], c["briefs"], c["sequences"]
+    out = [f"# Report card", "", f"Generated {c['generated_at']} from the pipeline's own output files. "
+           "Measurements only: no grades, because no outcome data or human labels exist yet.", "",
+           "## Discovery", "",
+           f"- {d['accounts']} accounts in {d['groups']} groups (accounts sharing a website count as one group).",
+           f"- By source: " + ", ".join(f"{k}: {v}" for k, v in d["by_source"].items()) + ".",
+           f"- {d['with_website_pct']}% have a website; {d['with_phone_pct']}% have a phone number.", "",
+           "## Signals", "",
+           f"- {c['signals']['accounts_enriched']} accounts enriched. Signal errors: "
+           + ", ".join(f"{k}: {v}" for k, v in c["signals"]["errors"].items()) + ".",
+           "", "| Signal column | Accounts with a value |", "|---|---|"]
+    out += [f"| `{k}` | {v}% |" for k, v in c["signals"]["filled_pct"].items()]
+    for col, breakdown in c["signals"]["status_breakdown"].items():
+        out += ["", f"`{col}` breakdown:", "", "| Status | Accounts |", "|---|---|"]
+        out += [f"| {k} | {v} |" for k, v in breakdown.items()]
+    out += ["", "## Scoring", "", "The rubric weights are a hypothesis. They have not been fitted to meetings booked or deals won.", "",
+            "| Tier | Minimum score | Accounts | Groups | Average data coverage |", "|---|---|---|---|---|"]
+    out += [f"| {t['tier']} | {t['min_score']} | {t['accounts']} | {t['groups']} | {t['avg_data_coverage_pct']}% |" for t in s["tiers"]]
+    out += ["", "Data coverage is the share of the rubric judged on real data. A low score with low coverage means "
+            "\"could not find out\", not \"poor fit\".", "",
+            "| Criterion | Max points | Average points | Accounts scoring above zero |", "|---|---|---|---|"]
+    out += [f"| {k['label']} | {k['max_points']} | {k['avg_points']} | {k['accounts_scoring_above_zero_pct']}% |" for k in s["criteria"]]
+    out += ["", "## Briefs", "",
+            f"- {b['written']} briefs written; {b['passed_source_check_pct']}% pass the source check.",
+            f"- {b['statements']} statements, {b['statements_per_brief']} per brief, each citing at least one numbered fact.",
+            f"- {b['facts_per_brief']} facts available per brief; {b['facts_used_pct']}% of available facts were cited.", "",
+            "## Sequences", "",
+            f"- {q['written']} sequences ({q['touches']} touches); {q['passed_checks_pct']}% pass their checks.",
+            f"- First-email closing questions: {q['distinct_first_email_questions_pct']}% are distinct; "
+            f"the most repeated one appears {q['most_repeated_first_email_question_count']} times.",
+            "- Written for: " + ", ".join(f"{k} ({v})" for k, v in q["personas"].items()) + ".", "",
+            "| Touch | Word limit | Average words | Longest |", "|---|---|---|---|"]
+    out += [f"| {t['touch']} | {t['limit_words']} | {t['avg_words']} | {t['max_words']} |" for t in q["touch_lengths"]]
+    out += ["", "## What the automated checks cover", ""] + [f"- {x}" for x in c["checks_cover"]]
+    out += ["", "## Not measured", ""] + [f"- {x}" for x in c["not_measured"]]
+    return "\n".join(out) + "\n"
+
+
+def render_costs(c: dict) -> str:
+    b, q = c["briefs"], c["sequences"]
+    out = ["# Costs", "", f"Generated {c['generated_at']}. Model costs are measured from the token usage logged for each "
+           "brief and sequence in the current run, priced at the per-token rates set in the vertical's config. "
+           "They cover one clean pass; samples, retries and regenerated drafts during development cost extra.", "",
+           "| Step | Model | Items | Avg input tokens | Avg output tokens | Cost per item | Total |", "|---|---|---|---|---|---|---|",
+           f"| Briefs | {b['model']} | {b['written']} | {b['avg_input_tokens']} | {b['avg_output_tokens']} | ${b['avg_cost_usd']:.4f} | ${b['total_cost_usd']:.2f} |",
+           f"| Sequences | {q['model']} | {q['written']} | {q['avg_input_tokens']} | {q['avg_output_tokens']} | ${q['avg_cost_usd']:.4f} | ${q['total_cost_usd']:.2f} |",
+           f"| **Model total** | | | | | | **${b['total_cost_usd'] + q['total_cost_usd']:.2f}** |", ""]
+    if c["other_costs"]:
+        out += ["## Other costs", "", "These are not logged by the pipeline. They are estimates from request counts and list prices.", "",
+                "| Item | Requests | Estimated cost | Basis |", "|---|---|---|---|"]
+        out += [f"| {o['item']} | {o['requests']} | {o['estimate']} | {o['basis']} |" for o in c["other_costs"]]
+        out += [""]
+    out += ["Scoring, export, anonymization and this report make no paid calls."]
+    return "\n".join(out) + "\n"
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--vertical", default="home_care_post_acute")
+    args = parser.parse_args()
+    main(args.vertical)

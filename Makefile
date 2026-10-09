@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export check-generic
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic
 
 discover:
 	python3 src/discover.py
@@ -29,6 +29,14 @@ sequence-sample:
 
 export:
 	python3 src/export.py
+
+public:
+	python3 src/anonymize.py
+	python3 src/evals.py
+
+site: public
+	@echo "Open http://localhost:8000/site/ (Ctrl-C to stop)"
+	python3 -m http.server 8000
 
 check-generic:
 	python3 scripts/check_generic.py

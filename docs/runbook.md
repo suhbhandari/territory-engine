@@ -2,7 +2,7 @@
 
 How to set up, run, extend, and recover the territory engine. This describes the code as of 2026-10-08. Run all commands from the project root.
 
-Seven steps work today:
+Eight steps work today:
 
 1. **Discover** builds the account list for one metro and one vertical from two public sources: the national provider registry (NPPES) and Google Maps.
 2. **Backfill** looks up each registry-only account on Google Maps to fill in its website.
@@ -11,8 +11,9 @@ Seven steps work today:
 5. **Brief** writes a one-page, source-linked brief for each top-tier account group.
 6. **Sequence** drafts a three-touch outreach sequence for each of those groups, built on the same facts.
 7. **Export** writes import-ready CSV files for the CRM and the sales engagement tool.
+8. **Public** builds the anonymized dataset, report card and cost summary that the demo site reads.
 
-The web app and weekly refresh are not built yet (section 7).
+The weekly refresh and the objection library are not built yet (section 7).
 
 ## 1. Setup
 
@@ -52,6 +53,8 @@ Run in this order. Backfill and enrich read the file that discover writes.
 | 6 | `make brief-sample` then `make brief` | Writes one brief per account group in the tiers named in `brief.yaml` (`brief-sample` writes the first 5). Code builds a numbered fact list with a source link for each fact; the model may only arrange and phrase those facts and must cite a fact id for every statement. A code check then fails any brief with an uncited statement or a number that is not in its cited facts. Skips briefs already written. `python3 src/brief.py --dry-run` prints the facts and calls nothing. | `accounts_scored.csv`, `brief.yaml` and `brief_prompt.md` in the vertical folder, `.env` | `outputs/raw/briefs/*.md`, `outputs/raw/briefs/briefs_index.csv` (check result, tokens and cost per brief) |
 | 7 | `make sequence-sample` then `make sequence` | Drafts the touches defined in `sequence.yaml` (today: email, follow-up email, call opener) for each group in its tiers, written for the role chosen by `personas.yaml`. Uses the same numbered facts as the brief. Code checks each touch for a cited fact, unsupported numbers, word and subject limits, and stray merge fields; failures are flagged "do not send without review". `--redo-failed` regenerates flagged ones; `--dry-run` calls nothing. | `accounts_scored.csv`; `sequence.yaml`, `personas.yaml`, `sequence_prompt.md`, `seller_context.md`, `brief.yaml` in the vertical folder; `.env` | `outputs/raw/sequences/*.md`, `sequences.csv` (one row per touch), `sequences_index.csv` (check result, tokens, cost) |
 | 8 | `make export` | Writes one CSV per target in `export.yaml`: accounts for the CRM, and one row per account group carrying its outreach copy for the sales engagement tool. Sequences that failed their checks are left out. Calls no external service. See `docs/stack-fit.md` for field mapping and import steps. | `accounts_scored.csv`, `sequences/sequences.csv`, `briefs/briefs_index.csv`, `export.yaml` and `sequence.yaml` in the vertical folder | `outputs/raw/exports/*.csv` |
+| 9 | `make public` | Builds `outputs/public/`: an anonymized copy of the scored accounts, briefs and sequences (aliases instead of names; addresses, phones, websites and IDs replaced), then the report card and cost summary computed from the run's own files. If any account's name words, domain, phone or ID survive in its published text, the build fails and writes nothing. | everything in `outputs/raw/`; `rubric.yaml`, `glossary.yaml`, `sequence.yaml`, `evals.yaml` | `outputs/public/site_data.json` and `.js`, `accounts_public.csv`, `report_card.json`, `.js` and `.md`, `costs.md` |
+| 10 | `make site` | Rebuilds the public data and serves the repo at `http://localhost:8000/site/`. The site is one static page, `site/index.html`, with no build step; it can also be opened directly as a file. | `outputs/public/*.js` | nothing |
 | any time | `make check-generic` | Scans core code and docs for vertical-specific terms and prints PASS or FAIL. Calls no external service. | text and code files outside `config/verticals/` and `outputs/` | nothing |
 
 Worth knowing:
@@ -65,7 +68,8 @@ Worth knowing:
 - **Locations of one operator are grouped.** Accounts that share a website domain get the same `group_rank` and sit together in the scored file, best location first (`rank_in_group`), so one operator takes one place in the ranking. Work the list by `group_rank`. Franchise locations share the franchisor's domain, so they group together even when the owners differ.
 - **Read `data_coverage` next to the score.** It is the share of the rubric judged on real data. A low score with low coverage means "we could not find out", not "poor fit". Weights and tier cut-offs live in `rubric.yaml` and are a starting hypothesis; no outcome data has been used to fit them.
 - **Enrich is slow on purpose.** Signals marked `sequential` in `signals.yaml` pause 1.2 seconds between accounts to stay polite to the service they call. For the NYC list that is about half an hour of waiting per sequential signal.
-- **`outputs/raw/` holds real business names** and is meant to stay uncommitted.
+- **`outputs/raw/` holds real business names** and is meant to stay uncommitted. `outputs/public/` is the only output folder meant for git and for the public site.
+- **Anonymization removes names and contact details, not every clue.** An account's combination of facts (an exact open-role count, a hiring system, a borough) may still point to it. Read a sample of `outputs/public/site_data.json` before publishing a new run.
 
 ## 3. Adding a new metro
 
@@ -109,6 +113,7 @@ Files in the shipped vertical's folder today:
 | `rubric.yaml` | Scoring criteria, their weights, the rules that award points, and the tier cut-offs. |
 | `seller_context.md` | One paragraph describing what the seller offers. Inserted into both prompts, so edit it in one place. |
 | `brief.yaml`, `brief_prompt.md` | Which tiers get briefs, the fact templates and their source links, the "what we don't know" lines, and the instructions the model follows. |
+| `evals.yaml` | The plain-language statements the report card prints: what the checks cover, what has not been measured, and cost estimates the pipeline does not log itself. Keep these current by hand. |
 | `export.yaml` | The export files: which rows and tiers each holds, its columns, and how merge fields are translated for the sending tool. |
 | `sequence.yaml`, `sequence_prompt.md`, `personas.yaml` | The touches in a sequence and their limits, the writing instructions, and the rules that pick which role a sequence is written for. |
 
@@ -163,5 +168,5 @@ Backfill is the larger cost: one request per registry-only account at the same t
 
 No commands exist for any of these:
 
-- Web app
+- Objection library
 - Weekly refresh

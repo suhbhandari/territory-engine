@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Territory Engine</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f6f5f2; --surface: #fcfcfb; --surface-2: #f0efec; --border: #dedcd6;
+    --text: #0b0b0b; --text-2: #52514e; --text-3: #7a7872;
+    --series: #2a78d6; --track: #e6e4df;
+    --tier-A: #184f95; --tier-B: #2a78d6; --tier-C: #5598e7; --tier-D: #86b6ef;
+    --tier-A-ink: #fff; --tier-B-ink: #fff; --tier-C-ink: #0b0b0b; --tier-D-ink: #0b0b0b;
+    --note-bg: #eef4fc; --note-border: #b7d3f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page: #121211; --surface: #1a1a19; --surface-2: #242422; --border: #383835;
+      --text: #ffffff; --text-2: #c3c2b7; --text-3: #94938a;
+      --series: #3987e5; --track: #2e2e2b;
+      --tier-A: #9ec5f4; --tier-B: #5598e7; --tier-C: #2a78d6; --tier-D: #184f95;
+      --tier-A-ink: #0b0b0b; --tier-B-ink: #0b0b0b; --tier-C-ink: #fff; --tier-D-ink: #fff;
+      --note-bg: #16233a; --note-border: #184f95;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px 64px; }
+  header { padding: 28px 0 12px; }
+  h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h2 { font-size: 17px; margin: 28px 0 10px; }
+  h3 { font-size: 14px; margin: 18px 0 6px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+  p { margin: 0 0 10px; }
+  .sub { color: var(--text-2); }
+  .note { background: var(--note-bg); border: 1px solid var(--note-border); border-radius: 8px; padding: 10px 14px; margin: 12px 0; color: var(--text-2); font-size: 14px; }
+  nav { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-top: 14px; overflow-x: auto; }
+  nav button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; font: inherit; color: var(--text-2); cursor: pointer; white-space: nowrap; }
+  nav button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--series); font-weight: 600; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 16px; }
+  .tile .n { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .tile .l { color: var(--text-2); font-size: 13px; }
+  .tile .d { color: var(--text-3); font-size: 12px; margin-top: 2px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+  .bars { display: grid; gap: 10px; }
+  .bar-row { display: grid; grid-template-columns: 64px 1fr 150px; gap: 10px; align-items: center; font-size: 13px; }
+  .bar-row.wide { grid-template-columns: 150px 1fr 64px; }
+  .bar-track { background: var(--track); border-radius: 4px; height: 14px; position: relative; }
+  .bar-fill { height: 100%; border-radius: 0 4px 4px 0; background: var(--series); min-width: 2px; }
+  .bar-row .v { color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .badge { display: inline-block; min-width: 24px; text-align: center; padding: 1px 7px; border-radius: 5px; font-weight: 650; font-size: 12px; }
+  .badge.A { background: var(--tier-A); color: var(--tier-A-ink); } .badge.B { background: var(--tier-B); color: var(--tier-B-ink); }
+  .badge.C { background: var(--tier-C); color: var(--tier-C-ink); } .badge.D { background: var(--tier-D); color: var(--tier-D-ink); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; counter-reset: step; }
+  .step { counter-increment: step; font-size: 13.5px; }
+  .step b::before { content: counter(step) ". "; color: var(--text-3); }
+  .step p { color: var(--text-2); margin: 4px 0 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--text-2); font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+  td.nw { white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .table-scroll { overflow-x: auto; }
+  tbody tr.click { cursor: pointer; } tbody tr.click:hover { background: var(--surface-2); }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 10px; }
+  .filters input, .filters select { font: inherit; padding: 6px 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); color: var(--text); }
+  .chip { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--text); color: var(--page); border-color: var(--text); }
+  .mini { display: inline-block; width: 70px; height: 8px; background: var(--track); border-radius: 4px; vertical-align: middle; margin-right: 6px; overflow: hidden; }
+  .mini i { display: block; height: 100%; background: var(--series); }
+  .pager { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 10px; color: var(--text-2); font-size: 13px; }
+  .pager button { font: inherit; padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); cursor: pointer; }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
+  dialog { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); width: min(760px, calc(100vw - 24px)); max-height: calc(100vh - 40px); padding: 0; }
+  dialog::backdrop { background: rgba(0,0,0,0.45); }
+  .dlg-head { position: sticky; top: 0; background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 18px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+  .dlg-body { padding: 4px 18px 20px; }
+  .dlg-head button { font: inherit; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  ul { margin: 0 0 8px; padding-left: 20px; } li { margin-bottom: 4px; }
+  .touch { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; background: var(--page); }
+  .touch .meta { color: var(--text-3); font-size: 12.5px; margin-bottom: 6px; }
+  .touch pre { margin: 0; white-space: pre-wrap; font: inherit; }
+  .facts li { color: var(--text-2); font-size: 13.5px; }
+  .tip { position: fixed; pointer-events: none; background: var(--text); color: var(--page); padding: 6px 9px; border-radius: 6px; font-size: 12.5px; max-width: 260px; z-index: 50; display: none; }
+  .empty { color: var(--text-3); padding: 18px 0; }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="title">Territory Engine</h1>
+    <div class="sub" id="subtitle"></div>
+    <div class="note" id="anon-note"></div>
+    <nav role="tablist">
+      <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
+      <button role="tab" data-tab="accounts" aria-selected="false">Accounts</button>
+      <button role="tab" data-tab="report" aria-selected="false">Report card</button>
+    </nav>
+  </header>
+  <main>
+    <section id="tab-overview"></section>
+    <section id="tab-accounts" hidden></section>
+    <section id="tab-report" hidden></section>
+  </main>
+</div>
+<dialog id="detail"></dialog>
+<div class="tip" id="tip"></div>
+
+<script src="../outputs/public/site_data.js"></script>
+<script src="../outputs/public/report_card.js"></script>
+<script>
+(function () {
+  const D = window.SITE_DATA, R = window.REPORT_CARD;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const fmt = (n) => Number(n).toLocaleString("en-US");
+  const pctText = (x) => Math.round(x * 100) + "%";
+  const STATUS = {
+    no_website: "No website", counted: "Roles counted", listings_found: "Some roles found",
+    ats_unsupported: "Hiring system, no count", offsite_listings: "External job board",
+    careers_page_no_listings: "Careers page, no listings read", no_careers_page: "No careers page",
+    site_unreachable: "Site unreachable", robots_disallowed: "Crawling disallowed",
+  };
+  const statusLabel = (s) => STATUS[s] || String(s || "").replace(/_/g, " ");
+
+  if (!D || !R) {
+    document.querySelector("main").innerHTML = '<p class="empty">No data found. Run <code>make public</code> to build <code>outputs/public/</code>, then reload.</p>';
+    return;
+  }
+
+  $("title").textContent = "Territory Engine: " + D.vertical + ", " + D.metro;
+  $("subtitle").textContent = "Discovers accounts in a territory from public sources, scores them against a rubric, and drafts source-cited briefs and outreach. Data built " + D.generated_at + ".";
+  $("anon-note").textContent = "Public demo data. Account names, addresses, phone numbers and websites are replaced with placeholders. Scores, signals and generated text are real output from one run.";
+
+  // ---------- tooltip ----------
+  const tip = $("tip");
+  document.addEventListener("mousemove", (e) => {
+    const el = e.target.closest("[data-tip]");
+    if (!el) { tip.style.display = "none"; return; }
+    tip.textContent = el.dataset.tip;
+    tip.style.display = "block";
+    const x = Math.min(e.clientX + 12, window.innerWidth - tip.offsetWidth - 8);
+    tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px";
+  });
+
+  // ---------- tabs ----------
+  const TABS = ["overview", "accounts", "report"];
+  function showTab(name) {
+    document.querySelectorAll("nav button").forEach((x) => x.setAttribute("aria-selected", x.dataset.tab === name));
+    TABS.forEach((t) => { $("tab-" + t).hidden = t !== name; });
+  }
+  document.querySelectorAll("nav button").forEach((b) => b.addEventListener("click", () => {
+    showTab(b.dataset.tab); history.replaceState(null, "", "#" + b.dataset.tab);
+  }));
+
+  // ---------- overview ----------
+  const groups = D.accounts;
+  const tierNames = D.tiers.map((t) => t.name);
+  const byTier = Object.fromEntries(tierNames.map((t) => [t, groups.filter((a) => a.tier === t)]));
+  const maxTier = Math.max(...tierNames.map((t) => byTier[t].length));
+  const withText = groups.filter((a) => a.brief).length;
+  const steps = [
+    ["Discover", "Pull every matching business from a public registry and map listings, then merge duplicates."],
+    ["Enrich", "Check each account's own website for a careers page, hiring system and open roles."],
+    ["Score", "Apply a written rubric. Every point has a plain-language reason, and missing data is tracked separately."],
+    ["Brief", "Code builds numbered facts with sources; a model phrases them and must cite a fact for each statement."],
+    ["Sequence", "Draft an email, a follow-up and a call opener from the same facts, checked by code."],
+    ["Export", "Write import files for the CRM and the sales engagement tool."],
+  ];
+  $("tab-overview").innerHTML = `
+    <div class="tiles">
+      <div class="card tile"><div class="n">${fmt(R.discovery.accounts)}</div><div class="l">accounts discovered</div><div class="d">${fmt(R.discovery.groups)} groups after merging shared websites</div></div>
+      <div class="card tile"><div class="n">${fmt(byTier[tierNames[0]].length)}</div><div class="l">tier ${esc(tierNames[0])} groups</div><div class="d">score ${D.tiers[0].min_score} or higher</div></div>
+      <div class="card tile"><div class="n">${fmt(withText)}</div><div class="l">briefs and sequences</div><div class="d">${R.briefs.passed_source_check_pct}% pass the source check</div></div>
+      <div class="card tile"><div class="n">$${R.briefs.avg_cost_usd.toFixed(2)}</div><div class="l">model cost per brief</div><div class="d">$${(R.briefs.total_cost_usd + R.sequences.total_cost_usd).toFixed(2)} for all briefs and sequences</div></div>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card">
+        <h2 style="margin-top:0">Groups by tier</h2>
+        <div class="bars">${R.scoring.tiers.map((t) => `
+          <div class="bar-row" data-tip="Tier ${esc(t.tier)}: ${fmt(t.groups)} groups (${fmt(t.accounts)} accounts), score ${t.min_score}+, average data coverage ${t.avg_data_coverage_pct}%">
+            <div><span class="badge ${esc(t.tier)}">${esc(t.tier)}</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(100 * t.groups / maxTier).toFixed(1)}%;background:var(--tier-${esc(t.tier)})"></div></div>
+            <div class="v">${fmt(t.groups)} · ${t.avg_data_coverage_pct}% coverage</div>
+          </div>`).join("")}
+        </div>
+        <p class="sub" style="margin-top:12px;font-size:13px">Coverage is the share of the rubric judged on real data. The lowest tier is mostly accounts that could not be assessed, not accounts that scored badly on evidence.</p>
+      </div>
+      <div class="card">
+        <h2 style="margin-top:0">Average points by criterion</h2>
+        <div class="bars">${R.scoring.criteria.map((c) => `
+          <div class="bar-row wide" data-tip="${esc(c.label)}: average ${c.avg_points} of ${c.max_points} points; ${c.accounts_scoring_above_zero_pct}% of accounts score above zero">
+            <div>${esc(c.label)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(100 * c.avg_points / c.max_points).toFixed(1)}%"></div></div>
+            <div class="v">${c.avg_points} / ${c.max_points}</div>
+          </div>`).join("")}
+        </div>
+        <p class="sub" style="margin-top:12px;font-size:13px">Bars show the average share of each criterion's points earned across all accounts.</p>
+      </div>
+    </div>
+    <h2>How it works</h2>
+    <div class="steps">${steps.map(([t, p]) => `<div class="card step"><b>${t}</b><p>${p}</p></div>`).join("")}</div>
+    <h2>The rubric</h2>
+    <div class="card table-scroll"><table>
+      <thead><tr><th>Criterion</th><th class="num">Max points</th><th>Why it is in the rubric</th></tr></thead>
+      <tbody>${D.criteria.map((c) => `<tr><td>${esc(c.label)}</td><td class="num">${c.max_points}</td><td>${esc(c.why)}</td></tr>`).join("")}</tbody>
+    </table></div>
+    <p class="sub" style="margin-top:10px;font-size:13px">These weights are a starting hypothesis. They have not been fitted to meetings booked or deals won.</p>`;
+
+  // ---------- accounts ----------
+  const state = { tiers: new Set(), q: "", status: "", sort: "rank", page: 0 };
+  const PAGE = 50;
+  const statuses = [...new Set(groups.map((a) => a.hiring_status))].filter(Boolean).sort();
+  $("tab-accounts").innerHTML = `
+    <div class="filters">
+      ${tierNames.map((t) => `<button class="chip" data-tier="${esc(t)}" aria-pressed="false">Tier ${esc(t)}</button>`).join("")}
+      <input id="q" type="search" placeholder="Search id, city or type" aria-label="Search accounts">
+      <select id="status" aria-label="Hiring check status"><option value="">Any hiring status</option>${statuses.map((s) => `<option value="${esc(s)}">${esc(statusLabel(s))}</option>`).join("")}</select>
+      <select id="sort" aria-label="Sort"><option value="rank">Sort: rank</option><option value="coverage">Sort: data coverage</option><option value="roles">Sort: open roles</option><option value="locations">Sort: locations</option></select>
+    </div>
+    <div class="card table-scroll"><table>
+      <thead><tr><th class="num">Rank</th><th>Account</th><th>City</th><th>Tier</th><th>Score</th><th class="num">Coverage</th><th>Type</th><th class="num">Locations</th><th class="num">Open roles</th><th>Hiring status</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <div class="pager"><span id="count"></span><button id="prev">Previous</button><button id="next">Next</button></div>`;
+
+  function filtered() {
+    const q = state.q.toLowerCase();
+    let rows = groups.filter((a) =>
+      (!state.tiers.size || state.tiers.has(a.tier)) &&
+      (!state.status || a.hiring_status === state.status) &&
+      (!q || (a.id + " " + a.city + " " + a.type).toLowerCase().includes(q)));
+    const key = { coverage: (a) => -a.data_coverage, roles: (a) => -(Number(a.open_roles) || -1), locations: (a) => -a.locations }[state.sort];
+    if (key) rows = rows.slice().sort((a, b) => key(a) - key(b) || a.rank - b.rank);
+    return rows;
+  }
+  function drawRows() {
+    const rows = filtered();
+    const pages = Math.max(1, Math.ceil(rows.length / PAGE));
+    state.page = Math.min(state.page, pages - 1);
+    const slice = rows.slice(state.page * PAGE, (state.page + 1) * PAGE);
+    $("rows").innerHTML = slice.map((a) => `
+      <tr class="click" data-id="${esc(a.id)}" tabindex="0">
+        <td class="num">${a.rank}</td><td class="nw">${esc(a.id)}${a.brief ? "" : ' <span class="sub" style="font-size:12px">(no brief)</span>'}</td><td>${esc(a.city)}</td>
+        <td><span class="badge ${esc(a.tier)}">${esc(a.tier)}</span></td>
+        <td class="nw"><span class="mini"><i style="width:${a.score}%"></i></span>${a.score}</td>
+        <td class="num">${pctText(a.data_coverage)}</td><td>${esc(a.type)}</td><td class="num">${a.locations}</td>
+        <td class="num">${a.open_roles === "" ? '<span class="sub">unknown</span>' : esc(a.open_roles)}</td><td>${esc(statusLabel(a.hiring_status))}</td>
+      </tr>`).join("") || '<tr><td colspan="10" class="empty">No accounts match these filters.</td></tr>';
+    $("count").textContent = rows.length ? `${state.page * PAGE + 1}–${state.page * PAGE + slice.length} of ${fmt(rows.length)}` : "0 accounts";
+    $("prev").disabled = state.page === 0; $("next").disabled = state.page >= pages - 1;
+  }
+  document.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", () => {
+    const t = c.dataset.tier; state.tiers.has(t) ? state.tiers.delete(t) : state.tiers.add(t);
+    c.setAttribute("aria-pressed", state.tiers.has(t)); state.page = 0; drawRows();
+  }));
+  $("q").addEventListener("input", (e) => { state.q = e.target.value; state.page = 0; drawRows(); });
+  $("status").addEventListener("change", (e) => { state.status = e.target.value; state.page = 0; drawRows(); });
+  $("sort").addEventListener("change", (e) => { state.sort = e.target.value; state.page = 0; drawRows(); });
+  $("prev").addEventListener("click", () => { state.page--; drawRows(); });
+  $("next").addEventListener("click", () => { state.page++; drawRows(); });
+  drawRows();
+
+  // ---------- account detail ----------
+  const dlg = $("detail");
+  const byId = Object.fromEntries(groups.map((a) => [a.id, a]));
+  const list = (items) => items && items.length ? `<ul>${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : '<p class="sub">None.</p>';
+  function openDetail(a) {
+    const b = a.brief;
+    dlg.innerHTML = `
+      <div class="dlg-head">
+        <div><h2 style="margin:0">${esc(a.id)} <span class="badge ${esc(a.tier)}">${esc(a.tier)}</span></h2>
+          <div class="sub" style="font-size:13.5px">Rank ${a.rank} · score ${a.score}/100 · data coverage ${pctText(a.data_coverage)} · ${esc(a.city)} · ${a.locations} location${a.locations === 1 ? "" : "s"}</div></div>
+        <button id="close" aria-label="Close">Close</button>
+      </div>
+      <div class="dlg-body">
+        <h3>Score breakdown</h3>
+        <div class="bars">${D.criteria.map((c) => `
+          <div class="bar-row wide" data-tip="${esc(c.label)}: ${a.points[c.key]} of ${c.max_points} points. ${esc(c.why)}">
+            <div>${esc(c.label)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(100 * a.points[c.key] / c.max_points).toFixed(1)}%;${a.points[c.key] ? "" : "min-width:0"}"></div></div>
+            <div class="v">${a.points[c.key]} / ${c.max_points}</div>
+          </div>`).join("")}</div>
+        <h3>Why this score</h3>${list(a.reasons)}
+        ${b ? `
+          <h3>Brief</h3><p>${esc(b.headline)}</p>
+          <h3>Snapshot</h3>${list(b.snapshot)}
+          <h3>Why now</h3>${list(b.why_now)}
+          <h3>Opening angle</h3><p>${esc(b.opening_angle)}</p>
+          <h3>What we don't know</h3>${list(b.unknowns)}
+          <h3>Facts the brief may cite</h3><ul class="facts">${b.facts.map((f) => `<li>${esc(f.replace(/\*\*/g, ""))}</li>`).join("")}</ul>` : `
+          <p class="sub" style="margin-top:14px">No brief or outreach was written for this account. Only groups in the top tiers get them.</p>`}
+        ${a.sequence ? `
+          <h3>Outreach sequence, written for: ${esc(a.persona)}</h3>
+          ${a.sequence.map((t) => `<div class="touch"><div class="meta">Touch ${t.touch} · ${esc(t.channel)} · day ${t.day} · rests on ${esc(t.fact_ids)}</div>
+            ${t.subject ? `<p><b>Subject:</b> ${esc(t.subject)}</p>` : ""}<pre>${esc(t.body)}</pre></div>`).join("")}
+          <p class="sub" style="font-size:13px">Drafts for a rep to review before sending. Bracketed fields in double braces are filled by the sending tool.</p>` : ""}
+      </div>`;
+    dlg.showModal(); dlg.scrollTop = 0;
+    $("close").addEventListener("click", () => dlg.close());
+  }
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  $("rows").addEventListener("click", (e) => { const tr = e.target.closest("tr[data-id]"); if (tr) openDetail(byId[tr.dataset.id]); });
+  $("rows").addEventListener("keydown", (e) => { if (e.key === "Enter") { const tr = e.target.closest("tr[data-id]"); if (tr) openDetail(byId[tr.dataset.id]); } });
+
+  // Deep links: #accounts, #report, or #account-0001 to open one account.
+  const hash = decodeURIComponent(location.hash.slice(1));
+  if (TABS.includes(hash)) showTab(hash);
+  const linked = groups.find((a) => a.id.toLowerCase().replace(/\s+/g, "-") === hash);
+  if (linked) { showTab("accounts"); openDetail(linked); }
+
+  // ---------- report card ----------
+  const kv = (obj) => Object.entries(obj).map(([k, v]) => `<tr><td>${esc(statusLabel(k))}</td><td class="num">${typeof v === "number" ? fmt(v) : esc(v)}</td></tr>`).join("");
+  const statusCols = Object.entries(R.signals.status_breakdown);
+  $("tab-report").innerHTML = `
+    <p class="sub" style="margin-top:16px">Every number here is computed from the pipeline's output files. There are no grades: without outcome data or human labels, a grade would be invented.</p>
+    <div class="grid-2">
+      <div class="card"><h2 style="margin-top:0">Discovery</h2><table><tbody>
+        <tr><td>Accounts</td><td class="num">${fmt(R.discovery.accounts)}</td></tr>
+        <tr><td>Groups</td><td class="num">${fmt(R.discovery.groups)}</td></tr>
+        <tr><td>With a website</td><td class="num">${R.discovery.with_website_pct}%</td></tr>
+        ${Object.entries(R.discovery.by_source).map(([k, v]) => `<tr><td>Found via ${esc(k)}</td><td class="num">${fmt(v)}</td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="card"><h2 style="margin-top:0">Signals</h2><table><tbody>
+        <tr><td>Accounts enriched</td><td class="num">${fmt(R.signals.accounts_enriched)}</td></tr>
+        ${Object.entries(R.signals.errors).map(([k, v]) => `<tr><td>Errors: ${esc(statusLabel(k))}</td><td class="num">${v}</td></tr>`).join("")}
+        ${statusCols.map(([, breakdown]) => kv(breakdown)).join("")}
+      </tbody></table></div>
+      <div class="card"><h2 style="margin-top:0">Briefs</h2><table><tbody>
+        <tr><td>Written</td><td class="num">${fmt(R.briefs.written)}</td></tr>
+        <tr><td>Pass the source check</td><td class="num">${R.briefs.passed_source_check_pct}%</td></tr>
+        <tr><td>Statements, each citing a fact</td><td class="num">${fmt(R.briefs.statements)}</td></tr>
+        <tr><td>Facts available per brief</td><td class="num">${R.briefs.facts_per_brief}</td></tr>
+        <tr><td>Cost per brief</td><td class="num">$${R.briefs.avg_cost_usd.toFixed(4)}</td></tr>
+      </tbody></table></div>
+      <div class="card"><h2 style="margin-top:0">Sequences</h2><table><tbody>
+        <tr><td>Written (touches)</td><td class="num">${fmt(R.sequences.written)} (${fmt(R.sequences.touches)})</td></tr>
+        <tr><td>Pass their checks</td><td class="num">${R.sequences.passed_checks_pct}%</td></tr>
+        <tr><td>Distinct first-email questions</td><td class="num">${R.sequences.distinct_first_email_questions_pct}%</td></tr>
+        ${R.sequences.touch_lengths.map((t) => `<tr><td>Touch ${t.touch}: average words (limit ${t.limit_words})</td><td class="num">${t.avg_words}</td></tr>`).join("")}
+        <tr><td>Cost per sequence</td><td class="num">$${R.sequences.avg_cost_usd.toFixed(4)}</td></tr>
+      </tbody></table></div>
+    </div>
+    <h2>What the automated checks cover</h2><div class="card">${list(R.checks_cover)}</div>
+    <h2>Not measured</h2><div class="card">${list(R.not_measured)}</div>
+    <h2>Other costs</h2>
+    <div class="card table-scroll"><table><thead><tr><th>Item</th><th>Requests</th><th>Estimate</th><th>Basis</th></tr></thead>
+      <tbody>${R.other_costs.map((o) => `<tr><td>${esc(o.item)}</td><td>${esc(o.requests)}</td><td>${esc(o.estimate)}</td><td>${esc(o.basis)}</td></tr>`).join("")}</tbody></table></div>`;
+})();
+</script>
+</body>
+</html>
