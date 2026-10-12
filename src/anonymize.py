@@ -64,7 +64,7 @@ _PATTERNS = [
 ]
 _COUNT_BANDS = [(100, "100+"), (50, "50-99"), (20, "20-49"), (5, "5-19"), (1, "1-4"), (0, "0")]
 # A number followed within a few words by a word for job openings, or a total "across all locations".
-_ROLE_COUNT = re.compile(r"\b\d[\d,]*(?=(?:\s+[\w/'-]+){0,3}?\s+(?:roles?|postings?|openings?|positions?|jobs?)\b"
+_ROLE_COUNT = re.compile(r"\b\d[\d,]*(?=(?:\s+[\w/'-]+){0,6}?\s+(?:roles?|postings?|openings?|positions?|jobs?|titles?)\b"
                          r"|\s+across\s+all\s+locations)", re.I)
 
 

@@ -57,3 +57,12 @@ def test_hiring_system_names_are_hidden_as_whole_words():
 
     assert hide_terms("Runs hiring through ADP and Workday; ADPX is not one.", {"ADP", "Workday"}, "[hiring system]") == \
         "Runs hiring through [hiring system] and [hiring system]; ADPX is not one."
+
+
+def test_counts_a_few_words_before_a_role_word_are_banded():
+    from src.anonymize import band_counts
+
+    assert band_counts("100+ open roles, 32 of them with scheduling or coordination titles.") == \
+        "100+ open roles, 20-49 of them with scheduling or coordination titles."
+    assert band_counts("First enrolled in 2015 (11 years ago); 3 accounts share a domain.") == \
+        "First enrolled in 2015 (11 years ago); 3 accounts share a domain."
