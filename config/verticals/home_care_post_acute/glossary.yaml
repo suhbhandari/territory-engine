@@ -1,5 +1,6 @@
-# Vertical glossary — human-readable labels for display in briefs and the web app.
-# Core code never reads this directly; it is loaded by brief.py and the web app.
+# Vertical glossary: human-readable labels.
+# src/anonymize.py reads vertical_name for the public site's title. The other keys are
+# not read by any code yet.
 
 vertical_name: Home Care & Post-Acute
 account_types:

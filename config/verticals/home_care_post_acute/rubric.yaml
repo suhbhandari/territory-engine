@@ -8,9 +8,9 @@
 # Condition ops: eq, in, contains, gte, lte, between, blank, not_blank.
 # Reasons may reference any column in braces, e.g. "{jobs_total} open roles".
 #
-# These weights are a starting hypothesis, not a fitted model. No outcome data
-# (meetings booked, deals won) exists yet. docs/closing-the-loop.md will describe how to
-# re-weight them once it does.
+# These weights are my judgment, a starting hypothesis, not a fitted model. No outcome
+# data (meetings booked, deals won) exists yet, so they have not been tested against it.
+# How to re-weight them once it does is not written yet; it is listed in V2.md.
 
 tiers:
   - {name: A, min_score: 60}
