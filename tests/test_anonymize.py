@@ -28,8 +28,9 @@ def test_scrub_removes_every_identifier():
 
 
 def test_scrub_leaves_ordinary_text_alone():
-    text = "Lists 12 open roles; runs hiring through Workday."
+    text = "Registered 11 years ago; runs hiring through Workday."
     assert scrub(text, ALIAS, [MEMBER], words()) == text
+    assert scrub("Lists 12 open roles.", ALIAS, [MEMBER], words()) == "Lists 5-19 open roles."
 
 
 def test_leak_check_catches_what_scrub_missed():
@@ -37,3 +38,15 @@ def test_leak_check_catches_what_scrub_missed():
     assert "bluebird" in found
     assert "phone …5550101" in found
     assert "bluebirdwell.example" in found
+
+
+def test_open_role_counts_become_ranges():
+    from src.anonymize import band, band_counts
+
+    assert [band(x) for x in ("", "0", "3", "5", "19", "20", "99", "161", "1,204")] == \
+        ["", "0", "1-4", "5-19", "5-19", "20-49", "50-99", "100+", "100+"]
+    text = ("Its job board lists 161 open roles located in NY, out of 192 across all locations. "
+            "Of these: 17 are scheduling roles. At least 4 open role(s). Registered 11 years ago. 3 locations share it.")
+    assert band_counts(text) == (
+        "Its job board lists 100+ open roles located in NY, out of 100+ across all locations. "
+        "Of these: 5-19 are scheduling roles. At least 1-4 open role(s). Registered 11 years ago. 3 locations share it.")

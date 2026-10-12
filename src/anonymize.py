@@ -18,8 +18,11 @@ Design:
     generated text of many different groups (ordinary language like "open"), does not
   - A leak check then searches every published text for that group's own identifiers.
     Any hit fails the build, so a scrub gap cannot ship silently
-  - Limits: this removes names and contact details. It does not make an account
-    impossible to re-identify from its combination of facts (e.g. an exact open-role count)
+  - Open-role counts are published as ranges (1-4, 5-19, 20-49, 50-99, 100+), in the
+    open_roles field and in the text, because an exact count plus a city points to one employer
+  - Limits: this removes names and contact details and blurs counts. It does not make an
+    account impossible to re-identify from its combination of facts (hiring system, city,
+    number of locations, years registered)
 """
 
 import argparse
@@ -57,6 +60,24 @@ _PATTERNS = [
     (re.compile(rf"\b(?:[NSEW]\.?\s+)?(?:\d+(?i:st|nd|rd|th)|[A-Z][\w'-]+)(?:\s[A-Z][\w'-]+)?\s(?i:{_STREET_TYPES})\b\.?"), "[street]"),
     (re.compile(r"\b(\d{3})\d{2}(?:-\d{4})?\b"), r"\1xx"),
 ]
+_COUNT_BANDS = [(100, "100+"), (50, "50-99"), (20, "20-49"), (5, "5-19"), (1, "1-4"), (0, "0")]
+# A number followed within a few words by a word for job openings, or a total "across all locations".
+_ROLE_COUNT = re.compile(r"\b\d[\d,]*(?=(?:\s+[\w/'-]+){0,3}?\s+(?:roles?|postings?|openings?|positions?|jobs?)\b"
+                         r"|\s+across\s+all\s+locations)", re.I)
+
+
+def band(count: str) -> str:
+    """'161' -> '100+'; blank stays blank (unknown is not zero)."""
+    if not str(count).strip():
+        return ""
+    n = int(float(str(count).replace(",", "")))
+    return next(label for floor, label in _COUNT_BANDS if n >= floor)
+
+
+def band_counts(text: str) -> str:
+    return _ROLE_COUNT.sub(lambda m: band(m.group(0)), text)
+
+
 _LEGAL = re.compile(r"(\[?Account \d{4}(?:-\d+)?\]?)(?:[,\s]+(?:llc|inc|corp|corporation|ltd|co|company|lp|llp|pllc)\b\.?)+", re.I)
 
 
@@ -96,7 +117,7 @@ def scrub(text: str, alias: str, members: list, words: set) -> str:
     for word in sorted(words, key=len, reverse=True):
         text = re.sub(_word_pattern(word) + r"(?:'s)?", alias, text, flags=re.I)
     text = re.sub(rf"(?:{re.escape(alias)}[\s,&-]*)+{re.escape(alias)}", alias, text)
-    return _LEGAL.sub(r"\1", text)
+    return band_counts(_LEGAL.sub(r"\1", text))
 
 
 def _word_pattern(word: str) -> str:
@@ -189,7 +210,7 @@ def main(vertical: str, metro_path: str) -> None:
             "has_website": lead["website"] != "",
             "hiring_status": lead["jobs_status"],
             "hiring_system": lead["jobs_ats"],
-            "open_roles": lead["jobs_total"],
+            "open_roles": band(lead["jobs_total"]),
             "points": {c: int(lead[f"pts_{c}"]) for c in criteria},
             "reasons": [clean(r) for r in lead["score_reasons"].split("; ") if r],
         }
