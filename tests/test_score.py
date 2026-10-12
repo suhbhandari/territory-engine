@@ -63,6 +63,6 @@ def test_tiers(score, tier):
 
 def test_derived_domain_counts_ignore_directory_sites():
     df = pd.DataFrame({"website": ["https://www.one.example/a", "one.example", "http://dir.example/x", ""]})
-    out = add_derived(df, {"directory_domains": ["dir.example"]})
+    out = add_derived(df, ["dir.example"])
     assert list(out["website_domain"]) == ["one.example", "one.example", "", ""]
     assert list(out["domain_account_count"]) == ["2", "2", "", ""]

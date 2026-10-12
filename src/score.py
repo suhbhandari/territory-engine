@@ -104,8 +104,8 @@ def _domain(url: str) -> str:
     return netloc[4:] if netloc.startswith("www.") else netloc
 
 
-def add_derived(df: pd.DataFrame, rubric: dict) -> pd.DataFrame:
-    not_own_site = set(rubric.get("directory_domains", []))
+def add_derived(df: pd.DataFrame, not_own_domains) -> pd.DataFrame:
+    not_own_site = set(not_own_domains)
     df["website_domain"] = df["website"].map(_domain)
     df.loc[df["website_domain"].isin(not_own_site), "website_domain"] = ""
     counts = df.loc[df["website_domain"] != "", "website_domain"].value_counts()
@@ -128,7 +128,8 @@ def main(vertical: str, metro_path: str) -> None:
               f"{excluded['excluded_because'].str.split(':').str[0].value_counts().to_dict()}")
     signals = pd.read_csv(SIGNALS_PATH, dtype=str, keep_default_na=False)
     df = accounts.merge(signals, on=ID_COL, how="left").fillna("")
-    df = add_derived(df, rubric)
+    discovery = yaml.safe_load(open(ROOT / "config" / "verticals" / vertical / "discovery.yaml"))
+    df = add_derived(df, discovery.get("not_own_website_domains", []))
     print(f"[score] {len(df)} accounts | {len(criteria)} criteria | {total_max} points possible")
 
     scored = []

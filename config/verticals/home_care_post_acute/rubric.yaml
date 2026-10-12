@@ -18,10 +18,8 @@ tiers:
   - {name: C, min_score: 25}
   - {name: D, min_score: 0}
 
-# Websites that are public directories, not the agency's own site. Ignored when
-# grouping accounts by domain.
-directory_domains:
-  - profiles.health.ny.gov
+# Websites that are not an account's own site are listed in discovery.yaml
+# (not_own_website_domains); backfill removes them and score ignores them when grouping.
 
 criteria:
 

@@ -13,6 +13,10 @@ Design:
     name is near-identical; otherwise the field stays blank rather than guessed
   - Every lookup (hit or miss) is logged to a cache CSV, so re-runs cost nothing
     and each filled value can be traced to the listing it came from
+  - Then websites that are not the account's own are removed: any on a domain in the
+    vertical's not_own_website_domains, and any a person listed in
+    outputs/raw/website_rejections.csv (columns entity_id, reason). A rejected website is
+    never filled in again from the cache
 """
 
 import argparse
@@ -25,6 +29,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
+from urllib.parse import urlparse
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
@@ -35,6 +40,7 @@ from src.discover import _name_key, _phone_key  # noqa: E402
 
 ACCOUNTS_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
 CACHE_PATH = ROOT / "outputs" / "raw" / "backfill_cache.csv"
+REJECTIONS_PATH = ROOT / "outputs" / "raw" / "website_rejections.csv"
 CACHE_COLS = ["entity_id", "lookup_source", "query", "match_reason", "matched_id", "matched_name", "looked_up_at"]
 
 _NAME_SIMILARITY = 0.85
@@ -54,6 +60,18 @@ def match(account: dict, candidates: list):
         if SequenceMatcher(None, name, _name_key(c["name"])).ratio() >= _NAME_SIMILARITY:
             return c, "name+zip"
     return None, "no_match"
+
+
+def domain(url: str) -> str:
+    netloc = urlparse(url if "//" in url else "//" + url).netloc.lower() if url else ""
+    return netloc[4:] if netloc.startswith("www.") else netloc
+
+
+def not_own_website(websites: pd.Series, not_own_domains, rejected: pd.Series) -> pd.Series:
+    """True where the website is on a listed domain (or a subdomain of one), or rejected."""
+    listed = [d.lower() for d in not_own_domains]
+    on_listed = websites.map(lambda w: any(domain(w) == d or domain(w).endswith("." + d) for d in listed))
+    return (websites != "") & (on_listed | rejected)
 
 
 def lookup_one(module, account: dict, template: str, fields: list) -> dict:
@@ -126,6 +144,12 @@ def main(vertical: str, limit) -> None:
         print(f"[backfill] {source_name} lookups so far: {reasons.value_counts().to_dict()}")
         for field in fields:
             print(f"  {field}: {int(accounts[field].ne('').sum())}/{len(accounts)} accounts now have a value")
+
+    rejections = pd.read_csv(REJECTIONS_PATH, dtype=str).fillna("") if REJECTIONS_PATH.exists() else pd.DataFrame(columns=["entity_id"])
+    remove = not_own_website(accounts["website"], discovery.get("not_own_website_domains", []),
+                             accounts["entity_id"].isin(rejections["entity_id"]))
+    accounts.loc[remove, "website"] = ""
+    print(f"[backfill] Removed {int(remove.sum())} websites that are not the account's own site")
 
     accounts.to_csv(ACCOUNTS_PATH, index=False)
     print(f"\n[backfill] Written → {ACCOUNTS_PATH}")

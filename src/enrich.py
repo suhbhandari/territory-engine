@@ -16,6 +16,9 @@ Design:
   - Every signal has its own <signal>_error column. A signal is done for an account when
     the account has a row and that column is empty. Anything else is attempted again on
     the next run, and only the signals that need it are re-run
+  - A signal marked `uses_website: true` is also re-run when the account's website has
+    changed since that signal last ran (for example after a wrong website was removed).
+    The website each such signal last read is kept in its <signal>_checked_website column
   - Within one run each account/signal pair is attempted at most once. A signal that fails
     MAX_CONSECUTIVE_ERRORS times in a row is switched off for the rest of the run
 """
@@ -41,7 +44,7 @@ OUTPUT_PATH = ROOT / "outputs" / "raw" / "signals_raw.csv"
 
 ID_COL = "entity_id"
 FETCHED_COL = "signals_fetched_at"
-RESERVED_KEYS = ("module", "description", "mode", "delay")
+RESERVED_KEYS = ("module", "description", "mode", "delay", "uses_website")
 DEFAULT_DELAY = 1.2
 MAX_WORKERS = 20
 MAX_CONSECUTIVE_ERRORS = 5
@@ -74,8 +77,14 @@ def error_col(sig_name: str) -> str:
     return f"{sig_name}_error"
 
 
-def needs_signal(row, sig_name: str) -> bool:
+def website_col(sig_name: str) -> str:
+    return f"{sig_name}_checked_website"
+
+
+def needs_signal(row, sig_name: str, account=None, uses_website: bool = False) -> bool:
     if row is None:
+        return True
+    if uses_website and account is not None and row.get(website_col(sig_name), "") != account.get("website", ""):
         return True
     return error_col(sig_name) not in row or row[error_col(sig_name)] != ""
 
@@ -132,6 +141,7 @@ def load_signals(vertical: str) -> list:
             "mode": mode,
             "delay": float(sig_cfg.get("delay", DEFAULT_DELAY)),
             "params": {k: v for k, v in sig_cfg.items() if k not in RESERVED_KEYS},
+            "uses_website": bool(sig_cfg.get("uses_website", False)),
             "streak": 0,
             "disabled": "",
         })
@@ -146,8 +156,22 @@ def main(metro_path: str, vertical: str, limit, batch_size: int, accounts_path: 
 
     signals = load_signals(vertical)
     rows, columns = load_existing(output_path)
+    missing = [website_col(s["name"]) for s in signals if s["uses_website"] and website_col(s["name"]) not in columns]
+    if rows and missing:
+        # Files written before these columns existed were enriched against the websites in the
+        # account file at that time; record them once so later website changes are detected.
+        websites = {a[ID_COL]: a.get("website", "") for a in read_csv_str(accounts_path).to_dict("records")}
+        for key, row in rows.items():
+            for col in missing:
+                row[col] = websites.get(key, "")
+        columns.extend(missing)
+        write_output(output_path, rows, columns)
+        print(f"[enrich] Recorded the website each existing row was checked against: {', '.join(missing)}")
 
-    todo = [a for a in accounts if any(needs_signal(rows.get(a[ID_COL]), s["name"]) for s in signals)]
+    def needs(row, sig, acc):
+        return needs_signal(row, sig["name"], acc, sig["uses_website"])
+
+    todo = [a for a in accounts if any(needs(rows.get(a[ID_COL]), s, a) for s in signals)]
     print(f"[enrich] {len(accounts)} accounts total | {len(accounts) - len(todo)} complete | {len(todo)} to process (new or with errors to retry)")
 
     if not todo:
@@ -159,7 +183,7 @@ def main(metro_path: str, vertical: str, limit, batch_size: int, accounts_path: 
         now = datetime.now(timezone.utc).isoformat()
 
         for sig in signals:
-            pending = [a for a in batch if needs_signal(rows.get(a[ID_COL]), sig["name"])]
+            pending = [a for a in batch if needs(rows.get(a[ID_COL]), sig, a)]
             if not pending:
                 continue
             for acc, (vals, err) in zip(pending, run_signal(sig, pending)):
@@ -167,7 +191,11 @@ def main(metro_path: str, vertical: str, limit, batch_size: int, accounts_path: 
                 row.update(vals)
                 row[error_col(sig["name"])] = err
                 row[FETCHED_COL] = now
-                for col in list(vals) + [error_col(sig["name"])]:
+                written = list(vals) + [error_col(sig["name"])]
+                if sig["uses_website"]:
+                    row[website_col(sig["name"])] = acc.get("website", "")
+                    written.append(website_col(sig["name"]))
+                for col in written:
                     if col not in columns:
                         columns.append(col)
 
@@ -181,7 +209,7 @@ def main(metro_path: str, vertical: str, limit, batch_size: int, accounts_path: 
     error_cols = [error_col(s["name"]) for s in signals]
     print(f"Coverage across the {len(run_rows)} accounts in this run:")
     for col in columns:
-        if col in (ID_COL, FETCHED_COL):
+        if col in (ID_COL, FETCHED_COL) or col.endswith("_checked_website"):
             continue
         filled = sum(1 for r in run_rows if r.get(col) not in (None, ""))
         label = "accounts with errors (retried next run)" if col in error_cols else "accounts with data"

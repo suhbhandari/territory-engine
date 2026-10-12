@@ -87,7 +87,8 @@ def main(vertical: str) -> None:
     }
 
     error_cols = [c for c in signals.columns if c.endswith("_error")]
-    data_cols = [c for c in signals.columns if c not in error_cols and c not in ("entity_id", "signals_fetched_at")]
+    data_cols = [c for c in signals.columns if c not in error_cols and c not in ("entity_id", "signals_fetched_at")
+                 and not c.endswith("_checked_website")]
     signal_stats = {
         "accounts_enriched": len(signals),
         "errors": {c[:-6]: int((signals[c] != "").sum()) for c in error_cols},

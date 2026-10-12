@@ -1,9 +1,12 @@
 # Per-signal run settings read by the enrichment step:
 #   mode: parallel | sequential (default sequential)
 #   delay: seconds between calls, sequential only (default 1.2)
+#   uses_website: true if the signal reads the account's website; it is re-run when the
+#                 website on file changes
 signals:
   careers_page:
     module: src.signals.careers_page
+    uses_website: true
     description: Open job postings on the account's own careers page — proxy for active recruiting pain
     mode: parallel
     # Keywords used to classify job titles into role buckets.
@@ -32,6 +35,7 @@ signals:
 
   http_check:
     module: src.signals.http_check
+    uses_website: true
     description: Website liveness and SSL as proxy for tech posture
     mode: parallel
 

@@ -28,3 +28,12 @@ backfill:
     fields:
       - website
     query_template: "{name}, {address}, {city}, {state} {zip}"
+
+# Websites on these domains are not an account's own site: state directories, listing
+# sites, or a page about the account on someone else's site. Backfill removes them from
+# the account file, and score does not treat them as a shared website when grouping.
+not_own_website_domains:
+  - profiles.health.ny.gov
+  - op.nysed.gov
+  - cdpap-ny.org
+  - fda.gov
