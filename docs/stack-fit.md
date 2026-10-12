@@ -8,12 +8,12 @@ Both tools ask you to map each CSV column to a field during import, so the colum
 
 ## Salesforce: `salesforce_accounts.csv`
 
-One row per account in tiers A, B and C: 521 accounts in the NYC run. Tier D is left out on purpose. Almost all of it is accounts with no web presence that the engine could not assess, and loading a thousand of those is clutter, not pipeline.
+One row per account in tiers A, B and C: 504 accounts in the 2026-10-12 build (after 49 accounts were left out: 48 outside the territory, 1 by review). Tier D is left out on purpose. Almost all of it is accounts with no web presence that the engine could not assess, and loading a thousand of those is clutter, not pipeline.
 
 | CSV column | Salesforce Account field | Type | Notes |
 |---|---|---|---|
-| Account Name, Phone, Website | Standard fields of the same name | — | |
-| Billing Street, City, State/Province, Zip/Postal Code | Standard billing address | — | |
+| Account Name, Phone, Website | Standard fields of the same name | | |
+| Billing Street, City, State/Province, Zip/Postal Code | Standard billing address | | |
 | Description | Description | Long text | The plain-language score reasons |
 | Territory Engine ID | Custom | Text, **External ID**, unique | Registry number or Google place ID. Match on this so re-imports update accounts and do not duplicate them. |
 | Territory Tier | Custom | Picklist (A, B, C) | What list views and reports filter on |
@@ -33,7 +33,7 @@ One row per account in tiers A, B and C: 521 accounts in the NYC run. Tier D is 
 
 ## Outreach: `outreach_accounts.csv`
 
-One row per account group in tiers A and B whose sequence passed its checks: 276 in the NYC run.
+One row per account group in tiers A and B whose sequence passed its checks and is not out of date: 197 in the 2026-10-12 build. 267 groups are in tiers A and B; the other 70 sequences are waiting to be rewritten (see the runbook, "Out-of-date text").
 
 Outreach sequences are shared templates, not one-off emails, so the per-account copy cannot be imported as a sequence. Instead the copy rides on **account custom fields**, and a single three-step sequence pulls it in:
 
