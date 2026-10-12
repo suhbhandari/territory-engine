@@ -35,3 +35,15 @@ def test_current_stale_and_dropped(tmp_path):
     current, stale = split(index, scored(), ["A", "B"], CFG, tmp_path, recheck)
     assert list(current["account_group"]) == ["g1"]
     assert stale == {"g2": "facts changed", "g4": "facts changed", "g5": "fails current checks"}
+
+
+def test_undated_fact_is_stale_once_its_source_has_a_date(tmp_path):
+    cfg = {"sources": {"s": {"label": "Site", "url": "{website}", "date_column": "checked"}},
+           "facts": [{"text": "Has {n} sites", "source": "s"}]}
+    rows = pd.DataFrame([{"account_group": "g1", "rank_in_group": "1", "tier": "A", "n": "3", "website": "w",
+                          "name": "g1", "checked": "2026-10-13T08:00:00"}])
+    (tmp_path / "old.md").write_text("- **F1** Has 3 sites ([Site](w))\n")
+    (tmp_path / "new.md").write_text("- **F1** Has 3 sites ([Site](w), checked 2026-10-09)\n")
+    for name, expected in (("old.md", {"g1": "facts not dated"}), ("new.md", {})):
+        index = pd.DataFrame({"account_group": ["g1"], "file": [name], "check_status": ["passed"]})
+        assert split(index, rows, ["A"], cfg, tmp_path)[1] == expected

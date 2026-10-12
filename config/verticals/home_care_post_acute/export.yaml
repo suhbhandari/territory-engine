@@ -54,6 +54,7 @@ targets:
       - {header: Hiring Check Status, value: "{jobs_status}"}
       - {header: Careers Page, value: "{jobs_source_url}"}
       - {header: Agency Type, value: "{license_type}"}
+      - {header: State License, value: "{license_types}"}
       - {header: Years Registered, value: "{npi_age_years}"}
       - {header: Found Via, value: "{source}"}
       - {header: Signals Checked On, value: "{signals_fetched_at:.10}"}

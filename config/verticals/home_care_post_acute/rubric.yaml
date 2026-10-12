@@ -131,9 +131,25 @@ criteria:
   agency_type:
     label: Agency type
     why: >
-      confirms the account is the kind of agency the product is built for, not an adjacent business the search happened to return.
+      confirms the account is the kind of agency the product is built for, not an adjacent business the search happened to return. A state licence is the strongest evidence; a registry category alone is self-reported.
     max_points: 10
     rules:
+      - when: {column: license_status, op: eq, value: matched}
+        points: 10
+        reason: "Licensed by the state ({license_types})"
+      - when:
+          - {column: license_status, op: eq, value: not_found}
+          - column: license_type
+            op: in
+            value: ["Home Health", "Hospice Care, Community Based", "In Home Supportive Care", "Home Health Aide"]
+        points: 5
+        reason: "Registered as {license_type}; no state licence matched by name or phone"
+      - when:
+          - {column: license_status, op: eq, value: not_found}
+          - {column: license_type, op: in, value: ["Health", "Services"]}
+        points: 2
+        reason: "No state licence matched by name or phone"
+      # Before the licence check has run, fall back to the registry category.
       - when:
           column: license_type
           op: in

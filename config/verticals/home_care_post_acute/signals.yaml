@@ -44,3 +44,20 @@ signals:
     description: NPI enrollment date — newer agencies are in growth mode
     mode: sequential
     delay: 1.2
+
+  state_license:
+    module: src.signals.open_data_match
+    description: Is the account in New York State's list of licensed home care and hospice providers
+    mode: parallel
+    prefix: license
+    # NYS DOH Health Facility General Information. 1,427 records of these four types
+    # statewide as of 2026-10-12: LHCSA (licensed home care services agency), CHHA
+    # (certified home health agency), LTHHCP (long term home health care program), HSPC (hospice).
+    url: https://health.data.ny.gov/resource/vn5v-hh5r.json
+    query:
+      $where: "fac_desc_short in('LHCSA','CHHA','LTHHCP','HSPC')"
+      $limit: 50000
+    name_fields: [operator_name, facility_name]
+    zip_field: fac_zip
+    phone_field: fac_phone
+    type_field: fac_desc_short

@@ -28,6 +28,10 @@ sources:
     label: "Google Maps listing"
     url: "https://www.google.com/maps/place/?q=place_id:{entity_id}"
     date_column: discovered_at
+  state_license:
+    label: "NYS DOH Health Facility General Information"
+    url: "https://health.data.ny.gov/d/vn5v-hh5r"
+    date_column: signals_fetched_at
   # Derived by the engine from its own account list, so there is no outside page to link.
   territory_list:
     label: "This territory list, built from {source} records"
@@ -53,6 +57,12 @@ facts:
   - text: "Listed on Google Maps at {address}, {city}, {state} {zip}. Phone {phone}."
     when: {column: npi_enrolled_year, op: blank}
     source: listing
+  - text: "Holds a New York State licence of type {license_types} (LHCSA: licensed home care services agency; CHHA: certified home health agency; LTHHCP: long term home health care program; HSPC: hospice)."
+    when: {column: license_status, op: eq, value: matched}
+    source: state_license
+  - text: "No matching record found in New York State's list of licensed home care and hospice providers, by name or phone. It may operate under a different name."
+    when: {column: license_status, op: eq, value: not_found}
+    source: state_license
   - text: "Has a company website: {website}"
     when: {column: website, op: not_blank}
     source: website

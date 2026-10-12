@@ -81,6 +81,15 @@ def identifiers(root: Path) -> dict:
                 continue
             (skipped if all(w in generic or w in places for w in words) else names).add(variant.lower())
 
+    # Names a signal found for an account in another table (for example a licence record)
+    # identify it just as its own name does.
+    for col in [c for c in signals.columns if c.endswith("_names")]:
+        for value in signals[col]:
+            for name in filter(None, (v.strip() for v in value.split(";"))):
+                words = _tokens(name)
+                if len(name) >= 4 and words and not all(w in generic or w in places for w in words):
+                    names.add(name.lower())
+
     urls = set(accounts["website"]) | set(signals.get("jobs_source_url", []))
     return {
         "names": names,

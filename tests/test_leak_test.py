@@ -41,3 +41,11 @@ def test_each_identifier_kind_is_caught(tmp_path):
 def test_name_of_only_place_words_is_not_a_leak(tmp_path):
     # "Brooklyn" alone names a place, not an account.
     assert kinds(tmp_path, "an office in Brooklyn") == set()
+
+
+def test_names_found_by_a_signal_are_checked_too(tmp_path):
+    root = build(tmp_path, "Run by Redwing Partners in Brooklyn.")
+    pd.DataFrame([{"entity_id": "1234567890", "license_names": "Redwing Partners; Brooklyn"}]).to_csv(
+        root / "outputs" / "raw" / "signals_raw.csv", index=False)
+    hits, _, _ = leak_test.find_leaks(root)
+    assert {(k, v) for k, v, _ in hits} == {("names", "redwing partners")}

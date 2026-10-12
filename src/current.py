@@ -5,10 +5,11 @@ A saved brief or sequence is current when:
   - its group still leads in a tier that gets written text,
   - the facts saved in its file (text, source label and link) are exactly the facts the
     code builds from the scored data now, and
-  - its saved text passes the checks as they are now.
+  - its saved text passes the checks as they are now, and
+  - every fact whose source now carries a collection date was saved with a date.
 Anything else is stale. Stale text is left out of the exports and the public build, and
 the next brief or sequence run writes it again. Collection dates on facts are not
-compared, so a signal refresh alone does not make text stale.
+compared (only whether one is present), so a signal refresh alone does not make text stale.
 """
 
 from pathlib import Path
@@ -16,14 +17,14 @@ from pathlib import Path
 import pandas as pd
 
 
-def saved_facts(path: Path) -> list:
-    """[(text, label, url)] from the fact lines of a saved file."""
+def saved_facts(path: Path, with_dates: bool = False) -> list:
+    """[(text, label, url)] from the fact lines of a saved file; with_dates adds the date."""
     from src.brief import parse_fact_line
 
     if not path.exists():
         return []
     facts = [parse_fact_line(line) for line in path.read_text().splitlines() if line.startswith("- **F")]
-    return [(f["text"], f["source_label"], f["source_url"]) for f in facts if f]
+    return [(f["text"], f["source_label"], f["source_url"]) + ((f["as_of"],) if with_dates else ()) for f in facts if f]
 
 
 def leads(scored: pd.DataFrame, tiers: list) -> dict:
@@ -47,8 +48,11 @@ def split(index: pd.DataFrame, scored: pd.DataFrame, tiers: list, facts_cfg: dic
             continue
         facts = build_facts(lead[group], facts_cfg)
         path = out_dir / row["file"] if row.get("file") else None
-        if path is None or saved_facts(path) != [(f["text"], f["source_label"], f["source_url"]) for f in facts]:
+        saved = saved_facts(path, with_dates=True) if path is not None else None
+        if saved is None or [s[:3] for s in saved] != [(f["text"], f["source_label"], f["source_url"]) for f in facts]:
             stale[group] = "facts changed"
+        elif any(f.get("as_of") and not s[3] for s, f in zip(saved, facts)):
+            stale[group] = "facts not dated"
         elif row.get("check_status") == "passed" and recheck and recheck(row, lead[group], facts):
             stale[group] = "fails current checks"
         else:
