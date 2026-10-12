@@ -296,7 +296,7 @@
           <h3>Opening angle</h3><p>${esc(b.opening_angle)}</p>
           <h3>What we don't know</h3>${list(b.unknowns)}
           <h3>Facts the brief may cite</h3><ul class="facts">${b.facts.map((f) => `<li>${esc(f.replace(/\*\*/g, ""))}</li>`).join("")}</ul>` : `
-          <p class="sub" style="margin-top:14px">No brief or outreach was written for this account. Only groups in the top tiers get them.</p>`}
+          <p class="sub" style="margin-top:14px">No brief or outreach is published for this account. Only groups in the top tiers get them, and text is held back while it is out of date and waiting to be rewritten.</p>`}
         ${a.sequence ? `
           <h3>Outreach sequence, written for: ${esc(a.persona)}</h3>
           ${a.sequence.map((t) => `<div class="touch"><div class="meta">Touch ${t.touch} · ${esc(t.channel)} · day ${t.day} · rests on ${esc(t.fact_ids)}</div>

@@ -69,6 +69,8 @@ def main(vertical: str) -> None:
     facts_cfg = yaml.safe_load(open(vdir / "brief.yaml"))
     # Measure only what is current: accounts still in the list, text that still matches the data.
     signals = signals[signals["entity_id"].isin(scored["entity_id"])]
+    # Costs cover everything the index logs as written, current or not: that is what was spent.
+    briefs_all, seqs_all = briefs, seqs
     briefs, stale_briefs = current_briefs(briefs, scored, facts_cfg, RAW / "briefs")
     seqs, stale_seqs = current_sequences(seqs, touches, scored, seq_cfg, facts_cfg, RAW / "sequences")
     touches = touches[touches["account_group"].isin(seqs["account_group"])]
@@ -118,7 +120,7 @@ def main(vertical: str) -> None:
         statements += len(cited)
         facts_cited += len({f for group in cited for f in group.split(", ")})
         facts_total += len(re.findall(r"^- \*\*F\d+\*\*", text, flags=re.M))
-    brief_cost = pd.to_numeric(briefs["cost_usd"], errors="coerce")
+    brief_cost = pd.to_numeric(briefs_all["cost_usd"], errors="coerce")
     brief_stats = {
         "written": len(briefs),
         "out_of_date": len(stale_briefs),
@@ -130,16 +132,17 @@ def main(vertical: str) -> None:
         "facts_used_pct": pct(facts_cited, facts_total),
         "avg_cost_usd": round(brief_cost.mean(), 4),
         "total_cost_usd": round(brief_cost.sum(), 2),
-        "avg_input_tokens": int(pd.to_numeric(briefs["input_tokens"], errors="coerce").mean()),
-        "avg_output_tokens": int(pd.to_numeric(briefs["output_tokens"], errors="coerce").mean()),
-        "model": briefs["model"].mode().iat[0],
+        "cost_items": int(brief_cost.notna().sum()),
+        "avg_input_tokens": int(pd.to_numeric(briefs_all["input_tokens"], errors="coerce").mean()),
+        "avg_output_tokens": int(pd.to_numeric(briefs_all["output_tokens"], errors="coerce").mean()),
+        "model": briefs_all["model"].mode().iat[0],
     }
 
     limits = {i + 1: t["max_words"] for i, t in enumerate(seq_cfg["touches"])}
     words = pd.to_numeric(touches["word_count"])
     last_question = touches["body"].str.findall(r"[^.?!\n]*\?").str[-1].fillna("").str.strip().str.lower()
     first_touch = touches["touch"] == "1"
-    seq_cost = pd.to_numeric(seqs["cost_usd"], errors="coerce")
+    seq_cost = pd.to_numeric(seqs_all["cost_usd"], errors="coerce")
     sequence_stats = {
         "written": len(seqs),
         "out_of_date": len(stale_seqs),
@@ -155,9 +158,10 @@ def main(vertical: str) -> None:
         "personas": seqs["persona"].value_counts().to_dict(),
         "avg_cost_usd": round(seq_cost.mean(), 4),
         "total_cost_usd": round(seq_cost.sum(), 2),
-        "avg_input_tokens": int(pd.to_numeric(seqs["input_tokens"], errors="coerce").mean()),
-        "avg_output_tokens": int(pd.to_numeric(seqs["output_tokens"], errors="coerce").mean()),
-        "model": seqs["model"].mode().iat[0],
+        "cost_items": int(seq_cost.notna().sum()),
+        "avg_input_tokens": int(pd.to_numeric(seqs_all["input_tokens"], errors="coerce").mean()),
+        "avg_output_tokens": int(pd.to_numeric(seqs_all["output_tokens"], errors="coerce").mean()),
+        "model": seqs_all["model"].mode().iat[0],
     }
 
     card = {
@@ -235,8 +239,8 @@ def render_costs(c: dict) -> str:
            "brief and sequence in the current run, priced at the per-token rates set in the vertical's config. "
            "They cover one clean pass; samples, retries and regenerated drafts during development cost extra.", "",
            "| Step | Model | Items | Avg input tokens | Avg output tokens | Cost per item | Total |", "|---|---|---|---|---|---|---|",
-           f"| Briefs | {b['model']} | {b['written']} | {b['avg_input_tokens']} | {b['avg_output_tokens']} | ${b['avg_cost_usd']:.4f} | ${b['total_cost_usd']:.2f} |",
-           f"| Sequences | {q['model']} | {q['written']} | {q['avg_input_tokens']} | {q['avg_output_tokens']} | ${q['avg_cost_usd']:.4f} | ${q['total_cost_usd']:.2f} |",
+           f"| Briefs | {b['model']} | {b['cost_items']} | {b['avg_input_tokens']} | {b['avg_output_tokens']} | ${b['avg_cost_usd']:.4f} | ${b['total_cost_usd']:.2f} |",
+           f"| Sequences | {q['model']} | {q['cost_items']} | {q['avg_input_tokens']} | {q['avg_output_tokens']} | ${q['avg_cost_usd']:.4f} | ${q['total_cost_usd']:.2f} |",
            f"| **Model total** | | | | | | **${b['total_cost_usd'] + q['total_cost_usd']:.2f}** |", ""]
     if c["other_costs"]:
         out += ["## Other costs (estimates written by hand)", "", "These are not logged by the pipeline. They are estimates from request counts and list prices, typed into the vertical's evals.yaml.", "",
