@@ -68,21 +68,21 @@ Data coverage is the share of the rubric judged on real data. A low score with l
 
 ## Briefs
 
-- 264 briefs written; 100.0% pass the source check. 3 more are out of date (their facts changed on re-scoring) and are not counted or published until rewritten.
-- 1580 statements, 6.0 per brief, each citing at least one numbered fact.
-- 4.2 facts available per brief; 99.7% of available facts were cited.
+- 206 briefs written; 100.0% pass the source check. 61 more are out of date and are not counted or published until rewritten (facts changed: 42, fails current checks: 19).
+- 1228 statements, 6.0 per brief, each citing at least one numbered fact.
+- 4.0 facts available per brief; 99.8% of available facts were cited.
 
 ## Sequences
 
-- 264 sequences (792 touches); 100.0% pass their checks. 3 more are out of date and are not counted or published until rewritten.
-- First-email closing questions: 80.3% are distinct; the most repeated one appears 9 times.
-- Written for: Administrator (198), Director of Operations or COO (40), Owner or Operator (24), Executive Director (2).
+- 197 sequences (591 touches); 100.0% pass their checks. 70 more are out of date and are not counted or published until rewritten (facts changed: 42, fails current checks: 28).
+- First-email closing questions: 77.2% are distinct; the most repeated one appears 7 times.
+- Written for: Administrator (177), Owner or Operator (18), Executive Director (2).
 
 | Touch | Word limit | Average words | Longest |
 |---|---|---|---|
-| 1 | 90 | 64.4 | 76 |
+| 1 | 90 | 64.9 | 76 |
 | 2 | 70 | 46.6 | 60 |
-| 3 | 60 | 44.8 | 53 |
+| 3 | 60 | 44.6 | 53 |
 
 ## What the automated checks cover
 
