@@ -1,16 +1,16 @@
 id,rank,tier,score,data_coverage,city,zip3,type,locations,years_registered,has_website,hiring_status,hiring_system,open_roles,persona
-Account 0001,1,A,100,1.0,Brooklyn,112,Home Health,3,11,True,counted,Workday,161,
-Account 0002,2,A,84,1.0,Forest Hills,113,Home Health,2,20,True,counted,Workday,7,
-Account 0003,3,A,84,0.9,Bronx,104,Health,3,,True,counted,Greenhouse,29,
-Account 0004,4,A,76,0.9,Brooklyn,112,Health,1,,True,counted,Greenhouse,29,
-Account 0005,5,A,75,1.0,Brooklyn,112,Home Health,3,11,True,listings_found,,1,
+Account 0001,1,A,100,1.0,Brooklyn,112,Home Health,3,11,True,counted,Workday,100+,
+Account 0002,2,A,84,1.0,Forest Hills,113,Home Health,2,20,True,counted,Workday,5-19,
+Account 0003,3,A,84,0.9,Bronx,104,Health,3,,True,counted,Greenhouse,20-49,
+Account 0004,4,A,76,0.9,Brooklyn,112,Health,1,,True,counted,Greenhouse,20-49,
+Account 0005,5,A,75,1.0,Brooklyn,112,Home Health,3,11,True,listings_found,,1-4,
 Account 0006,6,A,73,0.9,Brooklyn,112,Home Health,3,11,True,ats_unsupported,JazzHR,,
-Account 0007,7,A,72,1.0,Forest Hills,113,Home Health,3,20,True,listings_found,,1,
+Account 0007,7,A,72,1.0,Forest Hills,113,Home Health,3,20,True,listings_found,,1-4,
 Account 0008,8,A,70,0.9,Brooklyn,112,Home Health,5,15,True,ats_unsupported,BambooHR,,
 Account 0009,9,A,70,0.9,Brooklyn,112,Home Health,2,11,True,ats_unsupported,CareerPlug,,
-Account 0010,10,A,68,1.0,Queens Village,114,Home Health,1,19,True,listings_found,,1,Administrator
-Account 0011,11,A,68,0.9,Bronx,104,Health,1,,True,counted,Workday,7,Owner or Operator
-Account 0012,12,A,67,1.0,Brooklyn,112,Home Health,1,9,True,listings_found,,3,Administrator
+Account 0010,10,A,68,1.0,Queens Village,114,Home Health,1,19,True,listings_found,,1-4,Administrator
+Account 0011,11,A,68,0.9,Bronx,104,Health,1,,True,counted,Workday,5-19,Owner or Operator
+Account 0012,12,A,67,1.0,Brooklyn,112,Home Health,1,9,True,listings_found,,1-4,Administrator
 Account 0013,13,A,67,0.9,Bronx,104,Home Health,2,20,True,ats_unsupported,Workable,,
 Account 0014,14,A,67,0.9,New York City,100,Home Health,2,20,True,ats_unsupported,UKG,,
 Account 0015,15,A,67,0.9,Brooklyn,112,Home Health,2,19,True,ats_unsupported,Workable,,
@@ -49,8 +49,8 @@ Account 0047,47,B,54,0.9,Bronx,104,Home Health,1,20,True,offsite_listings,,,Admi
 Account 0048,48,B,54,0.9,Brooklyn,112,Home Health,2,15,True,careers_page_no_listings,,,
 Account 0049,49,B,54,0.9,Brooklyn,112,Home Health,2,18,True,careers_page_no_listings,,,
 Account 0050,50,B,53,1.0,Brooklyn,112,Home Health,1,5,True,counted,Greenhouse,0,Administrator
-Account 0051,51,B,53,0.9,Queens,114,Health,1,,True,listings_found,,1,Owner or Operator
-Account 0052,52,B,53,0.9,Queens,114,Health,1,,True,listings_found,,1,
+Account 0051,51,B,53,0.9,Queens,114,Health,1,,True,listings_found,,1-4,Owner or Operator
+Account 0052,52,B,53,0.9,Queens,114,Health,1,,True,listings_found,,1-4,
 Account 0053,53,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
 Account 0054,54,B,52,0.9,Bronx,104,Home Health,1,8,True,careers_page_no_listings,,,Administrator
 Account 0055,55,B,52,0.9,Brooklyn,112,Home Health,1,12,True,careers_page_no_listings,,,Administrator
@@ -167,7 +167,7 @@ Account 0165,165,B,49,0.9,New York,100,Home Health,1,20,True,careers_page_no_lis
 Account 0166,166,B,49,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
 Account 0167,167,B,49,0.9,New York,100,Home Health,1,19,True,careers_page_no_listings,,,
 Account 0168,168,B,49,0.9,New York,100,Home Health,1,20,True,careers_page_no_listings,,,
-Account 0169,169,B,48,0.8,Bronx,104,Services,1,,True,listings_found,,2,Owner or Operator
+Account 0169,169,B,48,0.8,Bronx,104,Services,1,,True,listings_found,,1-4,Owner or Operator
 Account 0170,170,B,47,0.8,New York,100,Home Health,1,11,True,careers_page_no_listings,,,Administrator
 Account 0171,171,B,47,0.8,Rego Park,113,Home Health,3,10,True,no_careers_page,,,
 Account 0172,172,B,47,0.8,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator

@@ -1,6 +1,8 @@
 # Report card
 
-Generated 2026-10-12 from the pipeline's own output files. Measurements only: no grades, because no outcome data or human labels exist yet.
+Built 2026-10-12 from the pipeline's own output files. Signals collected: 2026-10-09. Accounts discovered: not recorded.
+
+Measurements only: no grades, because no outcome data or human labels exist yet. The last two sections are written by hand in the vertical's evals.yaml.
 
 ## Discovery
 
@@ -84,20 +86,21 @@ Data coverage is the share of the rubric judged on real data. A low score with l
 | 2 | 70 | 46.6 | 60 |
 | 3 | 60 | 44.6 | 53 |
 
-## What the automated checks cover
+## What the automated checks cover (written by hand)
 
-- Briefs: every statement cites at least one numbered fact, every cited fact exists, and every number written in digits appears in a cited fact.
-- Sequences: the same citation and number rules, plus word limits, subject rules and allowed merge fields.
-- Public dataset: each published record is searched for that account's own name words, domain, phone number and IDs; a hit fails the build.
+- Briefs: every statement cites at least one numbered fact, every cited fact exists, every number (in digits, or a number word from two up) appears in a cited fact, and every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact.
+- Sequences: the same citation, number and wording rules, plus word limits, subject rules and allowed merge fields.
+- Saved text is re-checked on every build. A brief or sequence whose facts changed, or that fails a check added since it was written, is held back until rewritten.
+- Public dataset: each published record is searched for that account's own name words, domain, phone number and IDs, and a separate leak test searches every published file for every account's identifiers. A hit fails the build.
 
-## Not measured
+## Not measured (written by hand)
 
 - Whether the top tiers are actually the best accounts. No human has labelled a sample, and no meetings-booked or closed-won data exists to test the rubric against.
 - Reply rates or meetings from the outreach drafts. Nothing has been sent.
-- Unsupported wording that is not a number. A brief or email can add a detail from the model's own knowledge (a neighbourhood name, for example) or spell a number out in words, and the checks will not catch it.
-- Non-agencies in the list. The rubric trusts the registry's self-reported classification; at least one pest-control company registered as in-home supportive care sits in tier B.
+- Unsupported wording in lowercase. The checks catch capitalised words and number words missing from the cited facts, but not a wrong common word or an inference that goes further than its fact.
+- Accounts that are not the target type. The rubric trusts the registry's self-reported classification. Accounts flagged by name are reviewed by hand, and only those a person marks are excluded; the rest of the list has not been reviewed.
 - Recall of discovery: how many real agencies in the territory are missing from the list.
 - Job-posting accuracy. Counts were read from each employer's own job feed once and not cross-checked; most accounts have no readable feed at all.
-- First-pass failure rates. The pass rates above are after re-running drafts that failed a check; how many failed on the first attempt is not logged (it was a handful per run of 276).
+- First-pass failure rates. The pass rates above are after re-running drafts that failed a check; how many failed on the first attempt is not logged.
 - Whether the export files import cleanly. They have not been loaded into a live CRM or sales engagement workspace.
 - Whether the public dataset can be re-identified. Names and contact details are removed, but an account's combination of facts may still point to it.

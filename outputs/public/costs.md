@@ -8,9 +8,9 @@ Generated 2026-10-12. Model costs are measured from the token usage logged for e
 | Sequences | claude-opus-5-5 | 197 | 2109 | 507 | $0.0186 | $3.66 |
 | **Model total** | | | | | | **$7.60** |
 
-## Other costs
+## Other costs (estimates written by hand)
 
-These are not logged by the pipeline. They are estimates from request counts and list prices.
+These are not logged by the pipeline. They are estimates from request counts and list prices, typed into the vertical's evals.yaml.
 
 | Item | Requests | Estimated cost | Basis |
 |---|---|---|---|
