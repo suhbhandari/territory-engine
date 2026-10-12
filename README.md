@@ -14,7 +14,7 @@ The shipped demo targets **home care, home health and hospice agencies in New Yo
 | CRM and sequencing imports | CSVs mapped for Salesforce accounts and Outreach account fields. | `outputs/raw/exports/`, guide in `docs/stack-fit.md` |
 | Report card and demo site | What was measured, what was not, and what it cost, plus an anonymized, browsable copy of the list, briefs and drafts. | `outputs/public/report_card.md`, `site/index.html` |
 
-**The NYC run (signals collected 2026-10-09):** 1,497 accounts in 1,414 groups, of which 33 groups are tier A and 234 tier B. Model cost was about $0.02 per brief and $0.02 per sequence. The report card has the full, current numbers; they are computed from the output files, not typed in.
+**The NYC run (signals collected 2026-10-09):** 1,485 accounts in 1,404 groups, of which 33 groups are tier A and 220 tier B. 61 accounts were left out: 48 outside the city and 13 that are not home care providers (a pharmacy, nursing homes, consultancies, two pest-control companies), found by checking flagged names against the state's licensed home care list. Model cost was about $0.02 per brief and $0.02 per sequence. The report card has the full, current numbers; they are computed from the output files, not typed in.
 
 **What it saves:** not measured yet. No timed comparison of a rep's manual research against the engine has been done, so this README makes no time-saved claim. `V2.md` lists the study that would measure it.
 
@@ -34,7 +34,8 @@ The shipped demo targets **home care, home health and hospice agencies in New Yo
 - **No contacts.** The engine finds accounts, not people. A sequence needs a named contact from another tool.
 - **Nothing has been sent or imported.** Reply rates are unknown, and the export files have not been loaded into a live CRM.
 - **One snapshot.** There is no weekly refresh yet; the signals are from one collection date.
-- **Anonymization is not a guarantee.** Names, addresses, phones, websites and IDs are removed and counts are shown as ranges, but a combination of facts may still point to an account.
+- **Not every account has been checked against the state license list.** Only names that looked wrong were checked by hand (29 of them). Others that are not home care providers may remain, mostly in the lower tiers.
+- **Anonymization is not a guarantee.** Names, addresses, phones, websites, IDs and hiring systems are removed and counts are shown as ranges, but a combination of facts (city, number of locations, years registered) may still point to an account.
 
 The report card's "Not measured" section has the full list.
 

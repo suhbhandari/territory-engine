@@ -1,5 +1,7 @@
-requests>=2.31.0
-pandas>=2.0.0
-python-dotenv>=1.0.0
-PyYAML>=6.0
-anthropic>=0.125.0
+# Ranges tested on 2026-10-12 with Python 3.9 and 3.10. The anthropic library resolves to
+# 0.125.x on Python 3.9 and 1.x on Python 3.10+; briefs were generated with 1.13.
+requests>=2.31,<3
+pandas>=2.0,<3
+python-dotenv>=1.0,<2
+PyYAML>=6.0,<7
+anthropic>=0.125.0,<2
