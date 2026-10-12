@@ -7,13 +7,14 @@ import json
 import os
 from pathlib import Path
 
-import anthropic
 from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 
 def make_client():
+    import anthropic  # imported here so the checks and tests run without the SDK installed
+
     # Keys that are not tied to one workspace must name the workspace on every request.
     workspace = os.getenv("ANTHROPIC_WORKSPACE_ID")
     return anthropic.Anthropic(default_headers={"anthropic-workspace-id": workspace} if workspace else None)
