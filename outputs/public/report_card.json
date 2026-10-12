@@ -4,26 +4,26 @@
     "discovered": null,
     "signals_checked": {
       "first": "2026-10-09",
-      "last": "2026-10-09"
+      "last": "2026-10-12"
     }
   },
   "discovery": {
-    "accounts": 1497,
-    "groups": 1414,
+    "accounts": 1485,
+    "groups": 1404,
     "by_source": {
-      "NPPES": 1191,
-      "Google Maps": 167,
+      "NPPES": 1180,
+      "Google Maps": 166,
       "NPPES; Google Maps": 139
     },
-    "with_website_pct": 34.0,
+    "with_website_pct": 32.8,
     "with_phone_pct": 100.0,
     "excluded": {
       "outside territory (excluded zip)": 48,
-      "reviewed": 1
+      "reviewed": 13
     }
   },
   "signals": {
-    "accounts_enriched": 1497,
+    "accounts_enriched": 1485,
     "errors": {
       "careers_page": 0,
       "http_check": 0,
@@ -32,7 +32,7 @@
     "filled_pct": {
       "jobs_status": 100.0,
       "jobs_ats": 3.0,
-      "jobs_source_url": 18.7,
+      "jobs_source_url": 18.2,
       "jobs_total": 1.5,
       "jobs_total_all_locations": 1.5,
       "jobs_care_worker": 1.5,
@@ -40,18 +40,18 @@
       "jobs_admin_compliance": 1.5,
       "jobs_titles_sample": 1.4,
       "website_live": 100.0,
-      "website_has_ssl": 34.0,
+      "website_has_ssl": 32.8,
       "npi_enrolled_year": 88.8,
       "npi_age_years": 88.8
     },
     "status_breakdown": {
       "jobs_status": {
-        "no_website": 988,
-        "careers_page_no_listings": 205,
-        "no_careers_page": 156,
-        "site_unreachable": 65,
+        "no_website": 998,
+        "careers_page_no_listings": 197,
+        "no_careers_page": 145,
+        "site_unreachable": 63,
         "ats_unsupported": 34,
-        "offsite_listings": 19,
+        "offsite_listings": 18,
         "counted": 11,
         "listings_found": 11,
         "robots_disallowed": 8
@@ -70,34 +70,34 @@
       {
         "tier": "B",
         "min_score": 42,
-        "accounts": 283,
-        "groups": 234,
+        "accounts": 267,
+        "groups": 220,
         "avg_data_coverage_pct": 86.0
       },
       {
         "tier": "C",
         "min_score": 25,
-        "accounts": 175,
-        "groups": 154,
+        "accounts": 169,
+        "groups": 148,
         "avg_data_coverage_pct": 71.7
       },
       {
         "tier": "D",
         "min_score": 0,
-        "accounts": 993,
-        "groups": 993,
+        "accounts": 1003,
+        "groups": 1003,
         "avg_data_coverage_pct": 35.0
       }
     ],
-    "avg_data_coverage_pct": 50.7,
+    "avg_data_coverage_pct": 50.1,
     "median_score": 20.0,
     "criteria": [
       {
         "key": "hiring_activity",
         "label": "Hiring activity",
         "max_points": 35,
-        "avg_points": 2.6,
-        "accounts_scoring_above_zero_pct": 29.1
+        "avg_points": 2.5,
+        "accounts_scoring_above_zero_pct": 28.0
       },
       {
         "key": "back_office_hiring",
@@ -110,15 +110,15 @@
         "key": "web_presence",
         "label": "Web presence",
         "max_points": 15,
-        "avg_points": 5.0,
-        "accounts_scoring_above_zero_pct": 35.2
+        "avg_points": 4.8,
+        "accounts_scoring_above_zero_pct": 34.1
       },
       {
         "key": "multi_site",
         "label": "Multi-site",
         "max_points": 10,
-        "avg_points": 1.3,
-        "accounts_scoring_above_zero_pct": 33.5
+        "avg_points": 1.2,
+        "accounts_scoring_above_zero_pct": 32.8
       },
       {
         "key": "agency_type",
@@ -139,38 +139,37 @@
         "label": "Tech posture",
         "max_points": 10,
         "avg_points": 1.6,
-        "accounts_scoring_above_zero_pct": 31.0
+        "accounts_scoring_above_zero_pct": 29.9
       }
     ],
     "weights_fitted_to_outcomes": false
   },
   "briefs": {
-    "written": 206,
-    "out_of_date": 61,
+    "written": 215,
+    "out_of_date": 38,
     "out_of_date_reasons": {
-      "facts changed": 42,
-      "fails current checks": 19
+      "facts changed": 38
     },
-    "passed_source_check_pct": 100.0,
-    "statements": 1228,
+    "passed_source_check_pct": 99.5,
+    "statements": 1285,
     "statements_per_brief": 6.0,
-    "facts_per_brief": 4.0,
+    "facts_per_brief": 4.1,
     "facts_used_pct": 99.8,
-    "avg_cost_usd": 0.0199,
-    "total_cost_usd": 5.5,
-    "cost_items": 276,
-    "avg_input_tokens": 1974,
-    "avg_output_tokens": 600,
+    "avg_cost_usd": 0.0204,
+    "total_cost_usd": 4.86,
+    "cost_items": 238,
+    "avg_input_tokens": 1985,
+    "avg_output_tokens": 624,
     "model": "claude-opus-5-5"
   },
   "sequences": {
-    "written": 197,
-    "out_of_date": 70,
+    "written": 188,
+    "out_of_date": 65,
     "out_of_date_reasons": {
-      "facts changed": 42,
-      "fails current checks": 28
+      "facts changed": 40,
+      "fails current checks": 25
     },
-    "touches": 591,
+    "touches": 564,
     "passed_checks_pct": 100.0,
     "touch_lengths": [
       {
@@ -182,22 +181,22 @@
       {
         "touch": 2,
         "limit_words": 70,
-        "avg_words": 46.6,
+        "avg_words": 46.7,
         "max_words": 60
       },
       {
         "touch": 3,
         "limit_words": 60,
         "avg_words": 44.6,
-        "max_words": 53
+        "max_words": 51
       }
     ],
-    "distinct_first_email_questions_pct": 77.2,
+    "distinct_first_email_questions_pct": 77.1,
     "most_repeated_first_email_question_count": 7,
     "personas": {
-      "Administrator": 177,
-      "Owner or Operator": 18,
-      "Executive Director": 2
+      "Administrator": 170,
+      "Owner or Operator": 17,
+      "Executive Director": 1
     },
     "avg_cost_usd": 0.0185,
     "total_cost_usd": 5.12,

@@ -4,9 +4,9 @@ Generated 2026-10-12. Model costs are measured from the token usage logged for e
 
 | Step | Model | Items | Avg input tokens | Avg output tokens | Cost per item | Total |
 |---|---|---|---|---|---|---|
-| Briefs | claude-opus-5-5 | 276 | 1974 | 600 | $0.0199 | $5.50 |
+| Briefs | claude-opus-5-5 | 238 | 1985 | 624 | $0.0204 | $4.86 |
 | Sequences | claude-opus-5-5 | 276 | 2115 | 504 | $0.0185 | $5.12 |
-| **Model total** | | | | | | **$10.62** |
+| **Model total** | | | | | | **$9.98** |
 
 ## Other costs (estimates written by hand)
 
