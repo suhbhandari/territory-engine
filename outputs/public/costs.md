@@ -1,12 +1,12 @@
 # Costs
 
-Generated 2026-10-09. Model costs are measured from the token usage logged for each brief and sequence in the current run, priced at the per-token rates set in the vertical's config. They cover one clean pass; samples, retries and regenerated drafts during development cost extra.
+Generated 2026-10-12. Model costs are measured from the token usage logged for each brief and sequence in the current run, priced at the per-token rates set in the vertical's config. They cover one clean pass; samples, retries and regenerated drafts during development cost extra.
 
 | Step | Model | Items | Avg input tokens | Avg output tokens | Cost per item | Total |
 |---|---|---|---|---|---|---|
-| Briefs | claude-opus-5-5 | 276 | 1974 | 600 | $0.0199 | $5.50 |
-| Sequences | claude-opus-5-5 | 276 | 2115 | 504 | $0.0185 | $5.12 |
-| **Model total** | | | | | | **$10.62** |
+| Briefs | claude-opus-5-5 | 264 | 1973 | 597 | $0.0198 | $5.24 |
+| Sequences | claude-opus-5-5 | 264 | 2114 | 503 | $0.0185 | $4.89 |
+| **Model total** | | | | | | **$10.13** |
 
 ## Other costs
 

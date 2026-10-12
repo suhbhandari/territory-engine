@@ -1,22 +1,23 @@
 # Report card
 
-Generated 2026-10-09 from the pipeline's own output files. Measurements only: no grades, because no outcome data or human labels exist yet.
+Generated 2026-10-12 from the pipeline's own output files. Measurements only: no grades, because no outcome data or human labels exist yet.
 
 ## Discovery
 
-- 1546 accounts in 1459 groups (accounts sharing a website count as one group).
-- By source: NPPES: 1238, Google Maps: 167, NPPES; Google Maps: 141.
+- 1497 accounts in 1414 groups (accounts sharing a website count as one group).
+- By source: NPPES: 1191, Google Maps: 167, NPPES; Google Maps: 139.
 - 34.0% have a website; 100.0% have a phone number.
+- Left out before scoring: outside territory (excluded zip): 48, reviewed: 1.
 
 ## Signals
 
-- 1546 accounts enriched. Signal errors: careers_page: 0, http_check: 0, npi_age: 0.
+- 1497 accounts enriched. Signal errors: careers_page: 0, http_check: 0, npi_age: 0.
 
 | Signal column | Accounts with a value |
 |---|---|
 | `jobs_status` | 100.0% |
 | `jobs_ats` | 3.0% |
-| `jobs_source_url` | 18.6% |
+| `jobs_source_url` | 18.7% |
 | `jobs_total` | 1.5% |
 | `jobs_total_all_locations` | 1.5% |
 | `jobs_care_worker` | 1.5% |
@@ -25,20 +26,20 @@ Generated 2026-10-09 from the pipeline's own output files. Measurements only: no
 | `jobs_titles_sample` | 1.4% |
 | `website_live` | 100.0% |
 | `website_has_ssl` | 34.0% |
-| `npi_enrolled_year` | 89.2% |
-| `npi_age_years` | 89.2% |
+| `npi_enrolled_year` | 88.8% |
+| `npi_age_years` | 88.8% |
 
 `jobs_status` breakdown:
 
 | Status | Accounts |
 |---|---|
-| no_website | 1020 |
-| careers_page_no_listings | 210 |
-| no_careers_page | 163 |
-| site_unreachable | 67 |
-| ats_unsupported | 35 |
-| offsite_listings | 20 |
-| counted | 12 |
+| no_website | 988 |
+| careers_page_no_listings | 205 |
+| no_careers_page | 156 |
+| site_unreachable | 65 |
+| ats_unsupported | 34 |
+| offsite_listings | 19 |
+| counted | 11 |
 | listings_found | 11 |
 | robots_disallowed | 8 |
 
@@ -48,39 +49,39 @@ The rubric weights are a hypothesis. They have not been fitted to meetings booke
 
 | Tier | Minimum score | Accounts | Groups | Average data coverage |
 |---|---|---|---|---|
-| A | 60 | 48 | 34 | 92.1% |
-| B | 42 | 293 | 242 | 86.0% |
-| C | 25 | 180 | 158 | 71.8% |
-| D | 0 | 1025 | 1025 | 35.0% |
+| A | 60 | 46 | 33 | 92.0% |
+| B | 42 | 283 | 234 | 86.0% |
+| C | 25 | 175 | 154 | 71.7% |
+| D | 0 | 993 | 993 | 35.0% |
 
 Data coverage is the share of the rubric judged on real data. A low score with low coverage means "could not find out", not "poor fit".
 
 | Criterion | Max points | Average points | Accounts scoring above zero |
 |---|---|---|---|
-| Hiring activity | 35 | 2.6 | 29.2% |
+| Hiring activity | 35 | 2.6 | 29.1% |
 | Back-office hiring | 10 | 0.1 | 1.4% |
 | Web presence | 15 | 5.0 | 35.2% |
-| Multi-site | 10 | 1.3 | 33.6% |
+| Multi-site | 10 | 1.3 | 33.5% |
 | Agency type | 10 | 9.5 | 99.6% |
-| Maturity | 10 | 7.5 | 89.2% |
-| Tech posture | 10 | 1.6 | 30.8% |
+| Maturity | 10 | 7.4 | 88.8% |
+| Tech posture | 10 | 1.6 | 31.0% |
 
 ## Briefs
 
-- 276 briefs written; 100.0% pass the source check.
-- 1654 statements, 6.0 per brief, each citing at least one numbered fact.
+- 264 briefs written; 100.0% pass the source check. 3 more are out of date (their facts changed on re-scoring) and are not counted or published until rewritten.
+- 1580 statements, 6.0 per brief, each citing at least one numbered fact.
 - 4.2 facts available per brief; 99.7% of available facts were cited.
 
 ## Sequences
 
-- 276 sequences (828 touches); 100.0% pass their checks.
-- First-email closing questions: 80.4% are distinct; the most repeated one appears 9 times.
-- Written for: Administrator (203), Director of Operations or COO (44), Owner or Operator (27), Executive Director (2).
+- 264 sequences (792 touches); 100.0% pass their checks. 3 more are out of date and are not counted or published until rewritten.
+- First-email closing questions: 80.3% are distinct; the most repeated one appears 9 times.
+- Written for: Administrator (198), Director of Operations or COO (40), Owner or Operator (24), Executive Director (2).
 
 | Touch | Word limit | Average words | Longest |
 |---|---|---|---|
-| 1 | 90 | 64.3 | 76 |
-| 2 | 70 | 46.5 | 60 |
+| 1 | 90 | 64.4 | 76 |
+| 2 | 70 | 46.6 | 60 |
 | 3 | 60 | 44.8 | 53 |
 
 ## What the automated checks cover
