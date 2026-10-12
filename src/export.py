@@ -16,7 +16,8 @@ Design:
     greeting and sign-off removed, because a sending tool's template supplies those with
     its own merge fields; a merge field stored inside a field value is not filled in.
     The _script form swaps merge fields for bracketed words, for text a rep reads aloud
-  - Sequences that failed their checks are never exported
+  - Sequences that failed their checks are never exported, and neither is text that no
+    longer matches the scored data (see src/current.py)
   - Every file is UTF-8 with a header row; both tools map columns to fields at import,
     so headers are labels to map from, not API names
 """
@@ -31,11 +32,13 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.current import split as current_split  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
 TOUCHES_PATH = ROOT / "outputs" / "raw" / "sequences" / "sequences.csv"
 BRIEFS_INDEX_PATH = ROOT / "outputs" / "raw" / "briefs" / "briefs_index.csv"
+SEQ_INDEX_PATH = ROOT / "outputs" / "raw" / "sequences" / "sequences_index.csv"
 OUT_DIR = ROOT / "outputs" / "raw" / "exports"
 
 _GREETING = re.compile(r"^\s*(?:hi|hello|hey)?\s*\{\{[^}]+\}\}\s*[,.:]?\s*", re.I)
@@ -89,15 +92,21 @@ def build_target(target: dict, scored: pd.DataFrame, extras: dict) -> pd.DataFra
 def main(vertical: str) -> None:
     vdir = ROOT / "config" / "verticals" / vertical
     cfg = yaml.safe_load(open(vdir / "export.yaml"))
-    touch_ids = [t["id"] for t in yaml.safe_load(open(vdir / "sequence.yaml"))["touches"]]
+    seq_cfg = yaml.safe_load(open(vdir / "sequence.yaml"))
+    facts_cfg = yaml.safe_load(open(vdir / "brief.yaml"))
+    touch_ids = [t["id"] for t in seq_cfg["touches"]]
 
     scored = pd.read_csv(SCORED_PATH, dtype=str, keep_default_na=False)
     extras = {}
     if TOUCHES_PATH.exists():
         touches = pd.read_csv(TOUCHES_PATH, dtype=str, keep_default_na=False)
+        seq_index = pd.read_csv(SEQ_INDEX_PATH, dtype=str, keep_default_na=False)
+        current, _ = current_split(seq_index, scored, seq_cfg["tiers"], facts_cfg, SEQ_INDEX_PATH.parent)
+        touches = touches[touches["account_group"].isin(current["account_group"])]
         extras = touch_fields(touches, touch_ids, cfg.get("merge_field_map", {}), cfg.get("script_placeholders", {}))
     if BRIEFS_INDEX_PATH.exists():
         briefs = pd.read_csv(BRIEFS_INDEX_PATH, dtype=str, keep_default_na=False)
+        briefs, _ = current_split(briefs, scored, facts_cfg["tiers"], facts_cfg, BRIEFS_INDEX_PATH.parent)
         for b in briefs[briefs["check_status"] == "passed"].to_dict("records"):
             extras.setdefault(b["account_group"], {})["brief_file"] = b["file"]
 

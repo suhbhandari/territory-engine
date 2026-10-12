@@ -35,6 +35,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.current import split as current_split  # noqa: E402
 from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
 RAW = ROOT / "outputs" / "raw"
@@ -139,6 +140,13 @@ def main(vertical: str, metro_path: str) -> None:
     scored = pd.read_csv(RAW / "accounts_scored.csv", dtype=str, keep_default_na=False)
     briefs = pd.read_csv(RAW / "briefs" / "briefs_index.csv", dtype=str, keep_default_na=False)
     touches = pd.read_csv(RAW / "sequences" / "sequences.csv", dtype=str, keep_default_na=False)
+    seq_index = pd.read_csv(RAW / "sequences" / "sequences_index.csv", dtype=str, keep_default_na=False)
+    facts_cfg = yaml.safe_load(open(vdir / "brief.yaml"))
+    # Publish only text that still matches the scored data and passed its checks.
+    briefs, _ = current_split(briefs, scored, facts_cfg["tiers"], facts_cfg, RAW / "briefs")
+    briefs = briefs[briefs["check_status"] == "passed"]
+    seq_index, _ = current_split(seq_index, scored, seq_cfg["tiers"], facts_cfg, RAW / "sequences")
+    touches = touches[touches["account_group"].isin(seq_index["account_group"])]
 
     name_counts = Counter(t for name in scored["name"] for t in set(_tokens(name)))
     generic = {t for t, n in name_counts.items() if n >= GENERIC_NAME_SHARE}

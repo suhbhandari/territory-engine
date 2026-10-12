@@ -25,6 +25,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.current import split as current_split  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 RAW = ROOT / "outputs" / "raw"
@@ -46,6 +47,14 @@ def main(vertical: str) -> None:
     briefs = pd.read_csv(RAW / "briefs" / "briefs_index.csv", dtype=str, keep_default_na=False)
     seqs = pd.read_csv(RAW / "sequences" / "sequences_index.csv", dtype=str, keep_default_na=False)
     touches = pd.read_csv(RAW / "sequences" / "sequences.csv", dtype=str, keep_default_na=False)
+    excluded_path = RAW / "accounts_excluded.csv"
+    excluded = pd.read_csv(excluded_path, dtype=str, keep_default_na=False) if excluded_path.exists() else pd.DataFrame(columns=["excluded_because"])
+    facts_cfg = yaml.safe_load(open(vdir / "brief.yaml"))
+    # Measure only what is current: accounts still in the list, text that still matches the data.
+    signals = signals[signals["entity_id"].isin(scored["entity_id"])]
+    briefs, stale_briefs = current_split(briefs, scored, facts_cfg["tiers"], facts_cfg, RAW / "briefs")
+    seqs, stale_seqs = current_split(seqs, scored, seq_cfg["tiers"], facts_cfg, RAW / "sequences")
+    touches = touches[touches["account_group"].isin(seqs["account_group"])]
     n = len(scored)
     leads = scored[scored["rank_in_group"] == "1"]
 
@@ -55,6 +64,7 @@ def main(vertical: str) -> None:
         "by_source": scored["source"].value_counts().to_dict(),
         "with_website_pct": pct((scored["website"] != "").sum(), n),
         "with_phone_pct": pct((scored["phone"] != "").sum(), n),
+        "excluded": excluded["excluded_because"].str.split(":").str[0].value_counts().to_dict(),
     }
 
     error_cols = [c for c in signals.columns if c.endswith("_error")]
@@ -94,6 +104,7 @@ def main(vertical: str) -> None:
     brief_cost = pd.to_numeric(briefs["cost_usd"], errors="coerce")
     brief_stats = {
         "written": len(briefs),
+        "out_of_date": len(stale_briefs),
         "passed_source_check_pct": pct((briefs["check_status"] == "passed").sum(), len(briefs)),
         "statements": statements,
         "statements_per_brief": round(statements / max(len(briefs), 1), 1),
@@ -113,6 +124,7 @@ def main(vertical: str) -> None:
     seq_cost = pd.to_numeric(seqs["cost_usd"], errors="coerce")
     sequence_stats = {
         "written": len(seqs),
+        "out_of_date": len(stale_seqs),
         "touches": len(touches),
         "passed_checks_pct": pct((seqs["check_status"] == "passed").sum(), len(seqs)),
         "touch_lengths": [{"touch": t, "limit_words": limit,
@@ -157,7 +169,8 @@ def render_card(c: dict) -> str:
            "## Discovery", "",
            f"- {d['accounts']} accounts in {d['groups']} groups (accounts sharing a website count as one group).",
            f"- By source: " + ", ".join(f"{k}: {v}" for k, v in d["by_source"].items()) + ".",
-           f"- {d['with_website_pct']}% have a website; {d['with_phone_pct']}% have a phone number.", "",
+           f"- {d['with_website_pct']}% have a website; {d['with_phone_pct']}% have a phone number.",
+           "- Left out before scoring: " + (", ".join(f"{k}: {v}" for k, v in d["excluded"].items()) or "none") + ".", "",
            "## Signals", "",
            f"- {c['signals']['accounts_enriched']} accounts enriched. Signal errors: "
            + ", ".join(f"{k}: {v}" for k, v in c["signals"]["errors"].items()) + ".",
@@ -174,11 +187,13 @@ def render_card(c: dict) -> str:
             "| Criterion | Max points | Average points | Accounts scoring above zero |", "|---|---|---|---|"]
     out += [f"| {k['label']} | {k['max_points']} | {k['avg_points']} | {k['accounts_scoring_above_zero_pct']}% |" for k in s["criteria"]]
     out += ["", "## Briefs", "",
-            f"- {b['written']} briefs written; {b['passed_source_check_pct']}% pass the source check.",
+            f"- {b['written']} briefs written; {b['passed_source_check_pct']}% pass the source check. "
+            f"{b['out_of_date']} more are out of date (their facts changed on re-scoring) and are not counted or published until rewritten.",
             f"- {b['statements']} statements, {b['statements_per_brief']} per brief, each citing at least one numbered fact.",
             f"- {b['facts_per_brief']} facts available per brief; {b['facts_used_pct']}% of available facts were cited.", "",
             "## Sequences", "",
-            f"- {q['written']} sequences ({q['touches']} touches); {q['passed_checks_pct']}% pass their checks.",
+            f"- {q['written']} sequences ({q['touches']} touches); {q['passed_checks_pct']}% pass their checks. "
+            f"{q['out_of_date']} more are out of date and are not counted or published until rewritten.",
             f"- First-email closing questions: {q['distinct_first_email_questions_pct']}% are distinct; "
             f"the most repeated one appears {q['most_repeated_first_email_question_count']} times.",
             "- Written for: " + ", ".join(f"{k} ({v})" for k, v in q["personas"].items()) + ".", "",

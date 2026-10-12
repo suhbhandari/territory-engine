@@ -35,6 +35,7 @@ sys.path.insert(0, str(ROOT))
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 from src.brief import _when, build_facts, check_statements, slug  # noqa: E402
+from src.current import split as current_split  # noqa: E402
 from src.llm import cost_usd, generate_json, load_prompt, make_client  # noqa: E402
 
 SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
@@ -168,11 +169,13 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
 
     index = pd.read_csv(INDEX_PATH, dtype=str, keep_default_na=False) if INDEX_PATH.exists() else pd.DataFrame(columns=INDEX_COLS)
     touches = pd.read_csv(TOUCHES_PATH, dtype=str, keep_default_na=False) if TOUCHES_PATH.exists() else pd.DataFrame(columns=TOUCH_COLS)
-    done = set(index.loc[index["check_status"].isin(["passed"] if redo_failed else ["passed", "failed"]), "account_group"])
+    current, stale = current_split(index, scored, cfg["tiers"], facts_cfg, OUT_DIR)
+    done = set(current.loc[current["check_status"].isin(["passed"] if redo_failed else ["passed", "failed"]), "account_group"])
     todo = [r for r in leads if r["account_group"] not in done]
     if limit:
         todo = todo[:limit]
-    print(f"[sequence] {len(leads)} groups in tiers {cfg['tiers']} | {len([r for r in leads if r['account_group'] in done])} already written | {len(todo)} to write")
+    print(f"[sequence] {len(leads)} groups in tiers {cfg['tiers']} | {len([r for r in leads if r['account_group'] in done])} already written | "
+          f"{len(stale)} out of date (facts changed since written) | {len(todo)} to write")
 
     def work(row: dict):
         facts = build_facts(row, facts_cfg)

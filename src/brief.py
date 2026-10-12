@@ -177,12 +177,16 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
     leads = [m[0] for m in groups.values() if m[0]["tier"] in cfg["tiers"]]
 
     index = pd.read_csv(INDEX_PATH, dtype=str, keep_default_na=False) if INDEX_PATH.exists() else pd.DataFrame(columns=INDEX_COLS)
-    keep = index["check_status"].isin(["passed"] if redo_failed else ["passed", "failed"])
-    done = set(index.loc[keep, "account_group"])
+    from src.current import split as current_split  # here, not at the top: src.current imports this module
+
+    current, stale = current_split(index, scored, cfg["tiers"], cfg, BRIEFS_DIR)
+    keep = current["check_status"].isin(["passed"] if redo_failed else ["passed", "failed"])
+    done = set(current.loc[keep, "account_group"])
     todo = [r for r in leads if r["account_group"] not in done]
     if limit:
         todo = todo[:limit]
-    print(f"[brief] {len(leads)} groups in tiers {cfg['tiers']} | {len(leads) - len([r for r in leads if r['account_group'] not in done])} already written | {len(todo)} to write")
+    print(f"[brief] {len(leads)} groups in tiers {cfg['tiers']} | {len(leads) - len([r for r in leads if r['account_group'] not in done])} already written | "
+          f"{len(stale)} out of date (facts changed since written) | {len(todo)} to write")
 
     def work(row: dict) -> dict:
         members = groups[row["account_group"]]
