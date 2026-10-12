@@ -137,7 +137,7 @@
   const sig = R.data_as_of && R.data_as_of.signals_checked;
   const sigText = sig ? (sig.first === sig.last ? sig.first : sig.first + " to " + sig.last) : "not recorded";
   $("subtitle").textContent = "Discovers accounts in a territory from public sources, scores them against a rubric, and drafts source-cited briefs and outreach. Signals collected " + sigText + "; page built " + D.generated_at + ".";
-  $("anon-note").textContent = "Public demo data. Account names, addresses, phone numbers and websites are replaced with placeholders, and open-role counts are shown as ranges. Scores, signals and generated text are real output from one run.";
+  $("anon-note").textContent = "Public demo data. Account names, addresses, phone numbers and websites are replaced with placeholders, open-role counts are shown as ranges, and each account's hiring system is hidden. Scores, signals and generated text are real output from one run.";
 
   // ---------- tooltip ----------
   const tip = $("tip");

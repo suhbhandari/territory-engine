@@ -20,9 +20,11 @@ Design:
     Any hit fails the build, so a scrub gap cannot ship silently
   - Open-role counts are published as ranges (1-4, 5-19, 20-49, 50-99, 100+), in the
     open_roles field and in the text, because an exact count plus a city points to one employer
-  - Limits: this removes names and contact details and blurs counts. It does not make an
-    account impossible to re-identify from its combination of facts (hiring system, city,
-    number of locations, years registered)
+  - The account's hiring system (applicant-tracking vendor) is not published, in the field or
+    in the text: with a city it narrows an account down to a handful of employers
+  - Limits: this removes names and contact details, blurs counts and hides the hiring system.
+    It does not make an account impossible to re-identify from its combination of facts
+    (city, number of locations, years registered)
 """
 
 import argparse
@@ -72,6 +74,12 @@ def band(count: str) -> str:
         return ""
     n = int(float(str(count).replace(",", "")))
     return next(label for floor, label in _COUNT_BANDS if n >= floor)
+
+
+def hide_terms(text: str, terms, replacement: str) -> str:
+    for term in sorted(terms, key=len, reverse=True):
+        text = re.sub(rf"(?<![\w-]){re.escape(term)}(?![\w-])", replacement, text)
+    return text
 
 
 def band_counts(text: str) -> str:
@@ -194,7 +202,8 @@ def main(vertical: str, metro_path: str) -> None:
         lead = members[0]
         alias = f"Account {int(lead['group_rank']):04d}"
         words = identifying_words(members, generic, place_words)
-        clean = lambda text: scrub(text, alias, members, words)
+        systems = {m["jobs_ats"] for m in members if m.get("jobs_ats")}
+        clean = lambda text: hide_terms(scrub(text, alias, members, words), systems, "[hiring system]")
 
         record = {
             "id": alias,
@@ -209,7 +218,7 @@ def main(vertical: str, metro_path: str) -> None:
             "years_registered": lead["npi_age_years"],
             "has_website": lead["website"] != "",
             "hiring_status": lead["jobs_status"],
-            "hiring_system": lead["jobs_ats"],
+            "hiring_system": "[hidden]" if lead["jobs_ats"] else "",
             "open_roles": band(lead["jobs_total"]),
             "points": {c: int(lead[f"pts_{c}"]) for c in criteria},
             "reasons": [clean(r) for r in lead["score_reasons"].split("; ") if r],

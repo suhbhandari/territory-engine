@@ -50,3 +50,10 @@ def test_open_role_counts_become_ranges():
     assert band_counts(text) == (
         "Its job board lists 100+ open roles located in NY, out of 100+ across all locations. "
         "Of these: 5-19 are scheduling roles. At least 1-4 open role(s). Registered 11 years ago. 3 locations share it.")
+
+
+def test_hiring_system_names_are_hidden_as_whole_words():
+    from src.anonymize import hide_terms
+
+    assert hide_terms("Runs hiring through ADP and Workday; ADPX is not one.", {"ADP", "Workday"}, "[hiring system]") == \
+        "Runs hiring through [hiring system] and [hiring system]; ADPX is not one."
