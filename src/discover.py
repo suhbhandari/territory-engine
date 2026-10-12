@@ -9,10 +9,12 @@ Usage:
 
 import argparse
 import importlib
+import json
 import re
 import sys
 import yaml
 import pandas as pd
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -20,9 +22,11 @@ sys.path.insert(0, str(ROOT))
 
 from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
+from src.exclusions import out_of_territory  # noqa: E402
 from src.sources.base import SCHEMA  # noqa: E402
 
 OUTPUT_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
+SUMMARY_PATH = ROOT / "outputs" / "raw" / "discover_summary.json"
 
 
 def load_yaml(path: Path) -> dict:
@@ -94,6 +98,8 @@ def main(metro_path: str, vertical: str) -> None:
 
     print(f"[discover] Metro: {geo['metro']} | Vertical: {vertical}")
 
+    run_at = datetime.now(timezone.utc).isoformat()
+    fetched = {}
     dfs: list[pd.DataFrame] = []
     for source_name, params in discovery.get("sources", {}).items():
         try:
@@ -105,6 +111,7 @@ def main(metro_path: str, vertical: str) -> None:
         print(f"[discover] Source: {source_name}...")
         df = module.fetch(params, geo)
         print(f"  → {len(df)} records")
+        fetched[source_name] = len(df)
         dfs.append(df)
 
     if not dfs:
@@ -116,11 +123,23 @@ def main(metro_path: str, vertical: str) -> None:
     print(f"[discover] Combined: {len(combined)} | Deduplicating...")
 
     final = deduplicate(combined)
-    print(f"[discover] Final: {len(final)} unique accounts")
+    print(f"[discover] After merging duplicates: {len(final)} accounts ({len(combined) - len(final)} rows merged)")
+    outside = out_of_territory(final, geo)
+    final = final[~outside].copy()
+    print(f"[discover] Dropped {int(outside.sum())} outside the territory (exclude_zips) | Final: {len(final)}")
+    final["discovered_at"] = run_at
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     final.to_csv(OUTPUT_PATH, index=False)
-    print(f"\n[discover] Written → {OUTPUT_PATH}")
+    summary = {
+        "run_at": run_at, "metro": geo["metro"], "vertical": vertical, "fetched_by_source": fetched,
+        "combined_rows": len(combined), "after_merging": len(final) + int(outside.sum()),
+        "rows_merged": len(combined) - len(final) - int(outside.sum()),
+        "dropped_outside_territory": int(outside.sum()), "final_accounts": len(final),
+        "final_by_source": final["source"].value_counts().to_dict(),
+    }
+    SUMMARY_PATH.write_text(json.dumps(summary, indent=2))
+    print(f"\n[discover] Written → {OUTPUT_PATH} and {SUMMARY_PATH.name}")
     print(f"\nBy source:\n{final['source'].value_counts().to_string()}")
     print(f"\nBy license_type (top 10):\n{final['license_type'].value_counts().head(10).to_string()}")
 

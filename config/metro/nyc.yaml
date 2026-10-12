@@ -24,3 +24,20 @@ zip_prefixes:
   - "113"
   - "114"
   - "116"
+
+# 5-digit zips inside the prefixes above that are outside the territory. The 110 prefix
+# also covers part of Nassau County. Accounts in these zips are dropped by discover and
+# by score (with the reason logged in outputs/raw/accounts_excluded.csv).
+# 11001 and 11040 each include a small part of Queens; they are excluded because most of
+# each zip is in Nassau. Remove a zip from this list to keep it.
+exclude_zips:
+  - "11001"  # Floral Park
+  - "11003"  # Elmont
+  - "11010"  # Franklin Square
+  - "11021"  # Great Neck
+  - "11024"  # Great Neck
+  - "11030"  # Manhasset
+  - "11040"  # New Hyde Park
+  - "11042"  # New Hyde Park, Lake Success
+  - "11050"  # Port Washington
+  - "11096"  # Inwood (Nassau)

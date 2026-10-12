@@ -20,7 +20,7 @@ enrich-sample:
 	python3 src/enrich.py $(V) --limit 10
 
 score:
-	python3 src/score.py $(V)
+	python3 src/score.py $(M) $(V)
 
 brief:
 	python3 src/brief.py $(V)

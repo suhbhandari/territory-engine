@@ -4,7 +4,7 @@ Joins accounts with their signals, applies the vertical's rubric, and writes a r
 tiered account list where every point is traceable to a rule and a plain-language reason.
 
 Usage:
-  python3 src/score.py [--vertical <name>]
+  python3 src/score.py [--vertical <name>] [--metro config/metro/<name>.yaml]
 
 Design:
   - The rubric (config/verticals/<name>/rubric.yaml) is a list of criteria. Each criterion
@@ -16,6 +16,9 @@ Design:
   - Rule conditions are generic comparisons on columns; nothing here knows what a column means
   - Two derived columns are available to rules: website_domain, and domain_account_count
     (how many accounts in the list share that domain)
+  - Accounts outside the territory (the metro file's exclude_zips) and accounts a person
+    marked `exclude` in outputs/raw/exclusions.csv are left out before scoring, and written
+    with the reason to outputs/raw/accounts_excluded.csv
   - Accounts that share a website domain are one group (one operator or network with
     several locations). Each account keeps its own score; the list is ordered by each
     group's best score with its members kept together, so a group takes one place
@@ -32,11 +35,13 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src.settings import DEFAULT_VERTICAL  # noqa: E402
+from src.exclusions import reviewed_exclusions, split  # noqa: E402
+from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
 ACCOUNTS_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
 SIGNALS_PATH = ROOT / "outputs" / "raw" / "signals_raw.csv"
 OUTPUT_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
+EXCLUDED_PATH = ROOT / "outputs" / "raw" / "accounts_excluded.csv"
 
 ID_COL = "entity_id"
 
@@ -109,12 +114,18 @@ def add_derived(df: pd.DataFrame, rubric: dict) -> pd.DataFrame:
     return df
 
 
-def main(vertical: str) -> None:
+def main(vertical: str, metro_path: str) -> None:
     rubric = yaml.safe_load(open(ROOT / "config" / "verticals" / vertical / "rubric.yaml"))
     criteria = rubric["criteria"]
     total_max = sum(c["max_points"] for c in criteria.values())
 
     accounts = pd.read_csv(ACCOUNTS_PATH, dtype=str, keep_default_na=False)
+    geo = yaml.safe_load(open(ROOT / metro_path))
+    accounts, excluded = split(accounts, geo, reviewed_exclusions())
+    excluded.to_csv(EXCLUDED_PATH, index=False)
+    if len(excluded):
+        print(f"[score] Left out {len(excluded)} accounts → {EXCLUDED_PATH.relative_to(ROOT)}: "
+              f"{excluded['excluded_because'].str.split(':').str[0].value_counts().to_dict()}")
     signals = pd.read_csv(SIGNALS_PATH, dtype=str, keep_default_na=False)
     df = accounts.merge(signals, on=ID_COL, how="left").fillna("")
     df = add_derived(df, rubric)
@@ -172,5 +183,6 @@ def main(vertical: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
+    parser.add_argument("--metro", default=DEFAULT_METRO)
     args = parser.parse_args()
-    main(args.vertical)
+    main(args.vertical, args.metro)
