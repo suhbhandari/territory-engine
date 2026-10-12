@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks
 
 # Defaults come from config/defaults.yaml. Override for one run, for example:
 #   make score VERTICAL=<name> METRO=config/metro/<name>.yaml
@@ -47,3 +47,12 @@ site: public
 
 check-generic:
 	python3 scripts/check_generic.py
+
+test:
+	python3 -m pytest -q tests
+
+leak-test:
+	python3 scripts/leak_test.py
+
+# The three checks to run before calling any change done.
+checks: check-generic test leak-test
