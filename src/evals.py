@@ -7,7 +7,9 @@ Usage:
   python3 src/evals.py [--vertical <name>]
 
 Design:
-  - Every number is computed from files on disk; nothing is typed in by hand
+  - Every measurement is computed from files on disk. The only text typed by hand is in the
+    vertical's evals.yaml (what the checks cover, what is not measured, cost estimates), and
+    the card labels it as such
   - No letter grades: without outcome data or human labels a grade would be invented.
     Each line is a measurement, and the "not measured" list is part of the card
   - Calls no external service
@@ -34,6 +36,21 @@ PUBLIC = ROOT / "outputs" / "public"
 
 def pct(part, whole) -> float:
     return round(100 * part / whole, 1) if whole else 0.0
+
+
+def data_dates(scored: pd.DataFrame) -> dict:
+    """When the data was collected, as opposed to when this report was built."""
+    dates = {}
+    for key, col in (("discovered", "discovered_at"), ("signals_checked", "signals_fetched_at")):
+        values = scored[col].str[:10].replace("", pd.NA).dropna() if col in scored else pd.Series(dtype=str)
+        dates[key] = {"first": values.min(), "last": values.max()} if len(values) else None
+    return dates
+
+
+def _date_range(d) -> str:
+    if not d:
+        return "not recorded"
+    return d["first"] if d["first"] == d["last"] else f"{d['first']} to {d['last']}"
 
 
 def main(vertical: str) -> None:
@@ -145,6 +162,7 @@ def main(vertical: str) -> None:
 
     card = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "data_as_of": data_dates(scored),
         "discovery": discovery,
         "signals": signal_stats,
         "scoring": scoring,
@@ -166,8 +184,11 @@ def main(vertical: str) -> None:
 
 def render_card(c: dict) -> str:
     d, s, b, q = c["discovery"], c["scoring"], c["briefs"], c["sequences"]
-    out = [f"# Report card", "", f"Generated {c['generated_at']} from the pipeline's own output files. "
-           "Measurements only: no grades, because no outcome data or human labels exist yet.", "",
+    out = [f"# Report card", "", f"Built {c['generated_at']} from the pipeline's own output files. "
+           f"Signals collected: {_date_range(c['data_as_of']['signals_checked'])}. "
+           f"Accounts discovered: {_date_range(c['data_as_of']['discovered'])}.", "",
+           "Measurements only: no grades, because no outcome data or human labels exist yet. "
+           "The last two sections are written by hand in the vertical's evals.yaml.", "",
            "## Discovery", "",
            f"- {d['accounts']} accounts in {d['groups']} groups (accounts sharing a website count as one group).",
            f"- By source: " + ", ".join(f"{k}: {v}" for k, v in d["by_source"].items()) + ".",
@@ -203,8 +224,8 @@ def render_card(c: dict) -> str:
             "- Written for: " + ", ".join(f"{k} ({v})" for k, v in q["personas"].items()) + ".", "",
             "| Touch | Word limit | Average words | Longest |", "|---|---|---|---|"]
     out += [f"| {t['touch']} | {t['limit_words']} | {t['avg_words']} | {t['max_words']} |" for t in q["touch_lengths"]]
-    out += ["", "## What the automated checks cover", ""] + [f"- {x}" for x in c["checks_cover"]]
-    out += ["", "## Not measured", ""] + [f"- {x}" for x in c["not_measured"]]
+    out += ["", "## What the automated checks cover (written by hand)", ""] + [f"- {x}" for x in c["checks_cover"]]
+    out += ["", "## Not measured (written by hand)", ""] + [f"- {x}" for x in c["not_measured"]]
     return "\n".join(out) + "\n"
 
 
@@ -218,7 +239,7 @@ def render_costs(c: dict) -> str:
            f"| Sequences | {q['model']} | {q['written']} | {q['avg_input_tokens']} | {q['avg_output_tokens']} | ${q['avg_cost_usd']:.4f} | ${q['total_cost_usd']:.2f} |",
            f"| **Model total** | | | | | | **${b['total_cost_usd'] + q['total_cost_usd']:.2f}** |", ""]
     if c["other_costs"]:
-        out += ["## Other costs", "", "These are not logged by the pipeline. They are estimates from request counts and list prices.", "",
+        out += ["## Other costs (estimates written by hand)", "", "These are not logged by the pipeline. They are estimates from request counts and list prices, typed into the vertical's evals.yaml.", "",
                 "| Item | Requests | Estimated cost | Basis |", "|---|---|---|---|"]
         out += [f"| {o['item']} | {o['requests']} | {o['estimate']} | {o['basis']} |" for o in c["other_costs"]]
         out += [""]

@@ -134,8 +134,10 @@
   }
 
   $("title").textContent = "Territory Engine: " + D.vertical + ", " + D.metro;
-  $("subtitle").textContent = "Discovers accounts in a territory from public sources, scores them against a rubric, and drafts source-cited briefs and outreach. Data built " + D.generated_at + ".";
-  $("anon-note").textContent = "Public demo data. Account names, addresses, phone numbers and websites are replaced with placeholders. Scores, signals and generated text are real output from one run.";
+  const sig = R.data_as_of && R.data_as_of.signals_checked;
+  const sigText = sig ? (sig.first === sig.last ? sig.first : sig.first + " to " + sig.last) : "not recorded";
+  $("subtitle").textContent = "Discovers accounts in a territory from public sources, scores them against a rubric, and drafts source-cited briefs and outreach. Signals collected " + sigText + "; page built " + D.generated_at + ".";
+  $("anon-note").textContent = "Public demo data. Account names, addresses, phone numbers and websites are replaced with placeholders, and open-role counts are shown as ranges. Scores, signals and generated text are real output from one run.";
 
   // ---------- tooltip ----------
   const tip = $("tip");
@@ -235,7 +237,7 @@
       (!state.tiers.size || state.tiers.has(a.tier)) &&
       (!state.status || a.hiring_status === state.status) &&
       (!q || (a.id + " " + a.city + " " + a.type).toLowerCase().includes(q)));
-    const key = { coverage: (a) => -a.data_coverage, roles: (a) => -(Number(a.open_roles) || -1), locations: (a) => -a.locations }[state.sort];
+    const key = { coverage: (a) => -a.data_coverage, roles: (a) => -(a.open_roles === "" ? -1 : parseInt(a.open_roles, 10)), locations: (a) => -a.locations }[state.sort];
     if (key) rows = rows.slice().sort((a, b) => key(a) - key(b) || a.rank - b.rank);
     return rows;
   }
@@ -318,7 +320,7 @@
   const kv = (obj) => Object.entries(obj).map(([k, v]) => `<tr><td>${esc(statusLabel(k))}</td><td class="num">${typeof v === "number" ? fmt(v) : esc(v)}</td></tr>`).join("");
   const statusCols = Object.entries(R.signals.status_breakdown);
   $("tab-report").innerHTML = `
-    <p class="sub" style="margin-top:16px">Every number here is computed from the pipeline's output files. There are no grades: without outcome data or human labels, a grade would be invented.</p>
+    <p class="sub" style="margin-top:16px">Measurements here are computed from the pipeline's output files. The last three sections are written by hand in the vertical's config, and the costs there are estimates. There are no grades: without outcome data or human labels, a grade would be invented.</p>
     <div class="grid-2">
       <div class="card"><h2 style="margin-top:0">Discovery</h2><table><tbody>
         <tr><td>Accounts</td><td class="num">${fmt(R.discovery.accounts)}</td></tr>
@@ -334,6 +336,7 @@
       <div class="card"><h2 style="margin-top:0">Briefs</h2><table><tbody>
         <tr><td>Written</td><td class="num">${fmt(R.briefs.written)}</td></tr>
         <tr><td>Pass the source check</td><td class="num">${R.briefs.passed_source_check_pct}%</td></tr>
+        <tr><td>Out of date, not shown until rewritten</td><td class="num">${fmt(R.briefs.out_of_date || 0)}</td></tr>
         <tr><td>Statements, each citing a fact</td><td class="num">${fmt(R.briefs.statements)}</td></tr>
         <tr><td>Facts available per brief</td><td class="num">${R.briefs.facts_per_brief}</td></tr>
         <tr><td>Cost per brief</td><td class="num">$${R.briefs.avg_cost_usd.toFixed(4)}</td></tr>
@@ -341,6 +344,7 @@
       <div class="card"><h2 style="margin-top:0">Sequences</h2><table><tbody>
         <tr><td>Written (touches)</td><td class="num">${fmt(R.sequences.written)} (${fmt(R.sequences.touches)})</td></tr>
         <tr><td>Pass their checks</td><td class="num">${R.sequences.passed_checks_pct}%</td></tr>
+        <tr><td>Out of date, not shown until rewritten</td><td class="num">${fmt(R.sequences.out_of_date || 0)}</td></tr>
         <tr><td>Distinct first-email questions</td><td class="num">${R.sequences.distinct_first_email_questions_pct}%</td></tr>
         ${R.sequences.touch_lengths.map((t) => `<tr><td>Touch ${t.touch}: average words (limit ${t.limit_words})</td><td class="num">${t.avg_words}</td></tr>`).join("")}
         <tr><td>Cost per sequence</td><td class="num">$${R.sequences.avg_cost_usd.toFixed(4)}</td></tr>
@@ -348,7 +352,7 @@
     </div>
     <h2>What the automated checks cover</h2><div class="card">${list(R.checks_cover)}</div>
     <h2>Not measured</h2><div class="card">${list(R.not_measured)}</div>
-    <h2>Other costs</h2>
+    <h2>Other costs (estimates)</h2>
     <div class="card table-scroll"><table><thead><tr><th>Item</th><th>Requests</th><th>Estimate</th><th>Basis</th></tr></thead>
       <tbody>${R.other_costs.map((o) => `<tr><td>${esc(o.item)}</td><td>${esc(o.requests)}</td><td>${esc(o.estimate)}</td><td>${esc(o.basis)}</td></tr>`).join("")}</tbody></table></div>`;
 })();
