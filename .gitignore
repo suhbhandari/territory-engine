@@ -7,3 +7,8 @@ venv/
 *.egg-info/
 .DS_Store
 outputs/raw/
+
+# Real names and review notes. Never commit.
+outputs/private/
+.pytest_cache/
+*.duckdb
