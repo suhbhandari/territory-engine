@@ -1,7 +1,7 @@
 """
 Signal: NPI enrollment age
 Looks up the NPI record to get the enumeration date (when the provider registered).
-Newer agencies (< 3 years) are often in growth mode; older ones are established.
+Newer organizations (< 3 years) are often in growth mode; older ones are established.
 
 fetch(account, params) -> dict with keys:
   npi_enrolled_year, npi_age_years

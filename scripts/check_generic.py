@@ -3,6 +3,13 @@
 check_generic.py
 Fails if any vertical-specific terms are found in core code.
 Core = everything except config/verticals/, tests/fixtures/, outputs/, and this script.
+
+Two lists:
+  - prose terms are searched in every scanned file, docs included
+  - code terms are searched only in code (.py, .html, .js, Makefile). They add words a
+    vertical's buyers or staff are called by, and underscore or hyphen forms such as
+    a vertical's folder name, which the prose patterns do not match. Docs may name the
+    shipped vertical's folder and its export headers; code may not.
 """
 
 import re
@@ -20,7 +27,9 @@ EXCLUDED_PREFIXES = [
     ".env",
 ]
 
-SCAN_EXTENSIONS = {".py", ".yaml", ".yml", ".md", ".json", ".txt"}
+SCAN_EXTENSIONS = {".py", ".yaml", ".yml", ".md", ".json", ".txt", ".html", ".js"}
+CODE_EXTENSIONS = {".py", ".html", ".js"}
+CODE_FILENAMES = {"Makefile"}
 
 # Case-insensitive terms: plain English phrases and abbreviations found in vertical config
 TERMS_ICASE = [
@@ -42,7 +51,20 @@ TERMS_CASE = [
     r"\bCMS\b",
 ]
 
+# Code only: role and buyer words, and identifier forms (home_care, post-acute, ...).
+TERMS_CODE = [
+    r"\bagenc(?:y|ies)\b",
+    r"\baides?\b",
+    r"\bnurses?\b",
+    r"\bclinicians?\b",
+    r"\bpatients?\b",
+    r"home[_-]+(?:care|health)",
+    r"post[_-]+acute",
+    r"\bhospice",
+]
+
 pattern_icase = re.compile("|".join(TERMS_ICASE), re.IGNORECASE)
+pattern_code = re.compile("|".join(TERMS_CODE), re.IGNORECASE)
 pattern_case = re.compile("|".join(TERMS_CASE))
 
 
@@ -57,7 +79,8 @@ def main() -> int:
     for path in sorted(ROOT.rglob("*")):
         if not path.is_file():
             continue
-        if path.suffix not in SCAN_EXTENSIONS:
+        is_code = path.suffix in CODE_EXTENSIONS or path.name in CODE_FILENAMES
+        if path.suffix not in SCAN_EXTENSIONS and not is_code:
             continue
         relative = path.relative_to(ROOT)
         if is_excluded(relative):
@@ -69,7 +92,7 @@ def main() -> int:
             continue
 
         for i, line in enumerate(text.splitlines(), 1):
-            if pattern_icase.search(line) or pattern_case.search(line):
+            if pattern_icase.search(line) or pattern_case.search(line) or (is_code and pattern_code.search(line)):
                 failures.append(f"  {relative}:{i}: {line.strip()}")
 
     print("=== check-generic ===")
