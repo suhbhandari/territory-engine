@@ -2,7 +2,7 @@
 """
 check_generic.py
 Fails if any vertical-specific terms are found in core code.
-Core = everything except config/verticals/, tests/fixtures/, outputs/, and this script.
+Core = everything except config/verticals/, tests/fixtures/, outputs/, README.md, and this script.
 
 Two lists:
   - prose terms are searched in every scanned file, docs included
@@ -24,6 +24,7 @@ EXCLUDED_PREFIXES = [
     "outputs/",
     "scripts/check_generic.py",
     "CLAUDE.md",
+    "README.md",  # describes the shipped demo run (its vertical and metro) for readers
     ".env",
 ]
 
