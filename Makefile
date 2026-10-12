@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh
 
 # Defaults come from config/defaults.yaml. Override for one run, for example:
 #   make score VERTICAL=<name> METRO=config/metro/<name>.yaml
@@ -56,3 +56,13 @@ leak-test:
 
 # The three checks to run before calling any change done.
 checks: check-generic test leak-test
+
+# Keep a copy of the current run's private data in outputs/raw/runs/<date>/.
+snapshot:
+	python3 scripts/snapshot.py
+
+# A fresh run: keep a copy of the current run, then rebuild the account list and re-check
+# every signal. Paid Google calls in discover and for any new account in backfill.
+fresh:
+	python3 scripts/snapshot.py --fresh-signals
+	$(MAKE) discover backfill enrich score export
