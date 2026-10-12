@@ -25,7 +25,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src.current import split as current_split  # noqa: E402
+from src.current import current_briefs, current_sequences  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 RAW = ROOT / "outputs" / "raw"
@@ -52,8 +52,8 @@ def main(vertical: str) -> None:
     facts_cfg = yaml.safe_load(open(vdir / "brief.yaml"))
     # Measure only what is current: accounts still in the list, text that still matches the data.
     signals = signals[signals["entity_id"].isin(scored["entity_id"])]
-    briefs, stale_briefs = current_split(briefs, scored, facts_cfg["tiers"], facts_cfg, RAW / "briefs")
-    seqs, stale_seqs = current_split(seqs, scored, seq_cfg["tiers"], facts_cfg, RAW / "sequences")
+    briefs, stale_briefs = current_briefs(briefs, scored, facts_cfg, RAW / "briefs")
+    seqs, stale_seqs = current_sequences(seqs, touches, scored, seq_cfg, facts_cfg, RAW / "sequences")
     touches = touches[touches["account_group"].isin(seqs["account_group"])]
     n = len(scored)
     leads = scored[scored["rank_in_group"] == "1"]
@@ -105,6 +105,7 @@ def main(vertical: str) -> None:
     brief_stats = {
         "written": len(briefs),
         "out_of_date": len(stale_briefs),
+        "out_of_date_reasons": pd.Series(list(stale_briefs.values()), dtype=object).value_counts().to_dict(),
         "passed_source_check_pct": pct((briefs["check_status"] == "passed").sum(), len(briefs)),
         "statements": statements,
         "statements_per_brief": round(statements / max(len(briefs), 1), 1),
@@ -125,6 +126,7 @@ def main(vertical: str) -> None:
     sequence_stats = {
         "written": len(seqs),
         "out_of_date": len(stale_seqs),
+        "out_of_date_reasons": pd.Series(list(stale_seqs.values()), dtype=object).value_counts().to_dict(),
         "touches": len(touches),
         "passed_checks_pct": pct((seqs["check_status"] == "passed").sum(), len(seqs)),
         "touch_lengths": [{"touch": t, "limit_words": limit,
@@ -188,12 +190,14 @@ def render_card(c: dict) -> str:
     out += [f"| {k['label']} | {k['max_points']} | {k['avg_points']} | {k['accounts_scoring_above_zero_pct']}% |" for k in s["criteria"]]
     out += ["", "## Briefs", "",
             f"- {b['written']} briefs written; {b['passed_source_check_pct']}% pass the source check. "
-            f"{b['out_of_date']} more are out of date (their facts changed on re-scoring) and are not counted or published until rewritten.",
+            f"{b['out_of_date']} more are out of date and are not counted or published until rewritten"
+            + (" (" + ", ".join(f"{k}: {v}" for k, v in b["out_of_date_reasons"].items()) + ")." if b["out_of_date"] else "."),
             f"- {b['statements']} statements, {b['statements_per_brief']} per brief, each citing at least one numbered fact.",
             f"- {b['facts_per_brief']} facts available per brief; {b['facts_used_pct']}% of available facts were cited.", "",
             "## Sequences", "",
             f"- {q['written']} sequences ({q['touches']} touches); {q['passed_checks_pct']}% pass their checks. "
-            f"{q['out_of_date']} more are out of date and are not counted or published until rewritten.",
+            f"{q['out_of_date']} more are out of date and are not counted or published until rewritten"
+            + (" (" + ", ".join(f"{k}: {v}" for k, v in q["out_of_date_reasons"].items()) + ")." if q["out_of_date"] else "."),
             f"- First-email closing questions: {q['distinct_first_email_questions_pct']}% are distinct; "
             f"the most repeated one appears {q['most_repeated_first_email_question_count']} times.",
             "- Written for: " + ", ".join(f"{k} ({v})" for k, v in q["personas"].items()) + ".", "",

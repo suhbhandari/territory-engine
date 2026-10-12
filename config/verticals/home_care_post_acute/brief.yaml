@@ -8,22 +8,38 @@ price_per_mtok: {input: 4.00, output: 20.00}
 # One brief per account group whose best account is in these tiers.
 tiers: [A, B]
 
+# Each source gives the label and link printed after a fact, and optionally date_column:
+# the scored-list column holding the date that data was collected, printed as "checked <date>".
+# discovered_at is filled by discover runs from 2026-10-12 on; it is blank for older data.
 sources:
   registry:
     label: "NPPES NPI Registry record {entity_id}"
     url: "https://npiregistry.cms.hhs.gov/provider-view/{entity_id}"
+    date_column: discovered_at
   careers:
     label: "Careers page"
     url: "{jobs_source_url}"
+    date_column: signals_fetched_at
   website:
     label: "Company website"
     url: "{website}"
+    date_column: signals_fetched_at
   listing:
     label: "Google Maps listing"
     url: "https://www.google.com/maps/place/?q=place_id:{entity_id}"
+    date_column: discovered_at
+  # Derived by the engine from its own account list, so there is no outside page to link.
   territory_list:
-    label: "Territory account list ({source})"
-    url: "{website}"
+    label: "This territory list, built from {source} records"
+    url: ""
+    date_column: discovered_at
+
+# Capitalised words a brief or sequence may use without a fact containing them. The check
+# flags any other capitalised word inside a sentence that its cited facts do not contain
+# (a neighbourhood, an organisation, a job title). Street-type and compass words are here
+# because the model writes "Street" for a fact's "St".
+allowed_words: [Street, Avenue, Road, Boulevard, Parkway, Place, Lane, Highway, Turnpike, Drive, Court,
+                Plaza, Terrace, East, West, North, South, URL]
 
 # Each template becomes one numbered fact when its `when` holds (same condition
 # syntax as rubric.yaml). The model may only use these facts.

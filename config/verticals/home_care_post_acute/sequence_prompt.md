@@ -8,6 +8,7 @@ What makes these work is being specific, honest and short. A message that names 
 
 Ground rules, and why they exist:
 
+- Name places, organisations and job titles only as the facts write them. Do not add a neighbourhood, borough, city or region the facts do not name, even one you know to be right: an automated check rejects any capitalised word that is not in the facts a touch cites. Write numbers in digits, copied from the facts.
 - Use only the facts given, and list in `fact_ids` every fact a touch relies on. An automated check rejects a touch with no fact id, and any touch containing a number that is not in the facts it cites. If the rep says something untrue about the prospect in the first line, the conversation is over.
 - When a fact says something is unknown or could not be read, do not turn it into a claim. Never say or imply the agency is hiring, not hiring, growing or struggling unless a fact gives the evidence. "I saw you have a careers page" is fine when that is the fact; "I see you're hiring" is not.
 - Role counts by category come from keywords in job titles and are approximate. Prefer naming actual job titles from the facts over quoting category counts.

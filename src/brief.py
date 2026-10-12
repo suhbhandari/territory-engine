@@ -13,8 +13,12 @@ Design:
     browses: it can only arrange and phrase the facts it is given
   - The model returns structured JSON in which each statement lists the fact ids it rests on
   - Source check (code, not the model): every statement cites at least one fact, every cited
-    id exists, and every number in a statement appears in a fact it cites. A brief that
-    fails is saved with check_status=failed and the reasons
+    id exists, every number in a statement (in digits, or a number word from two up) appears
+    in a fact it cites, and every capitalised word inside a sentence (a place, an
+    organisation, a job title) appears in a fact it cites or in the vertical's
+    allowed_words. A brief that fails is saved with check_status=failed and the reasons
+  - Each fact carries its source link and, where the source config names a date column,
+    the date that data was collected
   - "What we don't know" is written by code from the same data, not by the model
   - One brief per group (accounts sharing a website); sibling locations are listed in it
   - Token usage and cost per brief are logged to briefs_index.csv, saved every few briefs
@@ -87,8 +91,29 @@ def build_facts(row: dict, cfg: dict) -> list:
             "text": template["text"].format(**row),
             "source_label": source["label"].format(**row),
             "source_url": source["url"].format(**row),
+            "as_of": str(row.get(source.get("date_column", ""), ""))[:10],
         })
     return facts
+
+
+def render_fact(fact: dict) -> str:
+    """'- **F1** text ([label](url), checked YYYY-MM-DD)'; no link when the source has no URL."""
+    source = f"[{fact['source_label']}]({fact['source_url']})" if fact["source_url"] else fact["source_label"]
+    if fact.get("as_of"):
+        source += f", checked {fact['as_of']}"
+    return f"- **{fact['id']}** {fact['text']} ({source})"
+
+
+_FACT_LINE = re.compile(r"^- \*\*(F\d+)\*\* (.*) \((?:\[(.*?)\]\((.*?)\)|([^()]*?))(?:, checked ([\d-]+))?\)\s*$")
+
+
+def parse_fact_line(line: str):
+    """Inverse of render_fact: {id, text, source_label, source_url, as_of}, or None."""
+    m = _FACT_LINE.match(line)
+    if not m:
+        return None
+    return {"id": m.group(1), "text": m.group(2), "source_label": m.group(3) if m.group(3) is not None else m.group(5),
+            "source_url": m.group(4) or "", "as_of": m.group(6) or ""}
 
 
 def build_unknowns(row: dict, cfg: dict) -> list:
@@ -99,14 +124,61 @@ def _numbers(text: str) -> list:
     return [n.replace(",", "") for n in re.findall(r"\d+(?:,\d{3})*", text)]
 
 
-def source_check(brief: dict, facts: list, name: str = "") -> list:
+def source_check(brief: dict, facts: list, name: str = "", allowed=()) -> list:
     statements = [("headline", brief["headline"]), ("opening_angle", brief["opening_angle"])]
     statements += [(f"snapshot[{i}]", s) for i, s in enumerate(brief["snapshot"])]
     statements += [(f"why_now[{i}]", s) for i, s in enumerate(brief["why_now"])]
-    return check_statements(statements, facts, name)
+    return check_statements(statements, facts, name, allowed)
 
 
-def check_statements(statements: list, facts: list, name: str = "") -> list:
+def saved_statements(markdown: str) -> list:
+    """Statements read back from a rendered brief, as [(section, {"text", "fact_ids"})].
+    A line the renderer would not have written is returned with no fact ids, so it fails."""
+    body = markdown.split("## Locations in this territory")[0].split("## Contact")[0]
+    section, statements = "headline", []
+    for line in body.splitlines():
+        if line.startswith("## "):
+            section = line[3:].strip()
+            continue
+        if not line.strip() or line.startswith(("# ", "**Tier", ">")):
+            continue
+        m = re.match(r"^(.*) \[(F\d+(?:, F\d+)*)\]\s*$", line.lstrip("- ").strip())
+        statements.append((section, {"text": m.group(1), "fact_ids": m.group(2).split(", ")} if m
+                           else {"text": line, "fact_ids": []}))
+    return statements
+
+
+_NUMBER_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+                 "ten": 10, "eleven": 11, "twelve": 12, "fifteen": 15, "twenty": 20, "thirty": 30,
+                 "forty": 40, "fifty": 50, "hundred": 100, "dozen": 12}
+_NUMBER_WORD = re.compile(r"\b(" + "|".join(_NUMBER_WORDS) + r")\b", re.I)
+_CAPITALISED = re.compile(r"(?<![\w{])([A-Z][A-Za-z'’-]{2,})")
+
+
+def unsupported_words(text: str, source_text: str, allowed=()) -> list:
+    """Capitalised words inside a sentence that the source text does not contain, and number
+    words whose value is not in it. Sentence-initial words, 'I'm'-style contractions and
+    words in `allowed` are skipped. Matching ignores case."""
+    source = source_text.lower()
+    allowed = {a.lower() for a in allowed}
+    found = []
+    for m in _CAPITALISED.finditer(text):
+        before = text[:m.start()].rstrip()
+        if not before or before[-1] in ".!?:\n•" or before.endswith("}}") or before.endswith("}},"):
+            continue
+        if re.match(r"I['’]", m.group(1)):
+            continue
+        for part in re.split(r"[-–]", re.sub(r"['’]s$", "", m.group(1))):
+            if len(part) >= 3 and part[0].isupper() and part.lower() not in source and part.lower() not in allowed:
+                found.append(part)
+    digits = set(_numbers(source_text))
+    for m in _NUMBER_WORD.finditer(text):
+        if str(_NUMBER_WORDS[m.group(1).lower()]) not in digits and m.group(1).lower() not in source:
+            found.append(m.group(1).lower())
+    return found
+
+
+def check_statements(statements: list, facts: list, name: str = "", allowed=()) -> list:
     """statements: [(label, {"text": str, "fact_ids": [str]})]. Returns a list of problems."""
     by_id = {f["id"]: f["text"] for f in facts}
     # Digits that are part of the account's own name are not claims.
@@ -122,10 +194,13 @@ def check_statements(statements: list, facts: list, name: str = "") -> list:
         if missing:
             problems.append(f"{where}: cites unknown fact {', '.join(missing)}")
             continue
-        cited_numbers = set(_numbers(" ".join(by_id[i] for i in ids))) | name_numbers
+        cited = " ".join(by_id[i] for i in ids)
+        cited_numbers = set(_numbers(cited)) | name_numbers
         for number in _numbers(statement["text"]):
             if number not in cited_numbers:
                 problems.append(f"{where}: number {number} is not in the cited facts")
+        for word in dict.fromkeys(unsupported_words(statement["text"], cited + " " + name, allowed)):
+            problems.append(f"{where}: '{word}' is not in the cited facts")
     return problems
 
 
@@ -152,7 +227,7 @@ def render(row: dict, members: list, brief: dict, facts: list, unknowns: list, p
     out += ["", "## What we don't know"]
     out += [f"- {u}" for u in unknowns] or ["- Nothing flagged."]
     out += ["", "## Facts and sources"]
-    out += [f"- **{f['id']}** {f['text']} ([{f['source_label']}]({f['source_url']}))" for f in facts]
+    out += [render_fact(f) for f in facts]
     out += ["", f"Score breakdown: {row['score_reasons']}", ""]
     return "\n".join(out)
 
@@ -177,16 +252,16 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
     leads = [m[0] for m in groups.values() if m[0]["tier"] in cfg["tiers"]]
 
     index = pd.read_csv(INDEX_PATH, dtype=str, keep_default_na=False) if INDEX_PATH.exists() else pd.DataFrame(columns=INDEX_COLS)
-    from src.current import split as current_split  # here, not at the top: src.current imports this module
+    from src.current import current_briefs  # here, not at the top: src.current imports this module
 
-    current, stale = current_split(index, scored, cfg["tiers"], cfg, BRIEFS_DIR)
+    current, stale = current_briefs(index, scored, cfg, BRIEFS_DIR)
     keep = current["check_status"].isin(["passed"] if redo_failed else ["passed", "failed"])
     done = set(current.loc[keep, "account_group"])
     todo = [r for r in leads if r["account_group"] not in done]
     if limit:
         todo = todo[:limit]
     print(f"[brief] {len(leads)} groups in tiers {cfg['tiers']} | {len(leads) - len([r for r in leads if r['account_group'] not in done])} already written | "
-          f"{len(stale)} out of date (facts changed since written) | {len(todo)} to write")
+          f"{len(stale)} out of date ({', '.join(sorted(set(stale.values()))) or 'none'}) | {len(todo)} to write")
 
     def work(row: dict) -> dict:
         members = groups[row["account_group"]]
@@ -203,7 +278,7 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
             brief, usage, model = generate_json(client, cfg, system, prompt, BRIEF_SCHEMA)
         except Exception as exc:
             return dict(entry, check_status="error", check_notes=f"{type(exc).__name__}: {exc}"[:300])
-        problems = source_check(brief, facts, row["name"])
+        problems = source_check(brief, facts, row["name"], cfg.get("allowed_words", []))
         path = BRIEFS_DIR / f"{int(row['group_rank']):04d}-{slug(row['name'])}.md"
         path.write_text(render(row, members, brief, facts, unknowns, problems))
         return dict(entry, file=path.name, model=model, check_status="failed" if problems else "passed",

@@ -32,7 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src.current import split as current_split  # noqa: E402
+from src.current import current_briefs, current_sequences  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
@@ -101,12 +101,12 @@ def main(vertical: str) -> None:
     if TOUCHES_PATH.exists():
         touches = pd.read_csv(TOUCHES_PATH, dtype=str, keep_default_na=False)
         seq_index = pd.read_csv(SEQ_INDEX_PATH, dtype=str, keep_default_na=False)
-        current, _ = current_split(seq_index, scored, seq_cfg["tiers"], facts_cfg, SEQ_INDEX_PATH.parent)
+        current, _ = current_sequences(seq_index, touches, scored, seq_cfg, facts_cfg, SEQ_INDEX_PATH.parent)
         touches = touches[touches["account_group"].isin(current["account_group"])]
         extras = touch_fields(touches, touch_ids, cfg.get("merge_field_map", {}), cfg.get("script_placeholders", {}))
     if BRIEFS_INDEX_PATH.exists():
         briefs = pd.read_csv(BRIEFS_INDEX_PATH, dtype=str, keep_default_na=False)
-        briefs, _ = current_split(briefs, scored, facts_cfg["tiers"], facts_cfg, BRIEFS_INDEX_PATH.parent)
+        briefs, _ = current_briefs(briefs, scored, facts_cfg, BRIEFS_INDEX_PATH.parent)
         for b in briefs[briefs["check_status"] == "passed"].to_dict("records"):
             extras.setdefault(b["account_group"], {})["brief_file"] = b["file"]
 

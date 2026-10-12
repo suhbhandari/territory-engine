@@ -13,8 +13,8 @@ Design:
   - The persona each sequence is written for is chosen by the first matching rule in
     personas.yaml. No contact names are collected, so drafts use merge fields
     (e.g. {{first_name}}) for the sending tool to fill
-  - Checks (code, not the model): every touch cites at least one real fact; every number in
-    a touch appears in a fact it cites; each touch is within its word limit; a touch that
+  - Checks (code, not the model): every touch cites at least one real fact; every number and
+    every capitalised word inside a sentence appears in a fact it cites (see brief.py); each touch is within its word limit; a touch that
     takes a subject has one within the length limit; only the allowed merge fields appear
   - Output is one readable file per group plus sequences.csv with one row per touch, which
     is what the export step reads
@@ -34,8 +34,8 @@ sys.path.insert(0, str(ROOT))
 
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
-from src.brief import _when, build_facts, check_statements, slug  # noqa: E402
-from src.current import split as current_split  # noqa: E402
+from src.brief import _when, build_facts, check_statements, render_fact, slug  # noqa: E402
+from src.current import current_sequences  # noqa: E402
 from src.llm import cost_usd, generate_json, load_prompt, make_client  # noqa: E402
 
 SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
@@ -95,7 +95,7 @@ def user_prompt(row: dict, facts: list, persona: dict, cfg: dict) -> str:
     return "\n".join(lines)
 
 
-def check(result: dict, facts: list, row: dict, cfg: dict) -> list:
+def check(result: dict, facts: list, row: dict, cfg: dict, allowed=()) -> list:
     by_id = {t["touch_id"]: t for t in result["touches"]}
     problems = []
     statements = []
@@ -122,7 +122,7 @@ def check(result: dict, facts: list, row: dict, cfg: dict) -> list:
     extra = set(by_id) - {t["id"] for t in cfg["touches"]}
     if extra:
         problems.append(f"unexpected touches: {', '.join(sorted(extra))}")
-    return problems + check_statements(statements, facts, row["name"])
+    return problems + check_statements(statements, facts, row["name"], allowed)
 
 
 def touch_rows(row: dict, persona: dict, result: dict, cfg: dict, status: str) -> list:
@@ -153,7 +153,7 @@ def render(row: dict, persona: dict, rows: list, facts: list, problems: list) ->
             out += [f"**Subject:** {r['subject']}", ""]
         out += [r["body"], "", f"_Rests on: {r['fact_ids']} · {r['word_count']} words_", ""]
     out += ["## Facts and sources"]
-    out += [f"- **{f['id']}** {f['text']} ([{f['source_label']}]({f['source_url']}))" for f in facts]
+    out += [render_fact(f) for f in facts]
     return "\n".join(out) + "\n"
 
 
@@ -169,13 +169,13 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
 
     index = pd.read_csv(INDEX_PATH, dtype=str, keep_default_na=False) if INDEX_PATH.exists() else pd.DataFrame(columns=INDEX_COLS)
     touches = pd.read_csv(TOUCHES_PATH, dtype=str, keep_default_na=False) if TOUCHES_PATH.exists() else pd.DataFrame(columns=TOUCH_COLS)
-    current, stale = current_split(index, scored, cfg["tiers"], facts_cfg, OUT_DIR)
+    current, stale = current_sequences(index, touches, scored, cfg, facts_cfg, OUT_DIR)
     done = set(current.loc[current["check_status"].isin(["passed"] if redo_failed else ["passed", "failed"]), "account_group"])
     todo = [r for r in leads if r["account_group"] not in done]
     if limit:
         todo = todo[:limit]
     print(f"[sequence] {len(leads)} groups in tiers {cfg['tiers']} | {len([r for r in leads if r['account_group'] in done])} already written | "
-          f"{len(stale)} out of date (facts changed since written) | {len(todo)} to write")
+          f"{len(stale)} out of date ({', '.join(sorted(set(stale.values()))) or 'none'}) | {len(todo)} to write")
 
     def work(row: dict):
         facts = build_facts(row, facts_cfg)
@@ -190,7 +190,7 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
             result, usage, model = generate_json(client, cfg, system, prompt, SCHEMA)
         except Exception as exc:
             return dict(entry, check_status="error", check_notes=f"{type(exc).__name__}: {exc}"[:300]), []
-        problems = check(result, facts, row, cfg)
+        problems = check(result, facts, row, cfg, facts_cfg.get("allowed_words", []))
         status = "failed" if problems else "passed"
         rows = touch_rows(row, persona, result, cfg, status)
         path = OUT_DIR / f"{int(row['group_rank']):04d}-{slug(row['name'])}.md"

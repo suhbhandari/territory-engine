@@ -90,3 +90,71 @@ def test_sequence_rule_breaks_are_each_reported():
 def test_call_touch_must_have_empty_subject():
     result = {"touches": [touch("e1", "s", "ok"), touch("c1", "not empty", "ok")]}
     assert "c1: subject should be empty" in check(result, FACTS, {"name": "N"}, SEQ_CFG)
+
+
+# --- wording the facts do not support -------------------------------------------------
+
+from src.brief import parse_fact_line, render_fact, saved_statements, unsupported_words  # noqa: E402
+
+SOURCE = "Registered practice location: 12 Main St, Brooklyn, NY 11201. Runs hiring through Workday."
+
+
+def test_place_not_in_the_facts_is_flagged():
+    assert unsupported_words("An office in Midtown that uses Workday.", SOURCE) == ["Midtown"]
+
+
+def test_sentence_starts_contractions_and_allowed_words_pass():
+    text = "Brooklyn office. I'm asking about the Main Street site.\nHi {{first_name}}, Workday is in use."
+    assert unsupported_words(text, SOURCE, allowed=["Street"]) == []
+
+
+def test_hyphenated_and_possessive_words_are_checked_by_part():
+    assert unsupported_words("A Brooklyn-based team and Workday's board.", SOURCE) == []
+    assert unsupported_words("A Harlem-based team.", SOURCE) == ["Harlem"]
+
+
+def test_number_words_must_match_a_cited_number():
+    assert unsupported_words("It has three sites.", "Runs 3 sites.") == []
+    assert unsupported_words("It has five sites.", "Runs 3 sites.") == ["five"]
+
+
+def test_check_statements_reports_unsupported_words():
+    facts = [{"id": "F1", "text": SOURCE}]
+    assert check_statements([st("A team near Harlem that uses Workday.", "F1")], facts) == [
+        "s: 'Harlem' is not in the cited facts"]
+
+
+def test_fact_lines_round_trip_with_and_without_link_and_date():
+    linked = {"id": "F1", "text": "Has 3 sites (all local).", "source_label": "Site (x)", "source_url": "https://x",
+              "as_of": "2026-10-09"}
+    plain = {"id": "F2", "text": "Shares a domain.", "source_label": "This territory list, built from A records",
+             "source_url": "", "as_of": ""}
+    for fact in (linked, plain):
+        line = render_fact(fact)
+        assert parse_fact_line(line) == fact
+    assert render_fact(linked).endswith("([Site (x)](https://x), checked 2026-10-09)")
+
+
+def test_saved_statements_reads_back_every_section():
+    md = """# Name
+
+**Tier A · score 90/100 · rank 1** · data coverage 100%
+
+Headline text [F1]
+
+## Snapshot
+- Snap one [F1, F2]
+
+## Why now
+- Why one [F2]
+
+## Opening angle
+Angle text [F1]
+
+## Contact
+- 12 Main St
+"""
+    got = saved_statements(md)
+    assert [(s, d["text"], d["fact_ids"]) for s, d in got] == [
+        ("headline", "Headline text", ["F1"]), ("Snapshot", "Snap one", ["F1", "F2"]),
+        ("Why now", "Why one", ["F2"]), ("Opening angle", "Angle text", ["F1"])]

@@ -6,6 +6,7 @@ You will receive an account name and a numbered list of facts (F1, F2, ...). Tho
 
 Ground rules, and why they exist:
 
+- Name places, organisations and job titles only as the facts write them. Do not add a neighbourhood, borough, city or region the facts do not name, even one you know to be right: an automated check rejects any capitalised word that is not in the facts a statement cites. Write numbers in digits, copied from the facts.
 - Use only the facts given. The rep will repeat what you write to the prospect, and a wrong detail in the first sentence ends the conversation. If something is not in the facts, leave it out; a separate section of the brief already lists what is unknown.
 - Every statement lists the ids of the facts it rests on in `fact_ids`. An automated check rejects any statement with no fact id, and any statement containing a number that does not appear in the facts it cites. Copy numbers exactly as given.
 - You may draw a modest inference from a fact, as long as you phrase it as an inference ("which suggests", "likely") and cite the fact it comes from. For example, open scheduler roles suggest the agency is adding scheduling capacity. Do not stack inferences on inferences.
