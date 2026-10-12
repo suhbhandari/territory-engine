@@ -3,7 +3,7 @@ Phase 2: Signal Enrichment
 Reads accounts CSV, runs all configured signal modules per account, writes signals CSV.
 
 Usage:
-  python3 src/enrich.py [--metro config/metro/nyc.yaml] [--vertical home_care_post_acute]
+  python3 src/enrich.py [--metro config/metro/<name>.yaml] [--vertical <name>]
                         [--limit N]        # process only first N accounts (for testing)
                         [--batch-size N]   # accounts per checkpoint (default 20)
                         [--accounts PATH] [--output PATH]
@@ -33,6 +33,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
 ACCOUNTS_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
 OUTPUT_PATH = ROOT / "outputs" / "raw" / "signals_raw.csv"
@@ -188,8 +190,8 @@ def main(metro_path: str, vertical: str, limit, batch_size: int, accounts_path: 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--metro", default="config/metro/nyc.yaml")
-    parser.add_argument("--vertical", default="home_care_post_acute")
+    parser.add_argument("--metro", default=DEFAULT_METRO)
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
     parser.add_argument("--limit", type=int, default=None, help="Process only first N accounts")
     parser.add_argument("--batch-size", type=int, default=20, help="Accounts per checkpoint")
     parser.add_argument("--accounts", type=Path, default=ACCOUNTS_PATH)

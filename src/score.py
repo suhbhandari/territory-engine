@@ -4,7 +4,7 @@ Joins accounts with their signals, applies the vertical's rubric, and writes a r
 tiered account list where every point is traceable to a rule and a plain-language reason.
 
 Usage:
-  python3 src/score.py [--vertical home_care_post_acute]
+  python3 src/score.py [--vertical <name>]
 
 Design:
   - The rubric (config/verticals/<name>/rubric.yaml) is a list of criteria. Each criterion
@@ -31,6 +31,8 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 ACCOUNTS_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
 SIGNALS_PATH = ROOT / "outputs" / "raw" / "signals_raw.csv"
@@ -169,6 +171,6 @@ def main(vertical: str) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vertical", default="home_care_post_acute")
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
     args = parser.parse_args()
     main(args.vertical)

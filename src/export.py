@@ -4,7 +4,7 @@ Writes import-ready CSV files for the CRM and the sales engagement tool, as desc
 the vertical's export.yaml. Calls no external service.
 
 Usage:
-  python3 src/export.py [--vertical home_care_post_acute]
+  python3 src/export.py [--vertical <name>]
 
 Design:
   - Each target in export.yaml is one CSV: which rows it holds (every account, or one row
@@ -30,6 +30,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
 TOUCHES_PATH = ROOT / "outputs" / "raw" / "sequences" / "sequences.csv"
@@ -123,6 +125,6 @@ def main(vertical: str) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vertical", default="home_care_post_acute")
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
     args = parser.parse_args()
     main(args.vertical)

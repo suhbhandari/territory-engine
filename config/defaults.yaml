@@ -1,0 +1,4 @@
+# The metro and vertical every script uses when none is passed on the command line.
+# Override for one run with: make <target> VERTICAL=<name> METRO=config/metro/<name>.yaml
+vertical: home_care_post_acute
+metro: config/metro/nyc.yaml

@@ -5,7 +5,7 @@ the brief. Every touch must cite the facts it uses, and drafts that break the ru
 flagged for review instead of shipped.
 
 Usage:
-  python3 src/sequence.py [--vertical home_care_post_acute] [--limit N] [--dry-run] [--redo-failed]
+  python3 src/sequence.py [--vertical <name>] [--limit N] [--dry-run] [--redo-failed]
 
 Design:
   - The touches (channel, day, purpose, word limit) come from the vertical's sequence.yaml,
@@ -31,6 +31,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 from src.brief import _when, build_facts, check_statements, slug  # noqa: E402
 from src.llm import cost_usd, generate_json, load_prompt, make_client  # noqa: E402
@@ -231,7 +233,7 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vertical", default="home_care_post_acute")
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
     parser.add_argument("--limit", type=int, default=None, help="Write only the first N sequences")
     parser.add_argument("--dry-run", action="store_true", help="Print the prompt; call nothing")
     parser.add_argument("--redo-failed", action="store_true", help="Regenerate sequences that failed their checks")

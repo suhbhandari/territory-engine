@@ -4,7 +4,7 @@ Measures what the pipeline produced, from its own output files, and states plain
 has not been measured. Writes the report card and the cost summary to outputs/public/.
 
 Usage:
-  python3 src/evals.py [--vertical home_care_post_acute]
+  python3 src/evals.py [--vertical <name>]
 
 Design:
   - Every number is computed from files on disk; nothing is typed in by hand
@@ -24,6 +24,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 RAW = ROOT / "outputs" / "raw"
 PUBLIC = ROOT / "outputs" / "public"
@@ -207,6 +209,6 @@ def render_costs(c: dict) -> str:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vertical", default="home_care_post_acute")
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
     args = parser.parse_args()
     main(args.vertical)

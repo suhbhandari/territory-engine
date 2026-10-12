@@ -4,7 +4,7 @@ Fills blank fields on discovered accounts by looking each one up in a second sou
 Configured per vertical under `backfill:` in discovery.yaml.
 
 Usage:
-  python3 src/backfill.py [--vertical home_care_post_acute] [--limit N]
+  python3 src/backfill.py [--vertical <name>] [--limit N]
 
 Design:
   - One lookup per account that is missing a configured field and was not already
@@ -28,6 +28,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 from src.discover import _name_key, _phone_key  # noqa: E402
 
@@ -131,7 +133,7 @@ def main(vertical: str, limit) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vertical", default="home_care_post_acute")
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
     parser.add_argument("--limit", type=int, default=None, help="Look up only the first N accounts")
     args = parser.parse_args()
     main(args.vertical, args.limit)

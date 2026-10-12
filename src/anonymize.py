@@ -4,7 +4,7 @@ Builds the anonymized dataset the public site and report card read. Real account
 addresses, phone numbers, websites and registry IDs never leave outputs/raw/.
 
 Usage:
-  python3 src/anonymize.py [--vertical home_care_post_acute] [--metro config/metro/nyc.yaml]
+  python3 src/anonymize.py [--vertical <name>] [--metro config/metro/<name>.yaml]
 
 Design:
   - Each account group gets an alias ("Account 0001") in rank order; its locations become
@@ -34,6 +34,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
 RAW = ROOT / "outputs" / "raw"
 PUBLIC = ROOT / "outputs" / "public"
@@ -239,7 +241,7 @@ def main(vertical: str, metro_path: str) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vertical", default="home_care_post_acute")
-    parser.add_argument("--metro", default="config/metro/nyc.yaml")
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
+    parser.add_argument("--metro", default=DEFAULT_METRO)
     args = parser.parse_args()
     main(args.vertical, args.metro)

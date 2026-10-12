@@ -5,7 +5,7 @@ brief must cite a numbered fact, every fact carries a source link, and briefs th
 fail the citation check are flagged instead of shipped.
 
 Usage:
-  python3 src/brief.py [--vertical home_care_post_acute] [--limit N] [--dry-run] [--redo-failed]
+  python3 src/brief.py [--vertical <name>] [--limit N] [--dry-run] [--redo-failed]
 
 Design:
   - Facts are built by code from the scored account row, using the fact templates in the
@@ -32,6 +32,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 from src.llm import cost_usd, generate_json, load_prompt, make_client  # noqa: E402
 from src.score import matches  # noqa: E402
@@ -235,7 +237,7 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vertical", default="home_care_post_acute")
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
     parser.add_argument("--limit", type=int, default=None, help="Write only the first N briefs")
     parser.add_argument("--dry-run", action="store_true", help="Print the facts and prompt; call nothing")
     parser.add_argument("--redo-failed", action="store_true", help="Regenerate briefs that failed the source check")

@@ -4,7 +4,7 @@ Generic orchestrator. Loads metro geo config + vertical discovery config,
 runs each configured source module, deduplicates, writes CSV.
 
 Usage:
-  python3 src/discover.py [--metro config/metro/nyc.yaml] [--vertical home_care_post_acute]
+  python3 src/discover.py [--metro config/metro/<name>.yaml] [--vertical <name>]
 """
 
 import argparse
@@ -17,6 +17,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
+
+from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
 from src.sources.base import SCHEMA  # noqa: E402
 
@@ -125,7 +127,7 @@ def main(metro_path: str, vertical: str) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--metro", default="config/metro/nyc.yaml")
-    parser.add_argument("--vertical", default="home_care_post_acute")
+    parser.add_argument("--metro", default=DEFAULT_METRO)
+    parser.add_argument("--vertical", default=DEFAULT_VERTICAL)
     args = parser.parse_args()
     main(args.metro, args.vertical)
