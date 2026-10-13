@@ -8,7 +8,7 @@ Both tools ask you to map each CSV column to a field during import, so the colum
 
 ## Salesforce: `salesforce_accounts.csv`
 
-One row per account in tiers A, B and C: 482 accounts in the 2026-10-12 build (after 61 accounts were left out: 48 outside the territory, 13 by review). Tier D is left out on purpose. Almost all of it is accounts with no web presence that the engine could not assess, and loading a thousand of those is clutter, not pipeline.
+One row per account in tiers A, B and C: 482 accounts in the 2026-10-13 build (after 61 accounts were left out: 48 outside the territory, 13 by review). Tier D is left out on purpose. Almost all of it is accounts with no web presence that the engine could not assess, and loading a thousand of those is clutter, not pipeline.
 
 | CSV column | Salesforce Account field | Type | Notes |
 |---|---|---|---|
@@ -21,7 +21,7 @@ One row per account in tiers A, B and C: 482 accounts in the 2026-10-12 build (a
 | Territory Data Coverage | Custom | Number (2 decimals) | Share of the rubric judged on real data. Low coverage means "could not find out", not "poor fit". |
 | Territory Group, Territory Group Rank, Locations In Group | Custom | Text, Number, Number | Locations of one operator share a group and a rank |
 | Open Roles In Area, Hiring System, Hiring Check Status, Careers Page | Custom | Number, Text, Text, URL | Blank open roles means unknown, never zero. Hiring Check Status says why. |
-| Agency Type, Years Registered, Found Via | Custom | Text, Number, Text | |
+| Agency Type, State License, Years Registered, Found Via | Custom | Text, Text, Number, Text | State License holds the licence types the state's list shows for the matched account (for example LHCSA, CHHA). Blank means no match was found, which is not proof the account is unlicensed. |
 | Signals Checked On | Custom | Date | So a rep can see how fresh the signals are |
 
 **Import.** Create the custom fields, then use the Data Import Wizard: Accounts, "add new and update existing", match by the External ID field, map columns, start.
@@ -33,13 +33,13 @@ One row per account in tiers A, B and C: 482 accounts in the 2026-10-12 build (a
 
 ## Outreach: `outreach_accounts.csv`
 
-One row per account group in tiers A and B whose sequence passed its checks and is not out of date: 188 in the 2026-10-12 build. 253 groups are in tiers A and B; the other 65 sequences are waiting to be rewritten (see the runbook, "Out-of-date text").
+One row per account group in tiers A and B whose sequence passed its checks and is not out of date: 244 in the 2026-10-13 build, which is every group in tiers A and B. After a re-score, groups whose facts changed are held back until rewritten (see the runbook, "Out-of-date text").
 
 Outreach sequences are shared templates, not one-off emails, so the per-account copy cannot be imported as a sequence. Instead the copy rides on **account custom fields**, and a single three-step sequence pulls it in:
 
 | CSV column | Outreach Account field |
 |---|---|
-| Account Name, Domain, Website, Phone | Standard account fields. Domain is how Outreach matches an existing account. Three rows have no domain. |
+| Account Name, Domain, Website, Phone | Standard account fields. Domain is how Outreach matches an existing account. Every row in the 2026-10-13 build has a domain. |
 | Territory Engine ID, Territory Tier, Territory Group Rank | Custom fields |
 | Write To Role | Custom field. The role the copy was written for; the engine does not know who holds it. |
 | Email 1 Subject, Email 1 Body, Email 2 Body | Custom fields. Greeting and sign-off are removed; the template adds them. |

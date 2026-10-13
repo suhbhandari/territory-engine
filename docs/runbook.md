@@ -1,19 +1,19 @@
 # Operator runbook
 
-How to set up, run, extend, and recover the territory engine. This describes the code as of 2026-10-12. Run all commands from the project root.
+How to set up, run, extend, and recover the territory engine. This describes the code as of 2026-10-13. Run all commands from the project root.
 
 Eight steps work today:
 
 1. **Discover** builds the account list for one metro and one vertical from two public sources: the national provider registry (NPPES) and Google Maps.
 2. **Backfill** looks up each registry-only account on Google Maps to fill in its website.
-3. **Enrich** looks up public signals for each account: job postings, website status, and registration age.
+3. **Enrich** looks up public signals for each account: job postings, website status, registration age, and a match against the state's list of licensed providers.
 4. **Score** ranks and tiers the accounts using the vertical's rubric.
 5. **Brief** writes a one-page, source-linked brief for each top-tier account group.
 6. **Sequence** drafts a three-touch outreach sequence for each of those groups, built on the same facts.
 7. **Export** writes import-ready CSV files for the CRM and the sales engagement tool.
 8. **Public** builds the anonymized dataset, report card and cost summary that the demo site reads.
 
-The weekly refresh is not built yet (section 7 and `V2.md`).
+Two more commands sit on top: `make triggers` lists what changed since the last saved run, and `make refresh` is the weekly routine. Both are built. Neither has been run on a weekly schedule yet (section 7 and `V2.md`).
 
 ## 1. Setup
 
@@ -59,16 +59,18 @@ Run in this order. Backfill and enrich read the file that discover writes.
 | 10 | `make site` | Rebuilds the public data and serves the repo at `http://localhost:8000/site/`. The site is one static page, `site/index.html`, with no build step; it can also be opened directly as a file. | `outputs/public/*.js` | nothing |
 | any time | `make check-generic` | Scans core code and docs for vertical-specific terms and prints PASS or FAIL. Docs are checked against a list of prose terms; code (`.py`, `.html`, `.js`, the Makefile) is also checked for role words and underscore names such as a vertical's folder name. Calls no external service. | files outside `config/verticals/`, `outputs/`, `tests/fixtures/`, and `README.md` (which describes the shipped demo run) | nothing |
 | any time | `make test` | Runs the tests in `tests/` (parsers, dedupe, backfill matching, scoring, the brief and sequence checks, exclusions, out-of-date detection, anonymization and the leak test). Made-up data only; calls nothing. | `tests/` | nothing |
-| any time | `make leak-test` | Searches every file in `site/` and `outputs/public/` for every account's name, address, phone, website, domain, careers URL and ID from `outputs/raw/`. Prints PASS or FAIL; never prints the values it finds. | `outputs/raw/`, `site/`, `outputs/public/` | nothing |
+| any time | `make leak-test` | Searches every file in `site/` and `outputs/public/` for every account's name, address, phone, website, domain, careers URL and ID from `outputs/raw/`. Prints PASS or FAIL; never prints the values it finds. | `outputs/raw/`, `site/`, `outputs/public/`, and `outputs/raw/leak_allowlist.csv` if it exists | nothing |
 | any time | `make snapshot` | Copies the current run's private files (accounts, signals, scores, exclusions, exports, draft indexes) into `outputs/raw/runs/<date>/`, labelled by the date most signals were collected. Refuses to overwrite a different snapshot. Never deletes. | `outputs/raw/` | `outputs/raw/runs/<date>/` |
 | fresh run | `make fresh` | Snapshots the current run and moves its signals file into the snapshot (only after confirming the copy), then runs discover, backfill, enrich, score and export, so every account is re-found and every signal re-checked. Paid Google calls in discover, and in backfill for accounts not in the cache. About an hour, mostly enrich. Then rewrite the drafts (`make brief sequence`, then `--redo-failed`) and run `make public checks`. | as each step | as each step |
+| weekly | `make triggers` | Compares the latest saved run in `outputs/raw/runs/` with the current scored list on the columns in `triggers.yaml` (tier, hiring evidence, open-role range, hiring system, website responds, state licence). Lists changed accounts, new accounts and gone accounts, with the rubric criteria whose points moved and the date each side was collected. Changes that only mean a check could not run are not listed. Calls nothing external. | the latest folder in `outputs/raw/runs/`, `outputs/raw/accounts_scored.csv`, `triggers.yaml` | `outputs/raw/triggers.csv` (private) |
+| weekly | `make refresh` | Saves a copy of the current run, re-checks every signal, re-scores, writes the trigger list, rewrites only the briefs and sequences that are out of date, then exports, rebuilds the public copy and runs the checks. Paid model calls for the rewritten drafts only. Does not re-discover; `make fresh` does. The weekly and monthly rhythm is the Makefile's suggestion and has not been run on a schedule. | as each step | as each step |
 | any time | `make checks` | Runs `check-generic`, `test` and `leak-test` together. Run it before calling any change done. | | nothing |
 
 Worth knowing:
 
 - **Defaults and overrides.** Every script and make target uses the metro and vertical in `config/defaults.yaml` (today `config/metro/nyc.yaml` and `home_care_post_acute`). For another one, pass it to make, for example `make score METRO=config/metro/<name>.yaml VERTICAL=<name>`, or call the scripts with `--metro` and `--vertical`.
 - **Account file columns**: `name`, `address`, `city`, `state`, `zip`, `phone`, `website`, `source`, `license_type`, `entity_id`. `discovered_at` (filled by discover runs from 2026-10-12 on) is when the account was collected. `source` shows which source found the account; one found by both lists both. `entity_id` is the registry number when the registry found the account, otherwise the Google place ID.
-- **Reference run.** The 2026-10-08 NYC discover run produced 1,546 accounts: 1,238 registry only, 167 Google Maps only, 141 in both. That run was before `exclude_zips` existed; score now leaves 61 of them out (48 outside the territory, 13 by review), so the scored list has 1,485. Discover prints the source breakdown at the end and saves it in `discover_summary.json`; use it to spot a source that silently returned nothing.
+- **Reference run.** The 2026-10-12 NYC discover run fetched 2,120 rows (registry 1,759, Google Maps 361), merged 558 duplicates, dropped 48 outside the territory and kept 1,514 accounts: 1,194 registry only, 182 Google Maps only, 138 in both. Score leaves out 13 more by review, so the scored list has 1,501. Discover prints the source breakdown at the end and saves it in `discover_summary.json`; use it to spot a source that silently returned nothing.
 - **Backfill cache.** `backfill_cache.csv` records every lookup, hit or miss, with the listing it matched. Lookups already in it are never repeated, so re-running backfill is free. Discover overwrites the account file and wipes the filled-in websites; run `make backfill` again afterwards to restore them from the cache. Do not delete the cache unless you mean to pay for the lookups again.
 - **Signals file.** One row per account. Each signal adds its data columns plus its own error column (`careers_page_error`, `http_check_error`, `npi_age_error`). An empty error cell means that signal finished for that account. Anything else is tried again on the next run, and only the signals that need it are re-run.
 - **Licence check.** The `state_license` signal (module `src/signals/open_data_match.py`) downloads the state's list of licensed providers once per run and matches each account by phone, exact name, or near-identical name in the same zip. `license_status` is `matched` or `not_found`; `not_found` is not proof the account is unlicensed, since it may trade under another name. The rubric's agency-type criterion uses it. The names on matched records (`license_names`) stay private.
@@ -150,7 +152,7 @@ To add a vertical, create the folder, write those files, and pass `VERTICAL=<nam
 | Enrich prints `[npi_age] 5 consecutive errors` with `ConnectionError`, or far more `site_unreachable` than the last run | The computer lost its internet connection during the run (Wi-Fi drop, lid closed). Since 2026-10-12 the website signals check a reference site before saving "unreachable", and raise instead if it also fails, so those accounts are retried. Runs before that saved them as unreachable. | Keep the computer awake and connected (`caffeinate -i`, lid open) and re-run `make enrich`; failed signals are retried. To re-check accounts saved as unreachable by an earlier run: `python3 src/enrich.py --redo careers_page,http_check --where jobs_status=site_unreachable`. |
 | `jobs_status` is `site_unreachable` for a site that opens in a browser | The site refuses requests that identify themselves as a crawler. The engine does not disguise itself. | None. Treat the account as unchecked. |
 | Enrich prints `[<signal>] 5 consecutive errors` then `disabled for the rest of this run` | A signal failed five times in a row, so enrich switched it off to avoid wasting the run. Affected accounts get `skipped: signal disabled...` in that signal's error column. | Read the error printed with the message, fix the cause, and re-run `make enrich`; only the skipped signal is retried. |
-| `website_live` is `False` with no SSL value for most accounts | Only accounts with a Google Maps listing carry a website: about a third of the NYC list after backfill (the report card has the current share). Backfill found no confident listing for 928 of the 1,238 registry-only accounts it looked up, so there is nothing to check for them. | Run `make backfill` if it has not been run since the last discover. Otherwise expected. `False` here means "no website on file or not reachable", not "site is down". |
+| `website_live` is `False` with no SSL value for most accounts | Only accounts with a Google Maps listing carry a website: about a third of the NYC list after backfill (the report card has the current share). Backfill found no confident listing for 929 of the 1,252 registry-only accounts it looked up, so there is nothing to check for them. | Run `make backfill` if it has not been run since the last discover. Otherwise expected. `False` here means "no website on file or not reachable", not "site is down". |
 | Registration-age columns are empty for some accounts | The lookup needs a registry number, and Google-Maps-only accounts do not have one. | Expected. A real lookup failure shows in `npi_age_error` and is retried next run. |
 | Enrich was interrupted partway | Closed laptop, lost network, Ctrl-C. | Re-run `make enrich`. Progress is saved after every 20 accounts (`--batch-size` changes this), so at most one batch is lost and the run picks up where it stopped. |
 | Some accounts show a value in a `<signal>_error` column after a full run | That signal failed for those accounts (timeout, service error). | Re-run `make enrich`; only failed signals are retried. To redo everything, move or delete `signals_raw.csv` first. |
@@ -159,6 +161,7 @@ To add a vertical, create the folder, write those files, and pass `VERTICAL=<nam
 | A check fails with `'<Word>' is not in the cited facts` for a word that is fine | The word is true but no cited fact contains it (for example a street-type word the model spelled out). | If it is a general word, add it to `allowed_words` in `brief.yaml`. If it is a place or name, the prompt is doing its job; re-run with `--redo-failed`. |
 | Brief or sequence run reports some items "out of date" | Their facts, sources or checks changed since they were written. | Expected after re-scoring or a check change. The run rewrites them. |
 | `make leak-test` prints FAIL | A real identifier from `outputs/raw/` appears in a published file. The output names the kind and the file, not the value. | Do not publish. Find the text in that file, fix the scrub in `src/anonymize.py` (never by editing the output), rebuild with `make public`, and re-run the test. |
+| `make leak-test` prints FAIL for a name made of ordinary words (an account named like a category) that appears in a generic sentence | The account's name matches wording that does not identify it, for example a sentence about "licensed providers" next to an account named "Care Providers". | Find where it appears first. If it is category wording, add a row to `outputs/raw/leak_allowlist.csv` with columns `name`, `allowed_phrase`, `reason`. The phrase must contain the name plus at least one more word. Only that exact phrase, in that case, is skipped for that name; the bare name or another case still fails, and no other name is affected. The test prints how many occurrences it masked. Never allow a bare name. |
 | `make check-generic` prints FAIL | A vertical-specific term is in core code or a doc. The output lists file and line. | Move the term into `config/verticals/<name>/`, or reword. |
 
 ## 6. Costs
@@ -169,23 +172,25 @@ To add a vertical, create the folder, write those files, and pass `VERTICAL=<nam
 | Job-postings and website signals | Free. No key. They read the accounts' own websites. |
 | Google Maps discovery | Paid, per request. |
 | Google Maps backfill | Paid, one request per account missing a website. Free on re-runs (cached). |
-| Briefs | Paid, on the Anthropic API. Measured on the NYC run: about $0.02 per brief. Logged per brief in `briefs_index.csv`; totals are in `outputs/public/costs.md`. |
+| Briefs | Paid, on the Anthropic API. Measured on the NYC run: about $0.03 per brief. Logged per brief in `briefs_index.csv`; totals are in `outputs/public/costs.md`. |
 | Sequences | Paid, on the Anthropic API. Measured on the NYC run: about $0.02 per sequence. Logged in `sequences_index.csv`; totals are in `outputs/public/costs.md`. |
+
+A full rewrite of all 244 groups in tiers A and B costs about $13 at these rates (244 × $0.032 + 244 × $0.019). A refresh rewrites only the groups whose facts changed, so it costs less; how much less is not known yet, because no week-over-week refresh has been run. The Anthropic API is prepaid. If the balance runs out mid-run, the unfinished items are saved as `error` and the next run writes them; turning on auto-reload in the Claude Console billing settings avoids the stop.
 
 The Google call is Places Text Search. Because the engine asks for website and phone in the same call, Google bills it at its higher "Enterprise" tier, list price roughly $35 per 1,000 requests. One NYC discovery run is 15 searches (5 place names × 3 search phrases), each up to 3 pages, so at most 45 requests: about $1.50 at list price, before any free monthly allowance.
 
 For a new metro, estimate: number of `search_cities` × number of search phrases × 3 pages. Every re-run of discover is billed again. Enrich makes no Google calls.
 
-Backfill is the larger cost: one request per registry-only account at the same tier. The NYC run made 1,238 lookups, about $43 at list price before any free monthly allowance. That is paid once per metro; the cache makes later runs free until new accounts appear.
+Backfill is the larger cost: one request per registry-only account at the same tier. The NYC run made 1,252 lookups, about $44 at list price before any free monthly allowance. That is paid once per metro; the cache makes later runs free until new accounts appear.
 
 **Confirm current prices on Google's Maps Platform pricing page before relying on these numbers.** Tiers and free allowances change.
 
 ## 7. What is not built yet
 
+Built but not proven: `make refresh` and `make triggers` (the only collections are 2026-10-09 and 2026-10-12 to 2026-10-13, so there is no week-over-week run) and the Monday playbook (`docs/monday-playbook.md`, a draft no sales team has used).
+
 No commands exist for any of these. Each is listed with what it needs in `V2.md`:
 
-- Weekly refresh and a trigger list (accounts whose signals changed since the last run)
-- Monday playbook for reps
 - Impact write-up with a measured time comparison
 - How to re-weight the rubric once outcome data exists ("closing the loop")
 - Contacts: the engine collects no people

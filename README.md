@@ -14,7 +14,7 @@ The shipped demo targets **home care, home health and hospice agencies in New Yo
 | CRM and sequencing imports | CSVs mapped for Salesforce accounts and Outreach account fields. | `outputs/raw/exports/`, guide in `docs/stack-fit.md` |
 | Report card and demo site | What was measured, what was not, and what it cost, plus an anonymized, browsable copy of the list, briefs and drafts. | `outputs/public/report_card.md`, `site/index.html` |
 
-**The NYC run (signals collected 2026-10-09):** 1,485 accounts in 1,404 groups, of which 33 groups are tier A and 220 tier B. 61 accounts were left out: 48 outside the city and 13 that are not home care providers (a pharmacy, nursing homes, consultancies, two pest-control companies), found by checking flagged names against the state's licensed home care list. Model cost was about $0.02 per brief and $0.02 per sequence. The report card has the full, current numbers; they are computed from the output files, not typed in.
+**The NYC run (signals collected 2026-10-12 to 2026-10-13):** 1,501 accounts in 1,415 groups, of which 33 groups are tier A and 211 tier B. Discover dropped 48 accounts outside the city's zips and kept 1,514; 13 more were left out by review because they are not home care providers (a pharmacy, nursing homes, consultancies, two pest-control companies), found by checking flagged names against the state's licensed home care list. That list is now matched to every account: 532 of the 1,501 matched and 969 did not (215 of the 244 groups in tiers A and B matched, 29 did not). Model cost was about $0.03 per brief and $0.02 per sequence. The report card has the full, current numbers; they are computed from the output files, not typed in.
 
 **What it saves:** not measured yet. No timed comparison of a rep's manual research against the engine has been done, so this README makes no time-saved claim. `V2.md` lists the study that would measure it.
 
@@ -22,10 +22,11 @@ The shipped demo targets **home care, home health and hospice agencies in New Yo
 
 1. **Discover**: pull every matching organization from the national provider registry and Google Maps, merge duplicates, drop zips outside the territory.
 2. **Backfill**: find a website for registry-only accounts, accepting a match only on phone, or on zip plus a near-identical name. Every lookup is cached.
-3. **Enrich**: read each account's own website for a careers page, hiring system and open roles; check the site is live; read the registry enrollment date. "Could not check" is recorded separately from "none found".
+3. **Enrich**: read each account's own website for a careers page, hiring system and open roles; check the site is live; read the registry enrollment date; match the account to the state's licensed-provider list. "Could not check" is recorded separately from "none found".
 4. **Score**: apply the rubric in `rubric.yaml`. Every point has a rule and a reason.
 5. **Brief and sequence**: code builds the facts; the model only arranges and phrases them. A code check fails any statement without a cited fact, with a number not in its cited facts, or with a capitalised word (a place, an organization, a job title) not in its cited facts.
 6. **Export and publish**: write the import files; build the anonymized public copy and run a leak test across every published file.
+7. **Refresh and triggers**: `make refresh` keeps a copy of the last run, re-checks every signal, re-scores and rewrites only the drafts whose facts changed. `make triggers` lists accounts whose tier, hiring evidence, open-role range, website or licence status moved since the last saved run. `docs/monday-playbook.md` is a draft of how a rep would use the list.
 
 ## Limits, stated plainly
 
@@ -33,8 +34,8 @@ The shipped demo targets **home care, home health and hospice agencies in New Yo
 - **Hiring signals are thin.** Most accounts have no website on file, and few careers pages publish a readable job feed, so most of the list is scored with low data coverage.
 - **No contacts.** The engine finds accounts, not people. A sequence needs a named contact from another tool.
 - **Nothing has been sent or imported.** Reply rates are unknown, and the export files have not been loaded into a live CRM.
-- **One snapshot.** There is no weekly refresh yet; the signals are from one collection date.
-- **Not every account has been checked against the state license list.** Only names that looked wrong were checked by hand (29 of them). Others that are not home care providers may remain, mostly in the lower tiers.
+- **Two collections, no weekly history.** Signals were collected on 2026-10-09 and again on 2026-10-12 to 2026-10-13, with a fresh discover between. `make refresh` and the trigger list exist, but no week-over-week refresh has been run, so how often accounts change tier is unknown. The Monday playbook is a draft that no sales team has used.
+- **The licence check matches by name and phone only.** `not_found` means no match, not that the account is unlicensed: it may trade under another name. A spot check found 8 of 8 matches correct and 6 of 6 `not_found` accounts absent from the state list; that is 14 accounts, not a measured error rate. Accounts that are not home care providers may remain, mostly in the lower tiers.
 - **Anonymization is not a guarantee.** Names, addresses, phones, websites, IDs and hiring systems are removed and counts are shown as ranges, but a combination of facts (city, number of locations, years registered) may still point to an account.
 
 The report card's "Not measured" section has the full list.
@@ -48,6 +49,9 @@ make discover backfill enrich score   # paid Google calls in discover and backfi
 make brief sequence                   # paid model calls
 make export public
 make checks                           # check-generic, tests, leak test
+make triggers                         # what changed since the last saved run
+make refresh                          # weekly: re-check signals, rewrite out-of-date drafts
+make fresh                            # monthly: save this run, re-discover, re-check everything
 make site                             # http://localhost:8000/site/
 ```
 
@@ -65,5 +69,5 @@ make site                             # http://localhost:8000/site/
 | `tests/` | Tests with made-up data |
 | `outputs/raw/` | Real names and contact details. Never committed. |
 | `outputs/public/` | The anonymized build the site reads. Committed. |
-| `docs/` | Runbook and stack-fit guide |
+| `docs/` | Runbook, stack-fit guide and the Monday playbook (draft) |
 | `V2.md` | What is not built, and what each item needs |
