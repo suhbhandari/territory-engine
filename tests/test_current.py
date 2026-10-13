@@ -47,3 +47,30 @@ def test_undated_fact_is_stale_once_its_source_has_a_date(tmp_path):
     for name, expected in (("old.md", {"g1": "facts not dated"}), ("new.md", {})):
         index = pd.DataFrame({"account_group": ["g1"], "file": [name], "check_status": ["passed"]})
         assert split(index, rows, ["A"], cfg, tmp_path)[1] == expected
+
+
+def test_saved_text_is_rechecked_against_a_check_added_later(tmp_path):
+    """A check added after a brief was written has to reach the saved text, or the build
+    keeps publishing text that the same check would reject if it were written today."""
+    import pandas as pd
+    from src.current import current_briefs
+
+    facts_cfg = {
+        "tiers": ["A"],
+        "sources": {"s": {"label": "Source", "url": "https://e.example", "date_column": "checked"}},
+        "facts": [{"text": "Uses a job board.", "when": {"column": "ats", "op": "not_blank"}, "source": "s"}],
+        "hedges": ["which suggests"],
+        "claim_words": ["ongoing"],
+    }
+    brief = tmp_path / "0001-one.md"
+    brief.write_text(
+        "# One\n\n**Tier A · score 70/100 · rank 1** · data coverage 100%\n\n"
+        "Uses a job board, which suggests recruiting is ongoing. [F1]\n\n"
+        "## Facts and sources\n"
+        "- **F1** Uses a job board. ([Source](https://e.example), checked 2026-10-13)\n")
+    index = pd.DataFrame([{"account_group": "g", "file": brief.name, "check_status": "passed"}])
+    scored = pd.DataFrame([{"account_group": "g", "rank_in_group": "1", "tier": "A",
+                            "name": "One", "ats": "Workable", "checked": "2026-10-13"}])
+    current, stale = current_briefs(index, scored, facts_cfg, tmp_path)
+    assert len(current) == 0
+    assert list(stale.values()) == ["fails current checks"]

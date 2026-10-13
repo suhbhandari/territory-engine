@@ -65,7 +65,8 @@ def current_briefs(index: pd.DataFrame, scored: pd.DataFrame, facts_cfg: dict, b
 
     def recheck(row, lead, facts):
         statements = saved_statements((briefs_dir / row["file"]).read_text())
-        return check_statements(statements, facts, lead["name"], facts_cfg.get("allowed_words", []))
+        return check_statements(statements, facts, lead["name"], facts_cfg.get("allowed_words", []),
+                                facts_cfg.get("hedges", []), facts_cfg.get("claim_words", []))
 
     return split(index, scored, facts_cfg["tiers"], facts_cfg, briefs_dir, recheck)
 
@@ -80,6 +81,6 @@ def current_sequences(index: pd.DataFrame, touches: pd.DataFrame, scored: pd.Dat
         mine = touches[touches["account_group"] == row["account_group"]]
         result = {"touches": [{"touch_id": ids[int(t["touch"]) - 1], "subject": t["subject"], "body": t["body"],
                                "fact_ids": t["fact_ids"].split()} for t in mine.to_dict("records")]}
-        return check(result, facts, lead, seq_cfg, facts_cfg.get("allowed_words", []))
+        return check(result, facts, lead, seq_cfg, facts_cfg.get("allowed_words", []), facts_cfg)
 
     return split(index, scored, seq_cfg["tiers"], facts_cfg, seq_dir, recheck)
