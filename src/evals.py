@@ -34,6 +34,11 @@ RAW = ROOT / "outputs" / "raw"
 PUBLIC = ROOT / "outputs" / "public"
 
 
+def whole(value):
+    """int for a count or average; None when there is nothing to measure (shown as n/a)."""
+    return None if pd.isna(value) else int(value)
+
+
 def pct(part, whole) -> float:
     return round(100 * part / whole, 1) if whole else 0.0
 
@@ -66,6 +71,8 @@ def main(vertical: str) -> None:
     touches = pd.read_csv(RAW / "sequences" / "sequences.csv", dtype=str, keep_default_na=False)
     excluded_path = RAW / "accounts_excluded.csv"
     excluded = pd.read_csv(excluded_path, dtype=str, keep_default_na=False) if excluded_path.exists() else pd.DataFrame(columns=["excluded_because"])
+    summary_path = RAW / "discover_summary.json"
+    discover_summary = json.loads(summary_path.read_text()) if summary_path.exists() else {}
     facts_cfg = yaml.safe_load(open(vdir / "brief.yaml"))
     # Measure only what is current: accounts still in the list, text that still matches the data.
     signals = signals[signals["entity_id"].isin(scored["entity_id"])]
@@ -83,7 +90,11 @@ def main(vertical: str) -> None:
         "by_source": scored["source"].value_counts().to_dict(),
         "with_website_pct": pct((scored["website"] != "").sum(), n),
         "with_phone_pct": pct((scored["phone"] != "").sum(), n),
-        "excluded": excluded["excluded_because"].str.split(":").str[0].value_counts().to_dict(),
+        "excluded": {**({"outside territory (dropped by discover)": discover_summary["dropped_outside_territory"]}
+                         if discover_summary.get("dropped_outside_territory") else {}),
+                      **excluded["excluded_because"].str.split(":").str[0].value_counts().to_dict()},
+        "rows_merged_as_duplicates": discover_summary.get("rows_merged"),
+        "rows_fetched_by_source": discover_summary.get("fetched_by_source", {}),
     }
 
     error_cols = [c for c in signals.columns if c.endswith("_error")]
@@ -134,8 +145,8 @@ def main(vertical: str) -> None:
         "avg_cost_usd": round(brief_cost.mean(), 4),
         "total_cost_usd": round(brief_cost.sum(), 2),
         "cost_items": int(brief_cost.notna().sum()),
-        "avg_input_tokens": int(pd.to_numeric(briefs_all["input_tokens"], errors="coerce").mean()),
-        "avg_output_tokens": int(pd.to_numeric(briefs_all["output_tokens"], errors="coerce").mean()),
+        "avg_input_tokens": whole(pd.to_numeric(briefs_all["input_tokens"], errors="coerce").mean()),
+        "avg_output_tokens": whole(pd.to_numeric(briefs_all["output_tokens"], errors="coerce").mean()),
         "model": briefs_all["model"].mode().iat[0],
     }
 
@@ -152,16 +163,16 @@ def main(vertical: str) -> None:
         "passed_checks_pct": pct((seqs["check_status"] == "passed").sum(), len(seqs)),
         "touch_lengths": [{"touch": t, "limit_words": limit,
                            "avg_words": round(words[touches["touch"] == str(t)].mean(), 1),
-                           "max_words": int(words[touches["touch"] == str(t)].max())}
+                           "max_words": whole(words[touches["touch"] == str(t)].max())}
                           for t, limit in limits.items()],
         "distinct_first_email_questions_pct": pct(last_question[first_touch].nunique(), int(first_touch.sum())),
-        "most_repeated_first_email_question_count": int(last_question[first_touch].value_counts().iat[0]),
+        "most_repeated_first_email_question_count": whole(last_question[first_touch].value_counts().max()),
         "personas": seqs["persona"].value_counts().to_dict(),
         "avg_cost_usd": round(seq_cost.mean(), 4),
         "total_cost_usd": round(seq_cost.sum(), 2),
         "cost_items": int(seq_cost.notna().sum()),
-        "avg_input_tokens": int(pd.to_numeric(seqs_all["input_tokens"], errors="coerce").mean()),
-        "avg_output_tokens": int(pd.to_numeric(seqs_all["output_tokens"], errors="coerce").mean()),
+        "avg_input_tokens": whole(pd.to_numeric(seqs_all["input_tokens"], errors="coerce").mean()),
+        "avg_output_tokens": whole(pd.to_numeric(seqs_all["output_tokens"], errors="coerce").mean()),
         "model": seqs_all["model"].mode().iat[0],
     }
 
@@ -198,7 +209,9 @@ def render_card(c: dict) -> str:
            f"- {d['accounts']} accounts in {d['groups']} groups (accounts sharing a website count as one group).",
            f"- By source: " + ", ".join(f"{k}: {v}" for k, v in d["by_source"].items()) + ".",
            f"- {d['with_website_pct']}% have a website; {d['with_phone_pct']}% have a phone number.",
-           "- Left out before scoring: " + (", ".join(f"{k}: {v}" for k, v in d["excluded"].items()) or "none") + ".", "",
+           "- Left out before scoring: " + (", ".join(f"{k}: {v}" for k, v in d["excluded"].items()) or "none") + ".",
+           f"- Rows fetched by source: " + (", ".join(f"{k}: {v}" for k, v in d["rows_fetched_by_source"].items()) or "not recorded")
+           + f"; {d['rows_merged_as_duplicates'] if d['rows_merged_as_duplicates'] is not None else 'not recorded'} rows merged as duplicates.", "",
            "## Signals", "",
            f"- {c['signals']['accounts_enriched']} accounts enriched. Signal errors: "
            + ", ".join(f"{k}: {v}" for k, v in c["signals"]["errors"].items()) + ".",
