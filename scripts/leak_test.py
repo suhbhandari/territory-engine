@@ -14,6 +14,14 @@ A name made only of common words is skipped: a word used in many account names, 
 place name from the data or the metro config, does not identify anyone on its own
 (the same rule anonymize.py uses). The count of skipped names is printed.
 
+A person can allow one ordinary phrase that happens to contain an account's name, for
+example a name that is also a category word, in outputs/raw/leak_allowlist.csv with the
+columns name, allowed_phrase and reason. Only that exact phrase, in the case written, is
+blanked out before that one name is searched, so the name on its own, or in a different
+case, still fails, and every other name is searched in the unmasked text. The phrase must
+contain the name plus at least one more word, and the name must be an account name.
+The test prints how many occurrences were masked, never the names.
+
 Exit code 0 means zero leaks; 1 means at least one, listed by kind and file.
 
 Usage:
@@ -61,6 +69,24 @@ def published_files(root: Path) -> dict:
     return {str(p.relative_to(root)): p.read_text(errors="ignore") for p in sorted(files)}
 
 
+def _phrase_pattern(phrase: str):
+    return re.compile(r"(?<![A-Za-z0-9'])" + re.escape(phrase) + r"(?![A-Za-z0-9'])")
+
+
+def load_allowlist(raw: Path, names: set) -> dict:
+    """Reviewed phrases that may appear in published text: {name: [phrase, ...]}."""
+    table = _read(raw / "leak_allowlist.csv")
+    allowed = {}
+    for _, row in table.iterrows():
+        name, phrase = row["name"].strip().lower(), row["allowed_phrase"].strip()
+        if name not in names:
+            raise SystemExit(f"leak_allowlist.csv: '{name}' is not an account name this test checks")
+        if not _phrase_pattern(name).search(phrase.lower()) or len(_tokens(phrase)) <= len(_tokens(name)):
+            raise SystemExit(f"leak_allowlist.csv: the phrase for '{name}' must contain the name plus at least one more word")
+        allowed.setdefault(name, []).append(phrase)
+    return allowed
+
+
 def identifiers(root: Path) -> dict:
     raw = root / "outputs" / "raw"
     accounts = _read(raw / "accounts_raw.csv")
@@ -93,6 +119,7 @@ def identifiers(root: Path) -> dict:
     urls = set(accounts["website"]) | set(signals.get("jobs_source_url", []))
     return {
         "names": names,
+        "allowed_phrases": load_allowlist(raw, names),
         "skipped_generic_names": skipped,
         "addresses": {a.lower() for a in accounts["address"] if len(a) >= 6},
         "phones": {d for d in (re.sub(r"\D", "", p)[-10:] for p in accounts["phone"]) if len(d) == 10},
@@ -110,7 +137,13 @@ def find_leaks(root: Path) -> tuple:
         lowered = text.lower()
         for kind in ("names", "addresses"):
             for value in ids[kind]:
-                if value in lowered and re.search(r"(?<![a-z0-9])" + re.escape(value) + r"(?![a-z0-9])", lowered):
+                haystack = lowered
+                if kind == "names" and value in ids["allowed_phrases"]:
+                    masked = text
+                    for phrase in ids["allowed_phrases"][value]:
+                        masked = _phrase_pattern(phrase).sub(" ", masked)
+                    haystack = masked.lower()
+                if value in haystack and re.search(r"(?<![a-z0-9])" + re.escape(value) + r"(?![a-z0-9])", haystack):
                     hits.append((kind, value, f))
         for kind in ("urls", "domains"):
             hits += [(kind, v, f) for v in ids[kind] if v in lowered]
@@ -125,8 +158,10 @@ def main(root: Path) -> int:
     hits, ids, texts = find_leaks(root)
     print("=== leak test ===")
     print(f"Published files scanned: {len(texts)}")
-    print("Identifiers checked: " + ", ".join(f"{k} {len(v)}" for k, v in ids.items() if k != "skipped_generic_names"))
+    print("Identifiers checked: " + ", ".join(f"{k} {len(v)}" for k, v in ids.items() if k not in ("skipped_generic_names", "allowed_phrases")))
     print(f"Names skipped as made only of common or place words: {len(ids['skipped_generic_names'])}")
+    masked = sum(len(_phrase_pattern(ph).findall(t)) for ph_list in ids["allowed_phrases"].values() for ph in ph_list for t in texts.values())
+    print(f"Reviewed phrases masked: {masked} occurrences from {sum(len(v) for v in ids['allowed_phrases'].values())} allowlist rows")
     if hits:
         print(f"FAIL: {len(hits)} leak(s)")
         for kind, _, f in sorted(set(hits))[:30]:
