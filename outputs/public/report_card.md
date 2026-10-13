@@ -98,21 +98,21 @@ Data coverage is the share of the rubric judged on real data. A low score with l
 | 2 | 70 | 46.5 | 64 |
 | 3 | 60 | 43.7 | 54 |
 
-## First-attempt results
+## First-attempt results, by prompt version
 
-Drafts as first written, before any re-run of a failed one. These come from the run logs and are kept by hand in a private file, because the draft files keep only the final result. The pass rates above are after failed drafts were re-run.
+A draft as it was first written, before any re-run of one that failed. Taken from the run logs and kept by hand in a private file, because the draft files keep only the final result. The pass rates earlier in this card are after failed drafts were re-run, so they are 100%.
 
-| Step | First attempts | Passed first time | Failed | Pass rate |
-|---|---|---|---|---|
-| Briefs | 485 | 460 | 25 | 94.8% |
-| Sequences | 467 | 445 | 22 | 95.3% |
+A later prompt version is judged by whatever checks existed when it ran, and checks were added along the way, so the rates below are not a clean comparison between prompt versions.
 
-- Briefs, what failed: number word not in cited facts (4), digit not in cited facts (21).
-- Sequences, what failed: number word not in cited facts (7), digit not in cited facts (11), place name not in cited facts (1), job title not in cited facts (3).
-- Briefs, re-run attempts: 33, passed: 31 (a draft that failed twice is counted twice).
-- Sequences, re-run attempts: 29, passed: 22 (a draft that failed twice is counted twice).
-- Briefs, prompt versions in the first attempts: brief_prompt.md with the place-name rule; brief_prompt.md with the guessed-claim and shared-domain rules.
-- Sequences, prompt versions in the first attempts: sequence_prompt.md with the place-name rule; sequence_prompt.md with the guessed-claim and engine-vocabulary rules.
+| Step | Prompt version | First attempts | Passed first time | Pass rate | What failed |
+|---|---|---|---|---|---|
+| Briefs | brief_prompt.md with the guessed-claim and shared-domain rules | 222 | 210 | 94.6% | digit not in cited facts (12) |
+| Briefs | brief_prompt.md with the place-name rule | 263 | 250 | 95.1% | number word not in cited facts (4), digit not in cited facts (9) |
+| Sequences | sequence_prompt.md with the guessed-claim and engine-vocabulary rules | 223 | 216 | 96.9% | digit not in cited facts (4), job title not in cited facts (3) |
+| Sequences | sequence_prompt.md with the place-name rule | 244 | 229 | 93.9% | number word not in cited facts (7), digit not in cited facts (7), place name not in cited facts (1) |
+
+- Briefs: 33 re-run attempts, 31 passed. A draft that failed twice is counted twice.
+- Sequences: 29 re-run attempts, 22 passed. A draft that failed twice is counted twice.
 
 ## What changed when a check was added
 

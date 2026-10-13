@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh stability
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh stability recall
 
 # Defaults come from config/defaults.yaml. Override for one run, for example:
 #   make score VERTICAL=<name> METRO=config/metro/<name>.yaml
@@ -71,6 +71,11 @@ fresh:
 # file only; calls nothing and costs nothing.
 stability:
 	python3 scripts/tier_stability.py $(V)
+
+# How much of the territory the list actually found, against a public register that is
+# meant to be complete for it. Downloads the register, so it needs network access.
+recall:
+	python3 scripts/recall_check.py $(V)
 
 # What changed since the last snapshot: outputs/raw/triggers.csv (private).
 triggers:

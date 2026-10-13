@@ -219,38 +219,56 @@
     "model": "claude-opus-5-5"
   },
   "first_attempts": {
-    "steps": {
-      "brief": {
-        "written": 485,
-        "passed": 460,
-        "failed": 25,
+    "steps": [
+      {
+        "step": "brief",
+        "prompt": "brief_prompt.md with the place-name rule",
+        "written": 263,
+        "passed": 250,
+        "failed": 13,
         "failure_types": {
           "number word not in cited facts": 4,
-          "digit not in cited facts": 21
+          "digit not in cited facts": 9
         },
-        "prompts": [
-          "brief_prompt.md with the place-name rule",
-          "brief_prompt.md with the guessed-claim and shared-domain rules"
-        ],
-        "passed_pct": 94.8
+        "passed_pct": 95.1
       },
-      "sequence": {
-        "written": 467,
-        "passed": 445,
-        "failed": 22,
+      {
+        "step": "sequence",
+        "prompt": "sequence_prompt.md with the place-name rule",
+        "written": 244,
+        "passed": 229,
+        "failed": 15,
         "failure_types": {
           "number word not in cited facts": 7,
-          "digit not in cited facts": 11,
-          "place name not in cited facts": 1,
+          "digit not in cited facts": 7,
+          "place name not in cited facts": 1
+        },
+        "passed_pct": 93.9
+      },
+      {
+        "step": "brief",
+        "prompt": "brief_prompt.md with the guessed-claim and shared-domain rules",
+        "written": 222,
+        "passed": 210,
+        "failed": 12,
+        "failure_types": {
+          "digit not in cited facts": 12
+        },
+        "passed_pct": 94.6
+      },
+      {
+        "step": "sequence",
+        "prompt": "sequence_prompt.md with the guessed-claim and engine-vocabulary rules",
+        "written": 223,
+        "passed": 216,
+        "failed": 7,
+        "failure_types": {
+          "digit not in cited facts": 4,
           "job title not in cited facts": 3
         },
-        "prompts": [
-          "sequence_prompt.md with the place-name rule",
-          "sequence_prompt.md with the guessed-claim and engine-vocabulary rules"
-        ],
-        "passed_pct": 95.3
+        "passed_pct": 96.9
       }
-    },
+    ],
     "retries": {
       "sequence": {
         "redone": 29,

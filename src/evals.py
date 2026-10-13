@@ -61,15 +61,18 @@ def first_attempt_summary(log: dict) -> dict:
     """
     steps = {}
     for run in log.get("runs", []):
-        t = steps.setdefault(run["step"], {"written": 0, "passed": 0, "failed": 0, "failure_types": {}, "prompts": []})
-        for key in ("written", "passed", "failed"):
-            t[key] += int(run[key])
+        # Keyed by step AND prompt: a pass rate only means something next to the prompt
+        # that produced it, and a later prompt is often judged by stricter checks.
+        key = (run["step"], run.get("prompt", "unrecorded"))
+        t = steps.setdefault(key, {"step": run["step"], "prompt": key[1], "written": 0, "passed": 0,
+                                   "failed": 0, "failure_types": {}})
+        for field in ("written", "passed", "failed"):
+            t[field] += int(run[field])
         for kind, count in run.get("failure_types", {}).items():
             t["failure_types"][kind] = t["failure_types"].get(kind, 0) + int(count)
-        if run.get("prompt") and run["prompt"] not in t["prompts"]:
-            t["prompts"].append(run["prompt"])
     for t in steps.values():
         t["passed_pct"] = pct(t["passed"], t["written"])
+    steps = list(steps.values())
     retries = {}
     for run in log.get("retries", []):
         t = retries.setdefault(run["step"], {"redone": 0, "passed": 0})
@@ -279,28 +282,23 @@ def render_card(c: dict) -> str:
     out += [f"| {t['touch']} | {t['limit_words']} | {t['avg_words']} | {t['max_words']} |" for t in q["touch_lengths"]]
     fa = c.get("first_attempts")
     if fa and fa["steps"]:
-        out += ["", "## First-attempt results", "",
-                "Drafts as first written, before any re-run of a failed one. These come from the run logs and are kept "
-                "by hand in a private file, because the draft files keep only the final result. The pass rates above are "
-                "after failed drafts were re-run.", "",
-                "| Step | First attempts | Passed first time | Failed | Pass rate |", "|---|---|---|---|---|"]
-        for step, label in (("brief", "Briefs"), ("sequence", "Sequences")):
-            t = fa["steps"].get(step)
-            if t:
-                out += [f"| {label} | {t['written']} | {t['passed']} | {t['failed']} | {t['passed_pct']}% |"]
+        out += ["", "## First-attempt results, by prompt version", "",
+                "A draft as it was first written, before any re-run of one that failed. Taken from the run logs and kept "
+                "by hand in a private file, because the draft files keep only the final result. The pass rates earlier in "
+                "this card are after failed drafts were re-run, so they are 100%.", "",
+                "A later prompt version is judged by whatever checks existed when it ran, and checks were added along the "
+                "way, so the rates below are not a clean comparison between prompt versions.", "",
+                "| Step | Prompt version | First attempts | Passed first time | Pass rate | What failed |",
+                "|---|---|---|---|---|---|"]
+        labels = {"brief": "Briefs", "sequence": "Sequences"}
+        for t in sorted(fa["steps"], key=lambda x: (x["step"], x["prompt"])):
+            why = ", ".join(f"{k} ({v})" for k, v in t["failure_types"].items()) or "nothing"
+            out += [f"| {labels.get(t['step'], t['step'])} | {t['prompt']} | {t['written']} | {t['passed']} | {t['passed_pct']}% | {why} |"]
         out += [""]
-        for step, label in (("brief", "Briefs"), ("sequence", "Sequences")):
-            t = fa["steps"].get(step)
-            if t and t["failure_types"]:
-                out += [f"- {label}, what failed: " + ", ".join(f"{k} ({v})" for k, v in t["failure_types"].items()) + "."]
-        for step, label in (("brief", "Briefs"), ("sequence", "Sequences")):
+        for step, label in labels.items():
             r = fa["retries"].get(step)
             if r:
-                out += [f"- {label}, re-run attempts: {r['redone']}, passed: {r['passed']} (a draft that failed twice is counted twice)."]
-        for step, label in (("brief", "Briefs"), ("sequence", "Sequences")):
-            t = fa["steps"].get(step)
-            if t and t["prompts"]:
-                out += [f"- {label}, prompt versions in the first attempts: " + "; ".join(t["prompts"]) + "."]
+                out += [f"- {label}: {r['redone']} re-run attempts, {r['passed']} passed. A draft that failed twice is counted twice."]
     ba = (c.get("first_attempts") or {}).get("quality_before_after")
     if ba:
         out += ["", "## What changed when a check was added", "",
