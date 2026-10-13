@@ -166,15 +166,15 @@
     "out_of_date": 0,
     "out_of_date_reasons": {},
     "passed_source_check_pct": 100.0,
-    "statements": 1564,
+    "statements": 1570,
     "statements_per_brief": 6.4,
     "facts_per_brief": 5.1,
-    "facts_used_pct": 94.5,
-    "avg_cost_usd": 0.032,
-    "total_cost_usd": 9.26,
+    "facts_used_pct": 95.2,
+    "avg_cost_usd": 0.0343,
+    "total_cost_usd": 9.9,
     "cost_items": 289,
-    "avg_input_tokens": 2135,
-    "avg_output_tokens": 1174,
+    "avg_input_tokens": 2486,
+    "avg_output_tokens": 1216,
     "model": "claude-opus-5-5"
   },
   "sequences": {
@@ -187,23 +187,23 @@
       {
         "touch": 1,
         "limit_words": 90,
-        "avg_words": 65.3,
-        "max_words": 76
+        "avg_words": 65.2,
+        "max_words": 77
       },
       {
         "touch": 2,
         "limit_words": 70,
-        "avg_words": 46.0,
-        "max_words": 61
+        "avg_words": 46.5,
+        "max_words": 64
       },
       {
         "touch": 3,
         "limit_words": 60,
-        "avg_words": 44.1,
+        "avg_words": 43.7,
         "max_words": 54
       }
     ],
-    "distinct_first_email_questions_pct": 79.1,
+    "distinct_first_email_questions_pct": 84.8,
     "most_repeated_first_email_question_count": 7,
     "personas": {
       "Administrator": 176,
@@ -211,64 +211,85 @@
       "Owner or Operator": 30,
       "Executive Director": 1
     },
-    "avg_cost_usd": 0.0193,
-    "total_cost_usd": 5.63,
+    "avg_cost_usd": 0.0205,
+    "total_cost_usd": 5.99,
     "cost_items": 292,
-    "avg_input_tokens": 2251,
-    "avg_output_tokens": 513,
+    "avg_input_tokens": 2502,
+    "avg_output_tokens": 525,
     "model": "claude-opus-5-5"
   },
   "first_attempts": {
     "steps": {
       "brief": {
-        "written": 263,
-        "passed": 250,
-        "failed": 13,
+        "written": 485,
+        "passed": 460,
+        "failed": 25,
         "failure_types": {
           "number word not in cited facts": 4,
-          "digit not in cited facts": 9
+          "digit not in cited facts": 21
         },
         "prompts": [
-          "brief_prompt.md with the place-name rule"
+          "brief_prompt.md with the place-name rule",
+          "brief_prompt.md with the guessed-claim and shared-domain rules"
         ],
-        "passed_pct": 95.1
+        "passed_pct": 94.8
       },
       "sequence": {
-        "written": 244,
-        "passed": 229,
-        "failed": 15,
+        "written": 467,
+        "passed": 445,
+        "failed": 22,
         "failure_types": {
           "number word not in cited facts": 7,
-          "digit not in cited facts": 7,
-          "place name not in cited facts": 1
+          "digit not in cited facts": 11,
+          "place name not in cited facts": 1,
+          "job title not in cited facts": 3
         },
         "prompts": [
-          "sequence_prompt.md with the place-name rule"
+          "sequence_prompt.md with the place-name rule",
+          "sequence_prompt.md with the guessed-claim and engine-vocabulary rules"
         ],
-        "passed_pct": 93.9
+        "passed_pct": 95.3
       }
     },
     "retries": {
       "sequence": {
-        "redone": 22,
-        "passed": 15
+        "redone": 29,
+        "passed": 22
       },
       "brief": {
-        "redone": 12,
-        "passed": 12
+        "redone": 33,
+        "passed": 31
       }
+    },
+    "quality_before_after": {
+      "measured_by": "scripts and checks in the repo, over the current (published) drafts only",
+      "guessed claims in briefs": {
+        "before": "67 of 289 (23%)",
+        "after": "0 of 244"
+      },
+      "engine vocabulary in outreach touches": {
+        "before": 59,
+        "after": 0
+      },
+      "raw uppercase addresses in outreach touches": {
+        "before": 35,
+        "after": 0
+      },
+      "note": "The before figures were measured with the same check definitions, applied to the drafts as they stood on 2026-10-13 before the prompt and code changes. The second prompt version was measured against stricter checks than the first, so its pass rate is not directly comparable with the first."
     }
   },
   "checks_cover": [
     "Briefs: every statement cites at least one numbered fact, every cited fact exists, every number (in digits, or a number word from two up) appears in a cited fact, and every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact.",
     "Sequences: the same citation, number and wording rules, plus word limits, subject rules and allowed merge fields.",
+    "Guessed claims: a hedge word (\"suggests\", \"likely\", \"appears to\") followed in the same sentence by a claim of how often something happens, that it is happening now, or who owns whom. The facts are a snapshot of public pages and cannot establish any of those.",
+    "Outreach wording: the engine's own vocabulary (territory, account, tier, score, ranked) is rejected in any subject or body, because a draft carrying it reads as a database export.",
     "Saved text is re-checked on every build. A brief or sequence whose facts changed, or that fails a check added since it was written, is held back until rewritten.",
     "Public dataset: each published record is searched for that account's own name words, domain, phone number and IDs, and a separate leak test searches every published file for every account's identifiers. A hit fails the build."
   ],
   "not_measured": [
     "Whether the top tiers are actually the best accounts. No human has labelled a sample, and no meetings-booked or closed-won data exists to test the rubric against.",
     "Reply rates or meetings from the outreach drafts. Nothing has been sent.",
-    "Unsupported wording in lowercase. The checks catch capitalised words and number words missing from the cited facts, but not a wrong common word or an inference that goes further than its fact.",
+    "Unsupported wording in lowercase, beyond the guessed-claim patterns now checked. A wrong common word, or an inference of a kind not in the claim list, still passes. The claim list was written from one blind grading of 15 briefs, so it covers the mistakes that grading found and not necessarily others.",
     "Accounts that are not the target type. The rubric trusts the registry's self-reported classification, plus a match to the state licence list by name and phone. An account that trades under another name shows as not found, which is not proof it is unlicensed. Accounts flagged by name are reviewed by hand, and only those a person marks are excluded.",
     "Recall of discovery: how many real agencies in the territory are missing from the list.",
     "Job-posting accuracy. Counts were read from each employer's own job feed once and not cross-checked; most accounts have no readable feed at all.",

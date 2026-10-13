@@ -83,20 +83,20 @@ Data coverage is the share of the rubric judged on real data. A low score with l
 ## Briefs
 
 - 244 briefs written; 100.0% pass the source check. 0 more are out of date and are not counted or published until rewritten.
-- 1564 statements, 6.4 per brief, each citing at least one numbered fact.
-- 5.1 facts available per brief; 94.5% of available facts were cited.
+- 1570 statements, 6.4 per brief, each citing at least one numbered fact.
+- 5.1 facts available per brief; 95.2% of available facts were cited.
 
 ## Sequences
 
 - 244 sequences (732 touches); 100.0% pass their checks. 0 more are out of date and are not counted or published until rewritten.
-- First-email closing questions: 79.1% are distinct; the most repeated one appears 7 times.
+- First-email closing questions: 84.8% are distinct; the most repeated one appears 7 times.
 - Written for: Administrator (176), Director of Operations or COO (37), Owner or Operator (30), Executive Director (1).
 
 | Touch | Word limit | Average words | Longest |
 |---|---|---|---|
-| 1 | 90 | 65.3 | 76 |
-| 2 | 70 | 46.0 | 61 |
-| 3 | 60 | 44.1 | 54 |
+| 1 | 90 | 65.2 | 77 |
+| 2 | 70 | 46.5 | 64 |
+| 3 | 60 | 43.7 | 54 |
 
 ## First-attempt results
 
@@ -104,20 +104,34 @@ Drafts as first written, before any re-run of a failed one. These come from the 
 
 | Step | First attempts | Passed first time | Failed | Pass rate |
 |---|---|---|---|---|
-| Briefs | 263 | 250 | 13 | 95.1% |
-| Sequences | 244 | 229 | 15 | 93.9% |
+| Briefs | 485 | 460 | 25 | 94.8% |
+| Sequences | 467 | 445 | 22 | 95.3% |
 
-- Briefs, what failed: number word not in cited facts (4), digit not in cited facts (9).
-- Sequences, what failed: number word not in cited facts (7), digit not in cited facts (7), place name not in cited facts (1).
-- Briefs, re-run attempts: 12, passed: 12 (a draft that failed twice is counted twice).
-- Sequences, re-run attempts: 22, passed: 15 (a draft that failed twice is counted twice).
-- Briefs, prompt versions in the first attempts: brief_prompt.md with the place-name rule.
-- Sequences, prompt versions in the first attempts: sequence_prompt.md with the place-name rule.
+- Briefs, what failed: number word not in cited facts (4), digit not in cited facts (21).
+- Sequences, what failed: number word not in cited facts (7), digit not in cited facts (11), place name not in cited facts (1), job title not in cited facts (3).
+- Briefs, re-run attempts: 33, passed: 31 (a draft that failed twice is counted twice).
+- Sequences, re-run attempts: 29, passed: 22 (a draft that failed twice is counted twice).
+- Briefs, prompt versions in the first attempts: brief_prompt.md with the place-name rule; brief_prompt.md with the guessed-claim and shared-domain rules.
+- Sequences, prompt versions in the first attempts: sequence_prompt.md with the place-name rule; sequence_prompt.md with the guessed-claim and engine-vocabulary rules.
+
+## What changed when a check was added
+
+Each row is the same measurement, run over the published drafts before and after a check and a prompt rule were added for it on 2026-10-13. The checks were written after a blind grading of 15 briefs by a model that had not seen the pipeline; the problems it found were not caught by any check at the time.
+
+| Measurement | Before | After |
+|---|---|---|
+| guessed claims in briefs | 67 of 289 (23%) | 0 of 244 |
+| engine vocabulary in outreach touches | 59 | 0 |
+| raw uppercase addresses in outreach touches | 35 | 0 |
+
+The before figures were measured with the same check definitions, applied to the drafts as they stood on 2026-10-13 before the prompt and code changes. The second prompt version was measured against stricter checks than the first, so its pass rate is not directly comparable with the first.
 
 ## What the automated checks cover (written by hand)
 
 - Briefs: every statement cites at least one numbered fact, every cited fact exists, every number (in digits, or a number word from two up) appears in a cited fact, and every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact.
 - Sequences: the same citation, number and wording rules, plus word limits, subject rules and allowed merge fields.
+- Guessed claims: a hedge word ("suggests", "likely", "appears to") followed in the same sentence by a claim of how often something happens, that it is happening now, or who owns whom. The facts are a snapshot of public pages and cannot establish any of those.
+- Outreach wording: the engine's own vocabulary (territory, account, tier, score, ranked) is rejected in any subject or body, because a draft carrying it reads as a database export.
 - Saved text is re-checked on every build. A brief or sequence whose facts changed, or that fails a check added since it was written, is held back until rewritten.
 - Public dataset: each published record is searched for that account's own name words, domain, phone number and IDs, and a separate leak test searches every published file for every account's identifiers. A hit fails the build.
 
@@ -125,7 +139,7 @@ Drafts as first written, before any re-run of a failed one. These come from the 
 
 - Whether the top tiers are actually the best accounts. No human has labelled a sample, and no meetings-booked or closed-won data exists to test the rubric against.
 - Reply rates or meetings from the outreach drafts. Nothing has been sent.
-- Unsupported wording in lowercase. The checks catch capitalised words and number words missing from the cited facts, but not a wrong common word or an inference that goes further than its fact.
+- Unsupported wording in lowercase, beyond the guessed-claim patterns now checked. A wrong common word, or an inference of a kind not in the claim list, still passes. The claim list was written from one blind grading of 15 briefs, so it covers the mistakes that grading found and not necessarily others.
 - Accounts that are not the target type. The rubric trusts the registry's self-reported classification, plus a match to the state licence list by name and phone. An account that trades under another name shows as not found, which is not proof it is unlicensed. Accounts flagged by name are reviewed by hand, and only those a person marks are excluded.
 - Recall of discovery: how many real agencies in the territory are missing from the list.
 - Job-posting accuracy. Counts were read from each employer's own job feed once and not cross-checked; most accounts have no readable feed at all.
