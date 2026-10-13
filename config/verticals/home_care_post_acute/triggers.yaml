@@ -1,0 +1,14 @@
+# What counts as a change worth a rep's attention between two runs. Read by src/triggers.py.
+# Each watched column is compared per account between the previous run's scored list and
+# the current one. A column with `bands` is compared by band, so 161 -> 158 open roles is
+# not a trigger but 4 -> 7 (band 1-4 -> 5-19) is. Blank means unknown, never zero.
+watch:
+  - {column: tier, label: Tier}
+  - {column: jobs_status, label: Hiring evidence}
+  - {column: jobs_total, label: Open roles in area, bands: [1, 5, 20, 50, 100]}
+  - {column: jobs_ats, label: Hiring system}
+  - {column: website_live, label: Website responds}
+  - {column: license_status, label: State licence}
+# Changes in these columns from or to these values are not shown: they describe a check
+# that could not run, not a change at the account.
+ignore_values: ["site_unreachable", "robots_disallowed"]

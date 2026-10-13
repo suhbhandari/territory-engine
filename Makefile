@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh
 
 # Defaults come from config/defaults.yaml. Override for one run, for example:
 #   make score VERTICAL=<name> METRO=config/metro/<name>.yaml
@@ -66,3 +66,14 @@ snapshot:
 fresh:
 	python3 scripts/snapshot.py --fresh-signals
 	$(MAKE) discover backfill enrich score export
+
+# What changed since the last snapshot: outputs/raw/triggers.csv (private).
+triggers:
+	python3 src/triggers.py $(V)
+
+# The weekly refresh: keep a copy of this run, re-check every signal, re-score, list what
+# changed, rewrite only the briefs and sequences whose facts changed, rebuild, check.
+# Paid model calls for the rewritten drafts. Run discover (make fresh) monthly instead.
+refresh:
+	python3 scripts/snapshot.py --fresh-signals
+	$(MAKE) enrich score triggers brief sequence export public checks
