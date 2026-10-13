@@ -1,60 +1,77 @@
 {
-  "generated_at": "2026-10-12",
+  "generated_at": "2026-10-13",
   "data_as_of": {
-    "discovered": null,
-    "signals_checked": {
-      "first": "2026-10-09",
+    "discovered": {
+      "first": "2026-10-12",
       "last": "2026-10-12"
+    },
+    "signals_checked": {
+      "first": "2026-10-12",
+      "last": "2026-10-13"
     }
   },
   "discovery": {
-    "accounts": 1485,
-    "groups": 1404,
+    "accounts": 1501,
+    "groups": 1415,
     "by_source": {
-      "NPPES": 1180,
-      "Google Maps": 166,
-      "NPPES; Google Maps": 139
+      "NPPES": 1182,
+      "Google Maps": 181,
+      "NPPES; Google Maps": 138
     },
-    "with_website_pct": 32.8,
-    "with_phone_pct": 100.0,
+    "with_website_pct": 33.4,
+    "with_phone_pct": 99.9,
     "excluded": {
-      "outside territory (excluded zip)": 48,
+      "outside territory (dropped by discover)": 48,
       "reviewed": 13
+    },
+    "rows_merged_as_duplicates": 558,
+    "rows_fetched_by_source": {
+      "nppes": 1759,
+      "google_maps": 361
     }
   },
   "signals": {
-    "accounts_enriched": 1485,
+    "accounts_enriched": 1501,
     "errors": {
       "careers_page": 0,
       "http_check": 0,
-      "npi_age": 0
+      "npi_age": 0,
+      "state_license": 0
     },
     "filled_pct": {
       "jobs_status": 100.0,
-      "jobs_ats": 3.0,
-      "jobs_source_url": 18.2,
+      "jobs_ats": 3.3,
+      "jobs_source_url": 18.4,
       "jobs_total": 1.5,
       "jobs_total_all_locations": 1.5,
       "jobs_care_worker": 1.5,
       "jobs_scheduling_ops": 1.5,
       "jobs_admin_compliance": 1.5,
-      "jobs_titles_sample": 1.4,
+      "jobs_titles_sample": 1.5,
       "website_live": 100.0,
-      "website_has_ssl": 32.8,
-      "npi_enrolled_year": 88.8,
-      "npi_age_years": 88.8
+      "website_has_ssl": 33.4,
+      "npi_enrolled_year": 87.9,
+      "npi_age_years": 87.9,
+      "license_status": 100.0,
+      "license_types": 35.4,
+      "license_names": 35.4,
+      "license_match": 35.4
     },
     "status_breakdown": {
       "jobs_status": {
-        "no_website": 998,
-        "careers_page_no_listings": 197,
-        "no_careers_page": 145,
-        "site_unreachable": 63,
-        "ats_unsupported": 34,
-        "offsite_listings": 18,
-        "counted": 11,
+        "no_website": 999,
+        "careers_page_no_listings": 196,
+        "no_careers_page": 151,
+        "site_unreachable": 67,
+        "ats_unsupported": 38,
+        "offsite_listings": 19,
+        "counted": 12,
         "listings_found": 11,
         "robots_disallowed": 8
+      },
+      "license_status": {
+        "not_found": 969,
+        "matched": 532
       }
     }
   },
@@ -63,147 +80,184 @@
       {
         "tier": "A",
         "min_score": 60,
-        "accounts": 46,
+        "accounts": 44,
         "groups": 33,
-        "avg_data_coverage_pct": 92.0
+        "avg_data_coverage_pct": 91.8
       },
       {
         "tier": "B",
         "min_score": 42,
-        "accounts": 267,
-        "groups": 220,
+        "accounts": 257,
+        "groups": 211,
         "avg_data_coverage_pct": 86.0
       },
       {
         "tier": "C",
         "min_score": 25,
-        "accounts": 169,
-        "groups": 148,
-        "avg_data_coverage_pct": 71.7
+        "accounts": 181,
+        "groups": 152,
+        "avg_data_coverage_pct": 74.3
       },
       {
         "tier": "D",
         "min_score": 0,
-        "accounts": 1003,
-        "groups": 1003,
-        "avg_data_coverage_pct": 35.0
+        "accounts": 1019,
+        "groups": 1019,
+        "avg_data_coverage_pct": 35.2
       }
     ],
-    "avg_data_coverage_pct": 50.1,
-    "median_score": 20.0,
+    "avg_data_coverage_pct": 50.2,
+    "median_score": 15.0,
     "criteria": [
       {
         "key": "hiring_activity",
         "label": "Hiring activity",
         "max_points": 35,
-        "avg_points": 2.5,
-        "accounts_scoring_above_zero_pct": 28.0
+        "avg_points": 2.6,
+        "accounts_scoring_above_zero_pct": 28.4
       },
       {
         "key": "back_office_hiring",
         "label": "Back-office hiring",
         "max_points": 10,
         "avg_points": 0.1,
-        "accounts_scoring_above_zero_pct": 1.4
+        "accounts_scoring_above_zero_pct": 1.5
       },
       {
         "key": "web_presence",
         "label": "Web presence",
         "max_points": 15,
-        "avg_points": 4.8,
-        "accounts_scoring_above_zero_pct": 34.1
+        "avg_points": 4.9,
+        "accounts_scoring_above_zero_pct": 34.6
       },
       {
         "key": "multi_site",
         "label": "Multi-site",
         "max_points": 10,
-        "avg_points": 1.2,
-        "accounts_scoring_above_zero_pct": 32.8
+        "avg_points": 1.3,
+        "accounts_scoring_above_zero_pct": 33.4
       },
       {
         "key": "agency_type",
         "label": "Agency type",
         "max_points": 10,
-        "avg_points": 9.5,
-        "accounts_scoring_above_zero_pct": 99.6
+        "avg_points": 6.5,
+        "accounts_scoring_above_zero_pct": 99.3
       },
       {
         "key": "maturity",
         "label": "Maturity",
         "max_points": 10,
         "avg_points": 7.4,
-        "accounts_scoring_above_zero_pct": 88.8
+        "accounts_scoring_above_zero_pct": 87.9
       },
       {
         "key": "tech_posture",
         "label": "Tech posture",
         "max_points": 10,
         "avg_points": 1.6,
-        "accounts_scoring_above_zero_pct": 29.9
+        "accounts_scoring_above_zero_pct": 30.2
       }
     ],
     "weights_fitted_to_outcomes": false
   },
   "briefs": {
-    "written": 215,
-    "out_of_date": 38,
-    "out_of_date_reasons": {
-      "facts changed": 38
-    },
-    "passed_source_check_pct": 99.5,
-    "statements": 1285,
-    "statements_per_brief": 6.0,
-    "facts_per_brief": 4.1,
-    "facts_used_pct": 99.8,
-    "avg_cost_usd": 0.0204,
-    "total_cost_usd": 4.86,
-    "cost_items": 238,
-    "avg_input_tokens": 1985,
-    "avg_output_tokens": 624,
+    "written": 244,
+    "out_of_date": 0,
+    "out_of_date_reasons": {},
+    "passed_source_check_pct": 100.0,
+    "statements": 1564,
+    "statements_per_brief": 6.4,
+    "facts_per_brief": 5.1,
+    "facts_used_pct": 94.5,
+    "avg_cost_usd": 0.032,
+    "total_cost_usd": 9.26,
+    "cost_items": 289,
+    "avg_input_tokens": 2135,
+    "avg_output_tokens": 1174,
     "model": "claude-opus-5-5"
   },
   "sequences": {
-    "written": 188,
-    "out_of_date": 65,
-    "out_of_date_reasons": {
-      "facts changed": 40,
-      "fails current checks": 25
-    },
-    "touches": 564,
+    "written": 244,
+    "out_of_date": 0,
+    "out_of_date_reasons": {},
+    "touches": 732,
     "passed_checks_pct": 100.0,
     "touch_lengths": [
       {
         "touch": 1,
         "limit_words": 90,
-        "avg_words": 64.9,
+        "avg_words": 65.3,
         "max_words": 76
       },
       {
         "touch": 2,
         "limit_words": 70,
-        "avg_words": 46.7,
-        "max_words": 60
+        "avg_words": 46.0,
+        "max_words": 61
       },
       {
         "touch": 3,
         "limit_words": 60,
-        "avg_words": 44.6,
-        "max_words": 51
+        "avg_words": 44.1,
+        "max_words": 54
       }
     ],
-    "distinct_first_email_questions_pct": 77.1,
+    "distinct_first_email_questions_pct": 79.1,
     "most_repeated_first_email_question_count": 7,
     "personas": {
-      "Administrator": 170,
-      "Owner or Operator": 17,
+      "Administrator": 176,
+      "Director of Operations or COO": 37,
+      "Owner or Operator": 30,
       "Executive Director": 1
     },
-    "avg_cost_usd": 0.0185,
-    "total_cost_usd": 5.12,
-    "cost_items": 276,
-    "avg_input_tokens": 2115,
-    "avg_output_tokens": 504,
+    "avg_cost_usd": 0.0193,
+    "total_cost_usd": 5.63,
+    "cost_items": 292,
+    "avg_input_tokens": 2251,
+    "avg_output_tokens": 513,
     "model": "claude-opus-5-5"
+  },
+  "first_attempts": {
+    "steps": {
+      "brief": {
+        "written": 263,
+        "passed": 250,
+        "failed": 13,
+        "failure_types": {
+          "number word not in cited facts": 4,
+          "digit not in cited facts": 9
+        },
+        "prompts": [
+          "brief_prompt.md with the place-name rule"
+        ],
+        "passed_pct": 95.1
+      },
+      "sequence": {
+        "written": 244,
+        "passed": 229,
+        "failed": 15,
+        "failure_types": {
+          "number word not in cited facts": 7,
+          "digit not in cited facts": 7,
+          "place name not in cited facts": 1
+        },
+        "prompts": [
+          "sequence_prompt.md with the place-name rule"
+        ],
+        "passed_pct": 93.9
+      }
+    },
+    "retries": {
+      "sequence": {
+        "redone": 22,
+        "passed": 15
+      },
+      "brief": {
+        "redone": 12,
+        "passed": 12
+      }
+    }
   },
   "checks_cover": [
     "Briefs: every statement cites at least one numbered fact, every cited fact exists, every number (in digits, or a number word from two up) appears in a cited fact, and every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact.",
@@ -215,10 +269,10 @@
     "Whether the top tiers are actually the best accounts. No human has labelled a sample, and no meetings-booked or closed-won data exists to test the rubric against.",
     "Reply rates or meetings from the outreach drafts. Nothing has been sent.",
     "Unsupported wording in lowercase. The checks catch capitalised words and number words missing from the cited facts, but not a wrong common word or an inference that goes further than its fact.",
-    "Accounts that are not the target type. The rubric trusts the registry's self-reported classification. Accounts flagged by name are reviewed by hand, and only those a person marks are excluded; the rest of the list has not been reviewed.",
+    "Accounts that are not the target type. The rubric trusts the registry's self-reported classification, plus a match to the state licence list by name and phone. An account that trades under another name shows as not found, which is not proof it is unlicensed. Accounts flagged by name are reviewed by hand, and only those a person marks are excluded.",
     "Recall of discovery: how many real agencies in the territory are missing from the list.",
     "Job-posting accuracy. Counts were read from each employer's own job feed once and not cross-checked; most accounts have no readable feed at all.",
-    "First-pass failure rates. The pass rates above are after re-running drafts that failed a check; how many failed on the first attempt is not logged.",
+    "First-pass failure rate under the current prompts. The first attempts counted above used the prompts as they stood before the number rule was tightened on 2026-10-13. The tightened prompts have only been run on drafts that had already failed, so their own first-pass rate is not known.",
     "Whether the export files import cleanly. They have not been loaded into a live CRM or sales engagement workspace.",
     "Whether the public dataset can be re-identified. Names and contact details are removed, but an account's combination of facts may still point to it."
   ],
@@ -231,8 +285,8 @@
     },
     {
       "item": "Google Places website lookups (one-time backfill, cached)",
-      "requests": "1,238",
-      "estimate": "about $43",
+      "requests": "1,252",
+      "estimate": "about $44",
       "basis": "Same price tier; before any free monthly allowance; not confirmed against a billing statement"
     },
     {
