@@ -52,6 +52,32 @@ def data_dates(scored: pd.DataFrame) -> dict:
     return dates
 
 
+def first_attempt_summary(log: dict) -> dict:
+    """Totals of first-attempt check results per step, from the hand-kept log of run results.
+
+    A first attempt is a draft as first written, before any re-run of a failed one. The log is
+    typed from run output (outputs/raw/first_pass_log.json), because the draft indexes keep
+    only the final result for each group.
+    """
+    steps = {}
+    for run in log.get("runs", []):
+        t = steps.setdefault(run["step"], {"written": 0, "passed": 0, "failed": 0, "failure_types": {}, "prompts": []})
+        for key in ("written", "passed", "failed"):
+            t[key] += int(run[key])
+        for kind, count in run.get("failure_types", {}).items():
+            t["failure_types"][kind] = t["failure_types"].get(kind, 0) + int(count)
+        if run.get("prompt") and run["prompt"] not in t["prompts"]:
+            t["prompts"].append(run["prompt"])
+    for t in steps.values():
+        t["passed_pct"] = pct(t["passed"], t["written"])
+    retries = {}
+    for run in log.get("retries", []):
+        t = retries.setdefault(run["step"], {"redone": 0, "passed": 0})
+        t["redone"] += int(run["redone"])
+        t["passed"] += int(run["passed"])
+    return {"steps": steps, "retries": retries}
+
+
 def _date_range(d) -> str:
     if not d:
         return "not recorded"
@@ -176,6 +202,9 @@ def main(vertical: str) -> None:
         "model": seqs_all["model"].mode().iat[0],
     }
 
+    log_path = RAW / "first_pass_log.json"
+    first_attempts = first_attempt_summary(json.loads(log_path.read_text())) if log_path.exists() else None
+
     card = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "data_as_of": data_dates(scored),
@@ -184,6 +213,7 @@ def main(vertical: str) -> None:
         "scoring": scoring,
         "briefs": brief_stats,
         "sequences": sequence_stats,
+        "first_attempts": first_attempts,
         "checks_cover": evals_cfg["checks_cover"],
         "not_measured": evals_cfg["not_measured"],
         "other_costs": evals_cfg.get("other_costs", []),
@@ -242,6 +272,30 @@ def render_card(c: dict) -> str:
             "- Written for: " + ", ".join(f"{k} ({v})" for k, v in q["personas"].items()) + ".", "",
             "| Touch | Word limit | Average words | Longest |", "|---|---|---|---|"]
     out += [f"| {t['touch']} | {t['limit_words']} | {t['avg_words']} | {t['max_words']} |" for t in q["touch_lengths"]]
+    fa = c.get("first_attempts")
+    if fa and fa["steps"]:
+        out += ["", "## First-attempt results", "",
+                "Drafts as first written, before any re-run of a failed one. These come from the run logs and are kept "
+                "by hand in a private file, because the draft files keep only the final result. The pass rates above are "
+                "after failed drafts were re-run.", "",
+                "| Step | First attempts | Passed first time | Failed | Pass rate |", "|---|---|---|---|---|"]
+        for step, label in (("brief", "Briefs"), ("sequence", "Sequences")):
+            t = fa["steps"].get(step)
+            if t:
+                out += [f"| {label} | {t['written']} | {t['passed']} | {t['failed']} | {t['passed_pct']}% |"]
+        out += [""]
+        for step, label in (("brief", "Briefs"), ("sequence", "Sequences")):
+            t = fa["steps"].get(step)
+            if t and t["failure_types"]:
+                out += [f"- {label}, what failed: " + ", ".join(f"{k} ({v})" for k, v in t["failure_types"].items()) + "."]
+        for step, label in (("brief", "Briefs"), ("sequence", "Sequences")):
+            r = fa["retries"].get(step)
+            if r:
+                out += [f"- {label}, re-run attempts: {r['redone']}, passed: {r['passed']} (a draft that failed twice is counted twice)."]
+        for step, label in (("brief", "Briefs"), ("sequence", "Sequences")):
+            t = fa["steps"].get(step)
+            if t and t["prompts"]:
+                out += [f"- {label}, prompt versions in the first attempts: " + "; ".join(t["prompts"]) + "."]
     out += ["", "## What the automated checks cover (written by hand)", ""] + [f"- {x}" for x in c["checks_cover"]]
     out += ["", "## Not measured (written by hand)", ""] + [f"- {x}" for x in c["not_measured"]]
     return "\n".join(out) + "\n"
@@ -255,7 +309,10 @@ def render_costs(c: dict) -> str:
            "| Step | Model | Items | Avg input tokens | Avg output tokens | Cost per item | Total |", "|---|---|---|---|---|---|---|",
            f"| Briefs | {b['model']} | {b['cost_items']} | {b['avg_input_tokens']} | {b['avg_output_tokens']} | ${b['avg_cost_usd']:.4f} | ${b['total_cost_usd']:.2f} |",
            f"| Sequences | {q['model']} | {q['cost_items']} | {q['avg_input_tokens']} | {q['avg_output_tokens']} | ${q['avg_cost_usd']:.4f} | ${q['total_cost_usd']:.2f} |",
-           f"| **Model total** | | | | | | **${b['total_cost_usd'] + q['total_cost_usd']:.2f}** |", ""]
+           f"| **Model total** | | | | | | **${b['total_cost_usd'] + q['total_cost_usd']:.2f}** |", "",
+           f"The items logged include {b['cost_items'] - b['written']} briefs and {q['cost_items'] - q['written']} sequences "
+           "that are not current (groups that have since left tiers A and B, or text held back as out of date); they were "
+           "paid for. A draft that was rewritten replaces its earlier row, so the cost of the earlier version is not in these totals.", ""]
     if c["other_costs"]:
         out += ["## Other costs (estimates written by hand)", "", "These are not logged by the pipeline. They are estimates from request counts and list prices, typed into the vertical's evals.yaml.", "",
                 "| Item | Requests | Estimated cost | Basis |", "|---|---|---|---|"]
