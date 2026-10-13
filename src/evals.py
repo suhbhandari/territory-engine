@@ -203,7 +203,12 @@ def main(vertical: str) -> None:
     }
 
     log_path = RAW / "first_pass_log.json"
-    first_attempts = first_attempt_summary(json.loads(log_path.read_text())) if log_path.exists() else None
+    if log_path.exists():
+        log = json.loads(log_path.read_text())
+        first_attempts = first_attempt_summary(log)
+        first_attempts["quality_before_after"] = log.get("quality_before_after")
+    else:
+        first_attempts = None
 
     card = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
@@ -296,6 +301,17 @@ def render_card(c: dict) -> str:
             t = fa["steps"].get(step)
             if t and t["prompts"]:
                 out += [f"- {label}, prompt versions in the first attempts: " + "; ".join(t["prompts"]) + "."]
+    ba = (c.get("first_attempts") or {}).get("quality_before_after")
+    if ba:
+        out += ["", "## What changed when a check was added", "",
+                "Each row is the same measurement, run over the published drafts before and after a check and a prompt "
+                "rule were added for it on 2026-10-13. The checks were written after a blind grading of 15 briefs by a "
+                "model that had not seen the pipeline; the problems it found were not caught by any check at the time.", "",
+                "| Measurement | Before | After |", "|---|---|---|"]
+        out += [f"| {k} | {v['before']} | {v['after']} |" for k, v in ba.items()
+                if isinstance(v, dict) and "before" in v]
+        if ba.get("note"):
+            out += ["", ba["note"]]
     out += ["", "## What the automated checks cover (written by hand)", ""] + [f"- {x}" for x in c["checks_cover"]]
     out += ["", "## Not measured (written by hand)", ""] + [f"- {x}" for x in c["not_measured"]]
     return "\n".join(out) + "\n"

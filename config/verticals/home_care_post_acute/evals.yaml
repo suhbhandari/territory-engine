@@ -4,13 +4,15 @@
 checks_cover:
   - "Briefs: every statement cites at least one numbered fact, every cited fact exists, every number (in digits, or a number word from two up) appears in a cited fact, and every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact."
   - "Sequences: the same citation, number and wording rules, plus word limits, subject rules and allowed merge fields."
+  - "Guessed claims: a hedge word (\"suggests\", \"likely\", \"appears to\") followed in the same sentence by a claim of how often something happens, that it is happening now, or who owns whom. The facts are a snapshot of public pages and cannot establish any of those."
+  - "Outreach wording: the engine's own vocabulary (territory, account, tier, score, ranked) is rejected in any subject or body, because a draft carrying it reads as a database export."
   - "Saved text is re-checked on every build. A brief or sequence whose facts changed, or that fails a check added since it was written, is held back until rewritten."
   - "Public dataset: each published record is searched for that account's own name words, domain, phone number and IDs, and a separate leak test searches every published file for every account's identifiers. A hit fails the build."
 
 not_measured:
   - "Whether the top tiers are actually the best accounts. No human has labelled a sample, and no meetings-booked or closed-won data exists to test the rubric against."
   - "Reply rates or meetings from the outreach drafts. Nothing has been sent."
-  - "Unsupported wording in lowercase. The checks catch capitalised words and number words missing from the cited facts, but not a wrong common word or an inference that goes further than its fact."
+  - "Unsupported wording in lowercase, beyond the guessed-claim patterns now checked. A wrong common word, or an inference of a kind not in the claim list, still passes. The claim list was written from one blind grading of 15 briefs, so it covers the mistakes that grading found and not necessarily others."
   - "Accounts that are not the target type. The rubric trusts the registry's self-reported classification, plus a match to the state licence list by name and phone. An account that trades under another name shows as not found, which is not proof it is unlicensed. Accounts flagged by name are reviewed by hand, and only those a person marks are excluded."
   - "Recall of discovery: how many real agencies in the territory are missing from the list."
   - "Job-posting accuracy. Counts were read from each employer's own job feed once and not cross-checked; most accounts have no readable feed at all."
