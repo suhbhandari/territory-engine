@@ -81,6 +81,10 @@ def _when(conditions, row: dict) -> bool:
 
 
 def build_facts(row: dict, cfg: dict) -> list:
+    row = dict(row)
+    for column in cfg.get("title_case_columns", []):
+        if column in row:
+            row[column] = smart_title(str(row[column]))
     facts = []
     for template in cfg["facts"]:
         if not _when(template.get("when"), row):
@@ -124,17 +128,24 @@ def _numbers(text: str) -> list:
     return [n.replace(",", "") for n in re.findall(r"\d+(?:,\d{3})*", text)]
 
 
-def source_check(brief: dict, facts: list, name: str = "", allowed=()) -> list:
+def source_check(brief: dict, facts: list, name: str = "", allowed=(), hedges=(), claims=()) -> list:
     statements = [("headline", brief["headline"]), ("opening_angle", brief["opening_angle"])]
     statements += [(f"snapshot[{i}]", s) for i, s in enumerate(brief["snapshot"])]
     statements += [(f"why_now[{i}]", s) for i, s in enumerate(brief["why_now"])]
-    return check_statements(statements, facts, name, allowed)
+    return check_statements(statements, facts, name, allowed, hedges, claims)
+
+
+# The renderer writes these headings and the reader splits on them. They are named once so
+# a change to the wording cannot silently stop the reader from finding the end of the
+# statements, which would make every line below look like a statement with no citation.
+MEMBERS_HEADING = "## Accounts sharing this website domain"
+CONTACT_HEADING = "## Contact"
 
 
 def saved_statements(markdown: str) -> list:
     """Statements read back from a rendered brief, as [(section, {"text", "fact_ids"})].
     A line the renderer would not have written is returned with no fact ids, so it fails."""
-    body = markdown.split("## Locations in this territory")[0].split("## Contact")[0]
+    body = markdown.split(MEMBERS_HEADING)[0].split(CONTACT_HEADING)[0]
     section, statements = "headline", []
     for line in body.splitlines():
         if line.startswith("## "):
@@ -178,7 +189,59 @@ def unsupported_words(text: str, source_text: str, allowed=()) -> list:
     return found
 
 
-def check_statements(statements: list, facts: list, name: str = "", allowed=()) -> list:
+_SENTENCE = re.compile(r"[^.!?\n]+")
+
+
+def hedged_claims(text: str, hedges=(), claims=()) -> list:
+    """Sentences where a hedge word introduces a claim the cited facts cannot support.
+
+    "Runs hiring through CareerPlug, which suggests recruiting is ongoing" states something
+    no source said. The citation and number checks cannot see it: the words are lowercase
+    and there is no number in them. The rule here is positional rather than semantic, so it
+    stays simple and generic: a hedge word followed in the same sentence by a word naming
+    the thing being claimed is a guess written as a finding. Both lists are
+    vertical-specific and come from the vertical's config.
+    """
+    if not hedges or not claims:
+        return []
+    hedge_re = re.compile(r"\b(" + "|".join(re.escape(h) for h in hedges) + r")\b", re.I)
+    claim_re = re.compile(r"\b(" + "|".join(re.escape(c) for c in claims) + r")", re.I)
+    found = []
+    for sentence in _SENTENCE.findall(text):
+        hedge = hedge_re.search(sentence)
+        if not hedge:
+            continue
+        claim = claim_re.search(sentence, hedge.end())
+        if claim:
+            found.append(f"'{hedge.group(1).lower()} ... {claim.group(0).lower()}'")
+    return found
+
+
+def forbidden_words(text: str, words=()) -> list:
+    """Words that must not appear in text a seller sends, however true they are.
+
+    The engine's own vocabulary (its territory, its list, its accounts) describes how the
+    engine sees the world, not how a buyer does. A draft carrying it reads as a database
+    export. The list is vertical-specific and comes from config.
+    """
+    found = [w for w in words if re.search(r"\b" + re.escape(w) + r"\b", text, re.I)]
+    return list(dict.fromkeys(found))
+
+
+def smart_title(value: str) -> str:
+    """Title-case a value that arrives in capitals, leaving anything else alone.
+
+    Public registries store street addresses in capitals. Copied straight into a draft,
+    "180 W 80TH ST" announces that a machine wrote it.
+    """
+    if not value or not value.isupper():
+        return value
+    out = re.sub(r"[A-Za-z]+", lambda m: m.group(0).capitalize(), value)
+    return re.sub(r"(?<=\d)(St|Nd|Rd|Th)\b", lambda m: m.group(0).lower(), out)
+
+
+def check_statements(statements: list, facts: list, name: str = "", allowed=(),
+                     hedges=(), claims=()) -> list:
     """statements: [(label, {"text": str, "fact_ids": [str]})]. Returns a list of problems."""
     by_id = {f["id"]: f["text"] for f in facts}
     # Digits that are part of the account's own name are not claims.
@@ -201,6 +264,8 @@ def check_statements(statements: list, facts: list, name: str = "", allowed=()) 
                 problems.append(f"{where}: number {number} is not in the cited facts")
         for word in dict.fromkeys(unsupported_words(statement["text"], cited + " " + name, allowed)):
             problems.append(f"{where}: '{word}' is not in the cited facts")
+        for phrase in hedged_claims(statement["text"], hedges, claims):
+            problems.append(f"{where}: {phrase} states a guess as a finding")
     return problems
 
 
@@ -220,10 +285,13 @@ def render(row: dict, members: list, brief: dict, facts: list, unknowns: list, p
     out += [f"- {line(s)}" for s in brief["why_now"]]
     out += ["", "## Opening angle", line(brief["opening_angle"])]
     if len(members) > 1:
-        out += ["", "## Locations in this territory"]
+        out += ["", MEMBERS_HEADING, ""]
         out += [f"- {m['name']}, {m['city']} {m['zip']} · {m['phone']} · score {m['score']}" for m in members]
+        out += ["", "These accounts were grouped because they use the same website domain. That happens when one "
+                "operator runs several sites, and also when separate businesses trade under the same brand's "
+                "website. Common ownership is not established here; check before treating them as one account."]
     else:
-        out += ["", "## Contact", f"- {row['address']}, {row['city']} {row['zip']} · {row['phone']}"]
+        out += ["", CONTACT_HEADING, f"- {smart_title(str(row['address']))}, {row['city']} {row['zip']} · {row['phone']}"]
     out += ["", "## What we don't know"]
     out += [f"- {u}" for u in unknowns] or ["- Nothing flagged."]
     out += ["", "## Facts and sources"]
@@ -278,7 +346,8 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
             brief, usage, model = generate_json(client, cfg, system, prompt, BRIEF_SCHEMA)
         except Exception as exc:
             return dict(entry, check_status="error", check_notes=f"{type(exc).__name__}: {exc}"[:300])
-        problems = source_check(brief, facts, row["name"], cfg.get("allowed_words", []))
+        problems = source_check(brief, facts, row["name"], cfg.get("allowed_words", []),
+                                cfg.get("hedges", []), cfg.get("claim_words", []))
         path = BRIEFS_DIR / f"{int(row['group_rank']):04d}-{slug(row['name'])}.md"
         path.write_text(render(row, members, brief, facts, unknowns, problems))
         return dict(entry, file=path.name, model=model, check_status="failed" if problems else "passed",

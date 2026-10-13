@@ -34,7 +34,7 @@ sys.path.insert(0, str(ROOT))
 
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
-from src.brief import _when, build_facts, check_statements, render_fact, slug  # noqa: E402
+from src.brief import _when, build_facts, check_statements, forbidden_words, render_fact, slug  # noqa: E402
 from src.current import current_sequences  # noqa: E402
 from src.llm import cost_usd, generate_json, load_prompt, make_client  # noqa: E402
 
@@ -95,8 +95,9 @@ def user_prompt(row: dict, facts: list, persona: dict, cfg: dict) -> str:
     return "\n".join(lines)
 
 
-def check(result: dict, facts: list, row: dict, cfg: dict, allowed=()) -> list:
+def check(result: dict, facts: list, row: dict, cfg: dict, allowed=(), facts_cfg=None) -> list:
     by_id = {t["touch_id"]: t for t in result["touches"]}
+    facts_cfg = facts_cfg or {}
     problems = []
     statements = []
     for spec in cfg["touches"]:
@@ -122,7 +123,14 @@ def check(result: dict, facts: list, row: dict, cfg: dict, allowed=()) -> list:
     extra = set(by_id) - {t["id"] for t in cfg["touches"]}
     if extra:
         problems.append(f"unexpected touches: {', '.join(sorted(extra))}")
-    return problems + check_statements(statements, facts, row["name"], allowed)
+    for spec in cfg["touches"]:
+        touch = by_id.get(spec["id"])
+        if touch is None:
+            continue
+        for word in forbidden_words(f"{touch['subject']} {touch['body']}", cfg.get("outreach_forbidden_words", [])):
+            problems.append(f"{spec['id']}: '{word}' is the engine's own vocabulary, not a seller's")
+    return problems + check_statements(statements, facts, row["name"], allowed,
+                                       facts_cfg.get("hedges", []), facts_cfg.get("claim_words", []))
 
 
 def touch_rows(row: dict, persona: dict, result: dict, cfg: dict, status: str) -> list:
@@ -190,7 +198,7 @@ def main(vertical: str, limit, dry_run: bool, redo_failed: bool) -> None:
             result, usage, model = generate_json(client, cfg, system, prompt, SCHEMA)
         except Exception as exc:
             return dict(entry, check_status="error", check_notes=f"{type(exc).__name__}: {exc}"[:300]), []
-        problems = check(result, facts, row, cfg, facts_cfg.get("allowed_words", []))
+        problems = check(result, facts, row, cfg, facts_cfg.get("allowed_words", []), facts_cfg)
         status = "failed" if problems else "passed"
         rows = touch_rows(row, persona, result, cfg, status)
         path = OUT_DIR / f"{int(row['group_rank']):04d}-{slug(row['name'])}.md"

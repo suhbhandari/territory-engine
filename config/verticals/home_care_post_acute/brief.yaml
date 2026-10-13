@@ -38,6 +38,46 @@ sources:
     url: ""
     date_column: discovered_at
 
+# Values that public registries store in capitals. A fact that copies "180 W 80TH ST"
+# straight into a draft announces that a machine wrote it, so these are title-cased.
+title_case_columns: [address]
+
+# A hedge word followed in the same sentence by one of these claim words is rejected.
+# The facts here are a snapshot of public pages: they can show that a careers page exists,
+# or that two accounts use one domain. They cannot show how OFTEN something happens, that
+# it is happening NOW, or WHO OWNS WHOM. Those are the three things the model kept adding,
+# and neither the citation check nor the number check can see them, because the words are
+# lowercase and carry no number. Keep hedges to words that nearly always introduce a guess.
+hedges: ["which suggests", "suggests", "suggesting", "likely", "appears to", "appear to",
+         "indicates", "indicating", "implies", "implying", "points to", "presumably", "probably"]
+claim_words:
+  # How often, or whether it is happening now. A page checked once cannot show either.
+  - ongoing
+  - continuous
+  - continually
+  - regularly
+  - regular basis
+  - actively
+  - consistently
+  - steadily
+  - frequently
+  - routinely
+  - constantly
+  - from time to time
+  - some of the time
+  - day to day
+  - all the time
+  - year-round
+  # Who owns whom. A shared website domain cannot show this.
+  - common ownership
+  - same owner
+  - sister
+  - parent company
+  - one operator
+  - single operator
+  - under one roof
+  - affiliate
+
 # Capitalised words a brief or sequence may use without a fact containing them. The check
 # flags any other capitalised word inside a sentence that its cited facts do not contain
 # (a neighbourhood, an organisation, a job title). Street-type and compass words are here
@@ -66,7 +106,7 @@ facts:
   - text: "Has a company website: {website}"
     when: {column: website, op: not_blank}
     source: website
-  - text: "{domain_account_count} accounts in this territory list share the website domain {website_domain}."
+  - text: "{domain_account_count} accounts in this territory list use the website domain {website_domain}, counting this one. Accounts share a domain when one operator runs several sites, and also when separate businesses trade under the same brand's website, so this does not show common ownership."
     when: {column: domain_account_count, op: gte, value: 2}
     source: territory_list
   - text: "Its job board ({jobs_ats}) lists {jobs_total} open roles located in {state}, out of {jobs_total_all_locations} across all locations."

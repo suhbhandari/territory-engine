@@ -38,3 +38,9 @@ touches:
     purpose: >
       What the rep says in the first 20 seconds of a cold call: who they are, the one
       specific reason for calling this agency, and one question. Written to be spoken.
+
+# Words that describe how the ENGINE sees the world, not how a buyer does. A draft that
+# says "one of 6 accounts in my territory" reads as a database export and tells the reader
+# they were picked by a list. Checked in every subject and body.
+outreach_forbidden_words: [territory, account, accounts, tier, score, scored, ranked,
+                           ranking, pipeline, database, dataset, CRM]
