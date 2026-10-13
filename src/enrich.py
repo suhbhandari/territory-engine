@@ -148,7 +148,24 @@ def load_signals(vertical: str) -> list:
     return signals
 
 
-def main(metro_path: str, vertical: str, limit, batch_size: int, accounts_path: Path, output_path: Path) -> None:
+def mark_for_redo(rows: dict, signals: list, redo: list, where: str) -> int:
+    """Flag the named signals to run again for rows matching COLUMN=VALUE (or all rows)."""
+    unknown = set(redo) - {s["name"] for s in signals}
+    if unknown:
+        raise SystemExit(f"--redo: unknown signal(s) {', '.join(sorted(unknown))}")
+    column, _, value = where.partition("=") if where else ("", "", "")
+    marked = 0
+    for row in rows.values():
+        if column and row.get(column, "") != value:
+            continue
+        for name in redo:
+            row[error_col(name)] = "redo requested"
+        marked += 1
+    return marked
+
+
+def main(metro_path: str, vertical: str, limit, batch_size: int, accounts_path: Path, output_path: Path,
+         redo=None, where: str = "") -> None:
     accounts_df = read_csv_str(accounts_path)
     if limit:
         accounts_df = accounts_df.head(limit)
@@ -167,6 +184,10 @@ def main(metro_path: str, vertical: str, limit, batch_size: int, accounts_path: 
         columns.extend(missing)
         write_output(output_path, rows, columns)
         print(f"[enrich] Recorded the website each existing row was checked against: {', '.join(missing)}")
+
+    if redo:
+        marked = mark_for_redo(rows, signals, redo, where)
+        print(f"[enrich] Re-running {', '.join(redo)} for {marked} accounts{' where ' + where if where else ''}")
 
     def needs(row, sig, acc):
         return needs_signal(row, sig["name"], acc, sig["uses_website"])
@@ -224,5 +245,8 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", type=int, default=20, help="Accounts per checkpoint")
     parser.add_argument("--accounts", type=Path, default=ACCOUNTS_PATH)
     parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
+    parser.add_argument("--redo", default="", help="Comma-separated signals to run again, e.g. careers_page,http_check")
+    parser.add_argument("--where", default="", help="Only rows where COLUMN=VALUE, e.g. jobs_status=site_unreachable")
     args = parser.parse_args()
-    main(args.metro, args.vertical, args.limit, args.batch_size, args.accounts, args.output)
+    main(args.metro, args.vertical, args.limit, args.batch_size, args.accounts, args.output,
+         [s for s in args.redo.split(",") if s], args.where)

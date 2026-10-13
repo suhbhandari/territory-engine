@@ -10,7 +10,9 @@ fetch(account, params) -> dict with keys:
 
 jobs_status says how far the lookup got, so "no postings" is never confused with "not checked":
   no_website                account has no website on file; nothing was fetched
-  site_unreachable          website did not respond, or refused the request
+  site_unreachable          website did not respond, or refused the request, while our own
+                            connection was working (if it was not, the signal raises and
+                            the account is retried on the next run)
   robots_disallowed         the site's robots.txt asks crawlers not to fetch it
   no_careers_page           site loaded, no careers/jobs link found
   careers_page_no_listings  careers page found, no ATS or structured listings on it
@@ -34,6 +36,8 @@ from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
 
 import requests
+
+from src.signals.online import require_online
 
 _UA = "territory-engine/1.0 (account research; honours robots.txt)"
 _HEADERS = {"User-Agent": _UA, "Accept": "text/html,application/json;q=0.9,*/*;q=0.5"}
@@ -418,6 +422,7 @@ def _get_page(url: str):
         body = resp.raw.read(_MAX_BYTES, decode_content=True)
         return resp.url, body.decode(resp.encoding or "utf-8", errors="ignore")
     except requests.RequestException as exc:
+        require_online()  # raises if our own connection is down, so this is retried, not saved
         raise _Unreachable(f"{type(exc).__name__} for {url}") from exc
 
 

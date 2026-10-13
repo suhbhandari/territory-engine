@@ -8,6 +8,8 @@ fetch(account, params) -> dict with keys:
 
 import requests
 
+from src.signals.online import require_online
+
 _TIMEOUT = 8
 
 
@@ -31,7 +33,8 @@ def fetch(account: dict, params: dict) -> dict:
         # Site exists but SSL is broken
         result["website_live"] = True
         result["website_has_ssl"] = False
-    except Exception:
+    except requests.RequestException:
+        require_online()  # raises if our own connection is down, so this is retried, not saved
         result["website_live"] = False
         result["website_has_ssl"] = False
 
