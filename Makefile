@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh stability
 
 # Defaults come from config/defaults.yaml. Override for one run, for example:
 #   make score VERTICAL=<name> METRO=config/metro/<name>.yaml
@@ -66,6 +66,11 @@ snapshot:
 fresh:
 	python3 scripts/snapshot.py --fresh-signals
 	$(MAKE) discover backfill enrich score export
+
+# How much of the ranking survives a change to the rubric's weights. Reads the scored
+# file only; calls nothing and costs nothing.
+stability:
+	python3 scripts/tier_stability.py $(V)
 
 # What changed since the last snapshot: outputs/raw/triggers.csv (private).
 triggers:

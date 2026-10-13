@@ -2,7 +2,7 @@
 
 ## Generalization rule
 
-The core engine (db, scoring, sensitivity, briefs, evals, anonymization, sequences, exports, refresh, site) must contain no vertical-specific logic. Everything vertical-specific lives in `config/verticals/<name>/`: discovery source configs, signal configs, rubric.yaml, personas.yaml, brief prompt, and a glossary. Signals and discovery sources implement a small shared interface (`fetch(params, geo) → DataFrame`).
+The core engine (discovery, backfill, enrichment, scoring, weight-sensitivity, briefs, sequences, evals, anonymization, exports, triggers, site) must contain no vertical-specific logic. Everything vertical-specific lives in `config/verticals/<name>/`: discovery source configs, signal configs, rubric.yaml, personas.yaml, brief prompt, and a glossary. Signals and discovery sources implement a small shared interface (`fetch(params, geo) → DataFrame`).
 
 v1 ships one vertical: `home_care_post_acute`.
 
