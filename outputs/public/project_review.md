@@ -15,7 +15,7 @@ The original brief's wording for the goals was lost when an earlier working sess
 | # | Goal | Status | Number and evidence | Next step |
 |---|---|---|---|---|
 | 1 | Find the target accounts in a territory from public sources | PARTIALLY MET, now measured | 1,501 accounts in 1,415 groups from 2 sources; 2,120 rows fetched, 558 merged as duplicates, 48 dropped outside the territory, 13 removed by review. Recall against a public register of licensed providers in the same zip codes: **503 of 664, or 75.8%** (`make recall`). Reviewing the 161 misses by eye, about 16 are the same business under a different name, which puts the real figure near 78%. 139 register entries have no similarly named account in their zip at all. By register type: 29 of 31, 5 of 7, 8 of 9, and 461 of 617 for the largest category. | Work the 139. They are a list of real licensed businesses the engine never found, so they say which source is thin. |
-| 2 | Rank them by public evidence of need, with a reason for every point | PARTIALLY MET | 33 tier A and 211 tier B groups. Ranking is stable: halving or raising any one criterion's weight by half keeps 91 to 100% of the same-sized top group, and weighting every criterion equally still keeps 86.1% (`make stability`). A blind grader's usefulness rating correlates 0.81 and 0.82 with the score across two separate gradings. | Compare the tiers with a real outcome. Nothing else closes this. |
+| 2 | Rank them by public evidence of need, with a reason for every point | PARTIALLY MET | 33 tier A and 211 tier B groups. Ranking is stable: halving or raising any one criterion's weight by half keeps 91 to 100% of the same-sized top group, and weighting every criterion equally still keeps 86.1% (`make stability`). Two blind checks agree with it: a grader's usefulness rating correlated 0.81 and 0.82 with the score across two gradings, and an evaluator applying qualification criteria written from outside sources, with tiers hidden, put 10 of 10 tier A or B accounts in its top 10 and 5 of 5 tier D in its bottom 5. | Compare the tiers with a real outcome. Nothing else closes this. |
 | 3 | Write a source-cited brief for every top account | MET for the mechanism, NOT MET for value | 244 briefs, 1,570 statements, every one citing a numbered fact, 100% passing the source check; 95.2% of available facts were used. Blind grading of 15 rated accuracy 4.5 of 5 and usefulness 2.1 of 5. | The ceiling is the data, not the writing. See "What would raise the usefulness score". |
 | 4 | Draft outreach built on the same facts | MET for the mechanism, PARTIALLY MET for quality | 244 sequences, 732 touches, 100% passing citation, number, wording, length and merge-field checks; 84.8% of first-email closing questions are distinct. Blind grading rated them 4.0 of 5 for accuracy and 3.3 of 5 for sendability. | A seller rewrites 5 drafts by hand; compare what they change. |
 | 5 | Hand off to a CRM and a sequencing tool | PARTIALLY MET | 482 account rows and 244 outreach rows written with a documented field map (`docs/stack-fit.md`). Neither file has been imported anywhere. | Import both into a free developer sandbox and record what breaks. |
@@ -54,6 +54,20 @@ Two caveats that cut against these numbers. The accuracy and sendability wording
 
 One result did replicate independently: in both rounds the grader's usefulness rating correlated 0.81 and 0.82 with the rubric's score, and tier A briefs outscored tier B on every dimension. That is the only evidence in the project that the ranking orders accounts the way a reader would.
 
+## A blind check on the ranking itself
+
+With no salespeople available to rank accounts, the nearest substitute was built instead: qualification criteria written from public sources rather than from this project's rubric, and frozen before any tier was looked at. The sources were an industry benchmarking report on caregiver turnover and referral rejection, a vendor's account-executive job posting stating the size of agency it sells to, the largest incumbent's product positioning, and a guide describing how small agencies run on stitched-together tools. An evaluator applied those criteria to 25 accounts presented as flat fact sheets, with every tier, score and brief removed, and named the 10 it would call first and the 5 it would call last.
+
+| Measure | Result | By chance | Odds against |
+|---|---|---|---|
+| Of its top 10, tier A or B | 10 of 10 | 5.6 | 1 in 3,265 |
+| Of its bottom 5, tier C or D | 5 of 5, all D | 2.2 | 1 in 115 |
+| Pair ordering inside its top 10 matching the score | 69% | 50% | |
+
+The coarse grouping agrees strongly and the fine ordering much less. What this supports is that the rubric implements a qualification logic an outside reader would recognise, not that it predicts a meeting or a sale. It is also not independent the way a person would be, because the evaluator read the same observed facts the rubric scores, so some agreement follows from both reading the same inputs.
+
+**The more useful result was what the evaluator said it could not do.** Asked which criterion separated the accounts, it reported that the heaviest one barely functioned: 24 of the 25 accounts had no readable count of open roles, and the back-office versus front-line split was readable for exactly one. It judged about six of the 25 genuinely distinguishable and called the middle of its own ranking close to arbitrary. The rubric gives hiring activity 35 of 100 points, more than any other criterion, and it can be read for about 1.5% of accounts. What actually orders this list is licence status, years registered, web presence and number of locations, which describe what an agency is rather than why to call it this week. That matches the weight sensitivity test, where halving the hiring weight moved only 22 of 244 groups, and it matches the brief grading, where usefulness scored 2.1 of 5. Three different measurements arrive at the same ceiling.
+
 ## What changed when a check was added
 
 | Measurement | Before | After |
@@ -74,7 +88,8 @@ None of these were caught by the citation check, the number check or the capital
 
 ## What this project does not prove
 
-- **That the ranking is right.** No meeting, reply or deal exists to test it against. The weights are one person's judgment and are labelled as such in the rubric.
+- **That the ranking is right.** No meeting, reply or deal exists to test it against. The weights are one person's judgment and are labelled as such in the rubric. Two blind checks agree with the coarse ordering, but both read the same facts the rubric reads, and neither touches whether a top-tier account is likelier to buy.
+- **That the heaviest criterion earns its weight.** Hiring activity carries 35 of 100 points and is readable for about 1.5% of accounts. The list is ordered mostly by static attributes instead.
 - **That the briefs help anyone sell.** The only quality evidence is a model grading itself: 2.1 of 5 for usefulness, 1 of 15 worth contacting this week.
 - **That it saves time.** No timed comparison against a person was done, so no time claim is made anywhere.
 - **That discovery is complete.** It is not. Against a public register of licensed providers in the same zip codes, the list contains 75.8% of them, and about 78% once near-misses on the name are allowed. Roughly one in five licensed providers in the territory is absent. The register covers only businesses that hold that licence, so recall against the whole market is still unknown.
