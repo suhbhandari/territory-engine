@@ -1,6 +1,6 @@
 # Report card
 
-Built 2026-10-13 from the pipeline's own output files. Signals collected: 2026-10-12 to 2026-10-13. Accounts discovered: 2026-10-12.
+Built 2026-10-14 from the pipeline's own output files. Signals collected: 2026-10-12 to 2026-10-13. Accounts discovered: 2026-10-12.
 
 Measurements only: no grades, because no outcome data or human labels exist yet. The last two sections are written by hand in the vertical's evals.yaml.
 

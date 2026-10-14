@@ -41,9 +41,13 @@ public:
 	python3 src/anonymize.py $(M) $(V)
 	python3 src/evals.py $(V)
 
+# Serves the whole project folder, because site/index.html reads the published data from
+# outputs/public/. Binds to 127.0.0.1 explicitly: the default binds to IPv6 only, which some
+# machines cannot reach as localhost. Opens the page itself so a live demo is one command.
 site: public
 	@echo "Open http://localhost:8000/site/ (Ctrl-C to stop)"
-	python3 -m http.server 8000
+	@(sleep 1 && python3 -c "import webbrowser; webbrowser.open('http://localhost:8000/site/')" >/dev/null 2>&1) &
+	python3 -m http.server 8000 --bind 127.0.0.1
 
 check-generic:
 	python3 scripts/check_generic.py

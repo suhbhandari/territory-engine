@@ -186,7 +186,10 @@ def main(vertical: str, metro_path: str) -> None:
 
     brief_file = dict(zip(briefs["account_group"], briefs["file"]))
     brief_text = {g: (RAW / "briefs" / f).read_text() for g, f in brief_file.items()}
-    touch_text = touches.groupby("account_group").apply(lambda d: " ".join(d["subject"] + " " + d["body"])).to_dict()
+    # Join the touch text per group on a single column rather than applying over the whole
+    # frame: grouping columns inside apply are deprecated, and this does not need them.
+    touch_text = (touches.assign(_text=touches["subject"] + " " + touches["body"])
+                  .groupby("account_group")["_text"].apply(" ".join).to_dict())
     text_counts = Counter()
     for group_key, frame in scored.groupby("account_group", sort=False):
         own = " ".join(frame["score_reasons"]) + " " + " ".join(frame["license_type"])

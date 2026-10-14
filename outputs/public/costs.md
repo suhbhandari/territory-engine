@@ -1,6 +1,6 @@
 # Costs
 
-Generated 2026-10-13. Model costs are measured from the token usage logged for each brief and sequence in the current run, priced at the per-token rates set in the vertical's config. They cover one clean pass; samples, retries and regenerated drafts during development cost extra.
+Generated 2026-10-14. Model costs are measured from the token usage logged for each brief and sequence in the current run, priced at the per-token rates set in the vertical's config. They cover one clean pass; samples, retries and regenerated drafts during development cost extra.
 
 | Step | Model | Items | Avg input tokens | Avg output tokens | Cost per item | Total |
 |---|---|---|---|---|---|---|
