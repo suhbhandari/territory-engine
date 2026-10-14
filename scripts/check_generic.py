@@ -25,6 +25,7 @@ EXCLUDED_PREFIXES = [
     "scripts/check_generic.py",
     "CLAUDE.md",
     "README.md",  # describes the shipped demo run (its vertical and metro) for readers
+    "docs/demo-script.md",  # a script for presenting the shipped demo, so it names that demo
     ".env",
 ]
 
