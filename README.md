@@ -30,6 +30,8 @@ The shipped demo targets **home care, home health and hospice agencies in New Yo
 
 ## Limits, stated plainly
 
+- **The list is not complete.** Against New York State's register of licensed providers in the same zip codes, this list contains 503 of 664, or 75.8%. Allowing for near-misses on the name it is about 78%, and 139 licensed providers in the territory are absent entirely. Run `make recall` to reproduce it. The register covers only businesses holding that licence, so recall against the whole market is still unknown.
+- **The briefs are accurate but thin.** A model that had not seen the pipeline graded 15 briefs blind, twice. It rated their accuracy 4.5 out of 5 and their usefulness 2.1 out of 5, and would contact 1 of the 15 this week. Only 1.5% of accounts have a readable count of open roles, so for most of the list the strongest available fact is that a careers page exists. `outputs/public/project_review.md` has the detail.
 - **The rubric is my judgment.** Its weights and tier cut-offs are a starting hypothesis. They have not been tested against meetings booked or deals won, because no outcome data exists yet.
 - **Hiring signals are thin.** Most accounts have no website on file, and few careers pages publish a readable job feed, so most of the list is scored with low data coverage.
 - **No contacts.** The engine finds accounts, not people. A sequence needs a named contact from another tool.
@@ -38,7 +40,7 @@ The shipped demo targets **home care, home health and hospice agencies in New Yo
 - **The licence check matches by name and phone only.** `not_found` means no match, not that the account is unlicensed: it may trade under another name. A spot check found 8 of 8 matches correct and 6 of 6 `not_found` accounts absent from the state list; that is 14 accounts, not a measured error rate. Accounts that are not home care providers may remain, mostly in the lower tiers.
 - **Anonymization is not a guarantee.** Names, addresses, phones, websites, IDs and hiring systems are removed and counts are shown as ranges, but a combination of facts (city, number of locations, years registered) may still point to an account.
 
-The report card's "Not measured" section has the full list.
+The report card's "Not measured" section has the full list, and `outputs/public/project_review.md` is a full review of what this project does and does not prove.
 
 ## Run it
 
