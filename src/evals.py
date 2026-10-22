@@ -213,6 +213,11 @@ def main(vertical: str) -> None:
     else:
         first_attempts = None
 
+    # CRM pushes that wrote, from push_hubspot's log. Counts only; the log stays private.
+    push_log = RAW / "hubspot_push_log.json"
+    crm_pushes = [{k: r.get(k) for k in ("at", "source", "accounts", "created", "updated", "unchanged")}
+                  for r in json.loads(push_log.read_text()) if r.get("mode") == "write"] if push_log.exists() else []
+
     card = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "data_as_of": data_dates(scored),
@@ -222,6 +227,7 @@ def main(vertical: str) -> None:
         "briefs": brief_stats,
         "sequences": sequence_stats,
         "first_attempts": first_attempts,
+        "crm_pushes": crm_pushes,
         "checks_cover": evals_cfg["checks_cover"],
         "not_measured": evals_cfg["not_measured"],
         "other_costs": evals_cfg.get("other_costs", []),
@@ -310,6 +316,13 @@ def render_card(c: dict) -> str:
                 if isinstance(v, dict) and "before" in v]
         if ba.get("note"):
             out += ["", ba["note"]]
+    if c.get("crm_pushes"):
+        out += ["", "## CRM push (HubSpot)", "",
+                "Each run that wrote to HubSpot, from the push log. Unchanged accounts are not sent, so a "
+                "second identical run should show 0 created and 0 updated.", "",
+                "| Run (UTC) | Source | Accounts | Created | Updated | Unchanged |", "|---|---|---|---|---|---|"]
+        out += [f"| {r['at']} | {r['source']} | {r['accounts']} | {r['created']} | {r['updated']} | {r['unchanged']} |"
+                for r in c["crm_pushes"]]
     out += ["", "## What the automated checks cover (written by hand)", ""] + [f"- {x}" for x in c["checks_cover"]]
     out += ["", "## Not measured (written by hand)", ""] + [f"- {x}" for x in c["not_measured"]]
     return "\n".join(out) + "\n"

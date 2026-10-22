@@ -1,10 +1,24 @@
 # Stack fit
 
-How the engine's output lands in a sales team's tools. Written for Salesforce (CRM) and Outreach (sales engagement), because they are the most common pairing.
+How the engine's output lands in a sales team's tools. Written for Salesforce (CRM) and Outreach (sales engagement), because they are the most common pairing, with a direct API push for HubSpot.
 
-**Status: untested against live tools.** `make export` produces both files and they pass the engine's own checks (unique IDs, no blank required fields, no stray merge fields). Neither file has been imported into a real Salesforce or Outreach workspace, and which tools the target sales team runs is an assumption, not a confirmed fact. Treat the import steps below as a plan to verify on first use.
+**Status: HubSpot companies proven; Salesforce and Outreach untested.** On 2026-10-21 `make push-hubspot` wrote the 396 tier A to C accounts of the anonymized build to a HubSpot developer test account as companies (396 created), and an identical second push created 0 and updated 0. That is a test account, companies only, from the anonymized build; the private build has not been pushed, and no contacts were created. `make export` produces the Salesforce and Outreach files and they pass the engine's own checks (unique IDs, no blank required fields, no stray merge fields), but neither has been imported into a real workspace. Which tools the target sales team runs is an assumption, not a confirmed fact. Treat those import steps as a plan to verify on first use.
 
 Both tools ask you to map each CSV column to a field during import, so the column headers are labels to map from. Changing a header, adding a field, or targeting a different tool is an edit to `export.yaml` in the vertical's config folder, not a code change.
+
+## HubSpot: companies through the API
+
+`make hubspot-setup` creates a "Territory Engine" property group and the custom company properties listed in the `hubspot` block of the vertical's `export.yaml`; `territory_engine_id` is created as a unique-value property. Running it again creates nothing. `make push-hubspot` then upserts one company per tier A to C account, matched on `territory_engine_id`, in batches of 100.
+
+- **Dry run by default.** It reads what HubSpot holds and prints create / update / unchanged counts. `CONFIRM=1` writes. Unchanged companies are not sent, so a repeat push writes nothing.
+- **Anonymized by default.** `SOURCE=raw` pushes the private build instead. The two builds use different IDs, so they make separate companies: use one per HubSpot account.
+- **Token.** A private app token in `.env` as `HUBSPOT_TOKEN`, with the scopes listed in `.env.example`.
+- **Log.** Every batch goes to `outputs/raw/hubspot_push_log.json`; the report card shows the counts of each run that wrote.
+- Property names, labels and types are config. Adding a property is an edit to `export.yaml`, then `make hubspot-setup` again.
+
+![HubSpot company list filtered to Territory Tier A: 33 companies, Account 0001 to 0033](img/hubspot-tier-a.png)
+
+The test account after the first push, filtered to tier A: 33 companies, matching the 33 tier A accounts in the public build. The unfiltered list holds 397: the 396 pushed, plus one company that was already in the account (not checked; most likely the sample company HubSpot adds to a new account).
 
 ## Salesforce: `salesforce_accounts.csv`
 

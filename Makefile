@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh stability recall
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh stability recall hubspot-setup push-hubspot
 
 # Defaults come from config/defaults.yaml. Override for one run, for example:
 #   make score VERTICAL=<name> METRO=config/metro/<name>.yaml
@@ -36,6 +36,16 @@ sequence-sample:
 
 export:
 	python3 src/export.py $(V)
+
+# HubSpot companies through the API (needs HUBSPOT_TOKEN in .env). Setup creates the
+# property group and custom properties; safe to run again. Push is a dry run unless
+# CONFIRM=1, and sends the anonymized public build unless SOURCE=raw.
+SOURCE ?= public
+hubspot-setup:
+	python3 src/push_hubspot.py setup $(V)
+
+push-hubspot:
+	python3 src/push_hubspot.py push $(V) --source $(SOURCE) $(if $(CONFIRM),--confirm)
 
 public:
 	python3 src/anonymize.py $(M) $(V)

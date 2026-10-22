@@ -1,6 +1,6 @@
 # Report card
 
-Built 2026-10-14 from the pipeline's own output files. Signals collected: 2026-10-12 to 2026-10-13. Accounts discovered: 2026-10-12.
+Built 2026-10-22 from the pipeline's own output files. Signals collected: 2026-10-12 to 2026-10-13. Accounts discovered: 2026-10-12.
 
 Measurements only: no grades, because no outcome data or human labels exist yet. The last two sections are written by hand in the vertical's evals.yaml.
 
@@ -126,6 +126,17 @@ Each row is the same measurement, run over the published drafts before and after
 
 The before figures were measured with the same check definitions, applied to the drafts as they stood on 2026-10-13 before the prompt and code changes. The second prompt version was measured against stricter checks than the first, so its pass rate is not directly comparable with the first.
 
+## CRM push (HubSpot)
+
+Each run that wrote to HubSpot, from the push log. Unchanged accounts are not sent, so a second identical run should show 0 created and 0 updated.
+
+| Run (UTC) | Source | Accounts | Created | Updated | Unchanged |
+|---|---|---|---|---|---|
+| 2026-10-22T00:43:20Z | public | 396 | 396 | 0 | 0 |
+| 2026-10-22T00:44:24Z | public | 396 | 0 | 0 | 396 |
+| 2026-10-22T00:44:31Z | public | 396 | 0 | 0 | 396 |
+| 2026-10-22T00:44:49Z | public | 396 | 0 | 0 | 396 |
+
 ## What the automated checks cover (written by hand)
 
 - Briefs: every statement cites at least one numbered fact, every cited fact exists, every number (in digits, or a number word from two up) appears in a cited fact, and every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact.
@@ -144,5 +155,5 @@ The before figures were measured with the same check definitions, applied to the
 - Recall of discovery: how many real agencies in the territory are missing from the list.
 - Job-posting accuracy. Counts were read from each employer's own job feed once and not cross-checked; most accounts have no readable feed at all.
 - First-pass failure rate under the current prompts. The first attempts counted above used the prompts as they stood before the number rule was tightened on 2026-10-13. The tightened prompts have only been run on drafts that had already failed, so their own first-pass rate is not known.
-- Whether the export files import cleanly. They have not been loaded into a live CRM or sales engagement workspace.
+- Whether the Salesforce and Outreach export files import cleanly. They have not been loaded into a live workspace. Only the HubSpot company push has run against a live (test) account; see the CRM push section.
 - Whether the public dataset can be re-identified. Names and contact details are removed, but an account's combination of facts may still point to it.

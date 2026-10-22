@@ -85,3 +85,65 @@ targets:
       - {header: Call Opener, value: "{call_1_script}"}
       - {header: Why This Account, value: "{score_reasons}"}
       - {header: Brief File, value: "{brief_file}"}
+
+# HubSpot companies, written through the API by src/push_hubspot.py (not a CSV).
+# `make hubspot-setup` creates the group and every property not marked standard;
+# `make push-hubspot` upserts one company per account in `tiers`, keyed on id_property.
+#
+# A property's `value` has one template per source: `public` is the anonymized build
+# (outputs/public/accounts_public.csv, safe to show on screen), `raw` the private scored
+# file. A source with no template leaves that property alone. The two sources use
+# different IDs, so they make separate companies; push one or the other to an account.
+# `type` and `field_type` are HubSpot's own: string/text, number/number,
+# enumeration/select (needs options), bool/booleancheckbox.
+hubspot:
+  object: companies
+  id_property: territory_engine_id
+  tiers: [A, B, C]
+  group: {name: territory_engine, label: Territory Engine}
+  properties:
+    # HubSpot's own company properties: filled, never created.
+    - {name: name, standard: true, value: {public: "{id}", raw: "{name}"}}
+    - {name: phone, standard: true, value: {raw: "{phone}"}}
+    - {name: website, standard: true, value: {raw: "{website}"}}
+    - {name: domain, standard: true, value: {raw: "{website_domain}"}}
+    - {name: address, standard: true, value: {raw: "{address}"}}
+    - {name: city, standard: true, value: {public: "{city}", raw: "{city}"}}
+    - {name: state, standard: true, value: {raw: "{state}"}}
+    - {name: zip, standard: true, value: {raw: "{zip}"}}
+    - {name: description, standard: true, value: {raw: "{score_reasons}"}}
+    # Custom properties, created in the Territory Engine group.
+    - name: territory_engine_id
+      label: Territory Engine ID
+      type: string
+      field_type: text
+      unique: true
+      value: {public: "{id}", raw: "{entity_id}"}
+    - name: territory_tier
+      label: Territory Tier
+      type: enumeration
+      field_type: select
+      options: [A, B, C, D]
+      value: {public: "{tier}", raw: "{tier}"}
+    - {name: territory_score, label: Territory Score, type: number, field_type: number,
+       value: {public: "{score}", raw: "{score}"}}
+    - {name: territory_rank, label: Territory Group Rank, type: number, field_type: number,
+       value: {public: "{rank}", raw: "{group_rank}"}}
+    - {name: territory_data_coverage, label: Territory Data Coverage, type: number, field_type: number,
+       value: {public: "{data_coverage}", raw: "{data_coverage}"}}
+    - {name: territory_locations, label: Locations In Group, type: number, field_type: number,
+       value: {public: "{locations}", raw: "{group_size}"}}
+    - {name: territory_agency_type, label: Agency Type, type: string, field_type: text,
+       value: {public: "{type}", raw: "{license_type}"}}
+    - {name: territory_years_registered, label: Years Registered, type: number, field_type: number,
+       value: {public: "{years_registered}", raw: "{npi_age_years}"}}
+    - {name: territory_hiring_status, label: Hiring Check Status, type: string, field_type: text,
+       value: {public: "{hiring_status}", raw: "{jobs_status}"}}
+    - {name: territory_open_roles, label: Open Roles In Area, type: string, field_type: text,
+       value: {public: "{open_roles}", raw: "{jobs_total}"}}
+    - {name: territory_write_to, label: Write To Role, type: string, field_type: text,
+       value: {public: "{persona}"}}
+    - {name: territory_found_via, label: Found Via, type: string, field_type: text,
+       value: {raw: "{source}"}}
+    - {name: territory_signals_checked, label: Signals Checked On, type: string, field_type: text,
+       value: {raw: "{signals_fetched_at:.10}"}}

@@ -11,7 +11,7 @@ def fail(*a, **k):
 
 @pytest.fixture(autouse=True)
 def fresh_probe(monkeypatch):
-    monkeypatch.setattr(online, "_last_ok", [0.0])
+    monkeypatch.setattr(online, "_last_ok", [float("-inf")])  # never checked, whatever the clock reads
 
 
 def test_site_down_while_online_is_recorded(monkeypatch):
