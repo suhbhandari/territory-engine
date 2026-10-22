@@ -11,14 +11,14 @@ Both tools ask you to map each CSV column to a field during import, so the colum
 `make hubspot-setup` creates a "Territory Engine" property group and the custom company properties listed in the `hubspot` block of the vertical's `export.yaml`; `territory_engine_id` is created as a unique-value property. Running it again creates nothing. `make push-hubspot` then upserts one company per tier A to C account, matched on `territory_engine_id`, in batches of 100.
 
 - **Dry run by default.** It reads what HubSpot holds and prints create / update / unchanged counts. `CONFIRM=1` writes. Unchanged companies are not sent, so a repeat push writes nothing.
-- **Anonymized by default.** `SOURCE=raw` pushes the private build instead. The two builds use different IDs, so they make separate companies: use one per HubSpot account.
+- **Anonymized by default, for demos only.** The public build's IDs are ranks (`Account 0001` is whichever account ranks first in that build), so after a refresh the same ID can name a different account: after the 2026-10-22 refresh, 325 of the 396 tier A to C IDs carried different data. A public push is a snapshot to show on screen, not a sync. For a CRM that is kept up to date, push `SOURCE=raw`, which keys on the registry number or Google place ID and does not change between runs. The two builds use different IDs, so they make separate companies: use one per HubSpot account.
 - **Token.** A private app token in `.env` as `HUBSPOT_TOKEN`, with the scopes listed in `.env.example`.
 - **Log.** Every batch goes to `outputs/raw/hubspot_push_log.json`; the report card shows the counts of each run that wrote.
 - Property names, labels and types are config. Adding a property is an edit to `export.yaml`, then `make hubspot-setup` again.
 
 ![HubSpot company list filtered to Territory Tier A: 33 companies, Account 0001 to 0033](img/hubspot-tier-a.png)
 
-The test account after the first push, filtered to tier A: 33 companies, matching the 33 tier A accounts in the public build. The unfiltered list holds 397: the 396 pushed, plus one company that was already in the account (not checked; most likely the sample company HubSpot adds to a new account).
+The test account after the first push, filtered to tier A: 33 companies, matching the 33 tier A accounts in the public build of 2026-10-13 (the build pushed; the 2026-10-22 refresh has 31). The unfiltered list holds 397: the 396 pushed, plus one company that was already in the account (not checked; most likely the sample company HubSpot adds to a new account).
 
 ## Salesforce: `salesforce_accounts.csv`
 

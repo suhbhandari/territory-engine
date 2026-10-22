@@ -81,6 +81,47 @@ def first_attempt_summary(log: dict) -> dict:
     return {"steps": steps, "retries": retries}
 
 
+def refresh_summary(scored: pd.DataFrame, briefs_all: pd.DataFrame, seqs_all: pd.DataFrame) -> dict:
+    """What changed since the previous saved run: tier moves, trigger rows by type, and the
+    drafts written in this run, split into rewrites and groups new to the drafted tiers."""
+    from src.triggers import latest_snapshot  # here, not at the top: only this section needs it
+    trig_path = RAW / "triggers.csv"
+    if not trig_path.exists():
+        return None
+    try:
+        prev_dir = latest_snapshot(set(scored["signals_fetched_at"].str[:10]))
+    except SystemExit:
+        return None
+    prev = pd.read_csv(prev_dir / "accounts_scored.csv", dtype=str, keep_default_na=False)
+    trig = pd.read_csv(trig_path, dtype=str, keep_default_na=False)
+    both = prev[["entity_id", "tier"]].merge(scored[["entity_id", "tier"]], on="entity_id", suffixes=("_before", "_after"))
+    moved = both[both["tier_before"] != both["tier_after"]]
+    drafted = sorted(set(briefs_all["tier"]))
+    was_drafted = set(prev.loc[prev["tier"].isin(drafted), "account_group"])
+    since = data_dates(scored)["signals_checked"]["first"]
+    written = {}
+    for label, index in (("briefs", briefs_all), ("sequences", seqs_all)):
+        new = index[index["generated_at"].str[:10] >= since]
+        rewrites = new["account_group"].isin(was_drafted)
+        written[label] = {"written": len(new), "rewritten": int(rewrites.sum()), "new_groups": int((~rewrites).sum()),
+                          "cost_usd": round(pd.to_numeric(new["cost_usd"], errors="coerce").sum(), 2)}
+    return {
+        "previous_run": prev_dir.name,
+        "previous_signals": data_dates(prev)["signals_checked"],
+        "accounts_compared": len(both),
+        "accounts_new": int((~scored["entity_id"].isin(prev["entity_id"])).sum()),
+        "accounts_gone": int((~prev["entity_id"].isin(scored["entity_id"])).sum()),
+        "tier_changes": len(moved),
+        "tier_changes_by_direction": (moved["tier_before"] + " to " + moved["tier_after"]).value_counts().to_dict(),
+        "trigger_rows": len(trig),
+        "trigger_rows_by_type": trig["what"].value_counts().to_dict(),
+        "accounts_with_trigger": int(trig["entity_id"].nunique()),
+        "drafted_tiers": drafted,
+        "accounts_in_drafted_tiers_with_trigger": int(trig.loc[trig["tier"].isin(drafted), "entity_id"].nunique()),
+        "drafts": written,
+    }
+
+
 def _date_range(d) -> str:
     if not d:
         return "not recorded"
@@ -218,6 +259,8 @@ def main(vertical: str) -> None:
     crm_pushes = [{k: r.get(k) for k in ("at", "source", "accounts", "created", "updated", "unchanged")}
                   for r in json.loads(push_log.read_text()) if r.get("mode") == "write"] if push_log.exists() else []
 
+    refresh = refresh_summary(scored, briefs_all, seqs_all)
+
     card = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "data_as_of": data_dates(scored),
@@ -228,6 +271,7 @@ def main(vertical: str) -> None:
         "sequences": sequence_stats,
         "first_attempts": first_attempts,
         "crm_pushes": crm_pushes,
+        "refresh": refresh,
         "checks_cover": evals_cfg["checks_cover"],
         "not_measured": evals_cfg["not_measured"],
         "other_costs": evals_cfg.get("other_costs", []),
@@ -316,6 +360,24 @@ def render_card(c: dict) -> str:
                 if isinstance(v, dict) and "before" in v]
         if ba.get("note"):
             out += ["", ba["note"]]
+    r = c.get("refresh")
+    if r:
+        out += ["", "## Week over week", "",
+                f"This run compared with the saved run `{r['previous_run']}`. Signals before: "
+                f"{_date_range(r['previous_signals'])}; after: {_date_range(c['data_as_of']['signals_checked'])}. "
+                f"{r['accounts_compared']} accounts are in both runs, {r['accounts_new']} are new and {r['accounts_gone']} are gone.", "",
+                f"- {r['tier_changes']} of {r['accounts_compared']} accounts changed tier: "
+                + ", ".join(f"{k}: {v}" for k, v in r["tier_changes_by_direction"].items()) + ".",
+                f"- {r['trigger_rows']} trigger events on {r['accounts_with_trigger']} accounts; "
+                f"{r['accounts_in_drafted_tiers_with_trigger']} of those accounts are now in tiers "
+                + " or ".join(r["drafted_tiers"]) + ".", "",
+                "| Trigger | Events |", "|---|---|"]
+        out += [f"| {k} | {v} |" for k, v in r["trigger_rows_by_type"].items()]
+        out += [""] + [f"- {k.capitalize()} written in this run: {v['written']} ({v['rewritten']} rewritten because "
+                       f"their facts changed, {v['new_groups']} for groups new to tiers {' and '.join(r['drafted_tiers'])}); "
+                       f"${v['cost_usd']:.2f}. The rest were kept as they were."
+                       for k, v in r["drafts"].items()]
+        out += ["", "Whether these changes are worth a rep acting on has not been judged by a rep."]
     if c.get("crm_pushes"):
         out += ["", "## CRM push (HubSpot)", "",
                 "Each run that wrote to HubSpot, from the push log. Unchanged accounts are not sent, so a "

@@ -1,83 +1,83 @@
 id,rank,tier,score,data_coverage,city,zip3,type,locations,years_registered,has_website,hiring_status,hiring_system,open_roles,persona
 Account 0001,1,A,100,1.0,Brooklyn,112,Home Health,3,11,True,counted,[hidden],100+,Director of Operations or COO
 Account 0002,2,A,88,0.9,Bronx,104,Health,3,,True,counted,[hidden],20-49,Director of Operations or COO
-Account 0003,3,A,87,1.0,Forest Hills,113,Home Health,3,20,True,counted,[hidden],5-19,Director of Operations or COO
-Account 0004,4,A,80,0.9,Brooklyn,112,Health,1,,True,counted,[hidden],20-49,Director of Operations or COO
-Account 0005,5,A,75,1.0,Brooklyn,112,Home Health,3,11,True,listings_found,,1-4,Director of Operations or COO
-Account 0006,6,A,73,0.9,Brooklyn,112,Home Health,3,11,True,ats_unsupported,[hidden],,Director of Operations or COO
-Account 0007,7,A,72,1.0,Forest Hills,113,Home Health,3,20,True,listings_found,,1-4,Director of Operations or COO
-Account 0008,8,A,70,0.9,Brooklyn,112,Home Health,5,15,True,ats_unsupported,[hidden],,Director of Operations or COO
-Account 0009,9,A,70,0.9,Brooklyn,112,Home Health,2,11,True,ats_unsupported,[hidden],,Director of Operations or COO
-Account 0010,10,A,68,1.0,Queens Village,114,Home Health,1,19,True,listings_found,,1-4,Administrator
-Account 0011,11,A,67,1.0,Brooklyn,112,Home Health,1,11,True,listings_found,,1-4,Administrator
-Account 0012,12,A,67,1.0,Brooklyn,112,Home Health,1,9,True,listings_found,,1-4,Administrator
-Account 0013,13,A,67,0.9,Bronx,104,Home Health,2,20,True,ats_unsupported,[hidden],,Director of Operations or COO
-Account 0014,14,A,67,0.9,New York City,100,Home Health,2,20,True,ats_unsupported,[hidden],,Director of Operations or COO
-Account 0015,15,A,67,0.9,Brooklyn,112,Home Health,2,19,True,ats_unsupported,[hidden],,Director of Operations or COO
-Account 0016,16,A,65,0.9,New York,100,Home Health,1,3,True,ats_unsupported,[hidden],,Administrator
-Account 0017,17,A,65,0.9,Brooklyn,112,Home Health,1,11,True,ats_unsupported,[hidden],,Administrator
-Account 0018,18,A,65,0.9,Brooklyn,112,Home Health,1,5,True,ats_unsupported,[hidden],,Administrator
-Account 0019,19,A,65,0.9,New York,100,Home Health,3,6,True,offsite_listings,,,Director of Operations or COO
-Account 0020,20,A,65,0.9,Flushing,113,Home Health,1,11,True,ats_unsupported,[hidden],,Administrator
-Account 0021,21,A,65,0.9,Brooklyn,112,Home Health,1,9,True,ats_unsupported,[hidden],,Administrator
-Account 0022,22,A,64,0.9,Bronx,104,Health,1,,True,counted,[hidden],5-19,Owner or Operator
-Account 0023,23,A,63,0.8,New York,100,Health,3,,True,ats_unsupported,[hidden],,Director of Operations or COO
-Account 0024,24,A,62,0.9,New York,100,Home Health,1,19,True,ats_unsupported,[hidden],,Administrator
-Account 0025,25,A,62,0.9,Brooklyn,112,Home Health,3,20,True,offsite_listings,,,Director of Operations or COO
+Account 0003,3,A,80,0.9,Brooklyn,112,Health,1,,True,counted,[hidden],20-49,Director of Operations or COO
+Account 0004,4,A,75,1.0,Brooklyn,112,Home Health,3,11,True,listings_found,,1-4,Director of Operations or COO
+Account 0005,5,A,73,0.9,Brooklyn,112,Home Health,3,11,True,ats_unsupported,[hidden],,Director of Operations or COO
+Account 0006,6,A,72,1.0,Forest Hills,113,Home Health,3,20,True,listings_found,,1-4,Director of Operations or COO
+Account 0007,7,A,70,0.9,Brooklyn,112,Home Health,5,15,True,ats_unsupported,[hidden],,Director of Operations or COO
+Account 0008,8,A,70,0.9,Brooklyn,112,Home Health,2,11,True,ats_unsupported,[hidden],,Director of Operations or COO
+Account 0009,9,A,68,1.0,Queens Village,114,Home Health,1,19,True,listings_found,,1-4,Administrator
+Account 0010,10,A,67,1.0,Brooklyn,112,Home Health,1,11,True,listings_found,,1-4,Administrator
+Account 0011,11,A,67,1.0,Brooklyn,112,Home Health,1,9,True,listings_found,,1-4,Administrator
+Account 0012,12,A,67,0.9,Bronx,104,Home Health,2,20,True,ats_unsupported,[hidden],,Director of Operations or COO
+Account 0013,13,A,67,0.9,New York City,100,Home Health,2,20,True,ats_unsupported,[hidden],,Director of Operations or COO
+Account 0014,14,A,67,0.9,Brooklyn,112,Home Health,2,19,True,ats_unsupported,[hidden],,Director of Operations or COO
+Account 0015,15,A,65,0.9,New York,100,Home Health,1,3,True,ats_unsupported,[hidden],,Administrator
+Account 0016,16,A,65,0.9,Brooklyn,112,Home Health,1,11,True,ats_unsupported,[hidden],,Administrator
+Account 0017,17,A,65,0.9,Brooklyn,112,Home Health,1,5,True,ats_unsupported,[hidden],,Administrator
+Account 0018,18,A,65,0.9,New York,100,Home Health,3,6,True,offsite_listings,,,Director of Operations or COO
+Account 0019,19,A,65,0.9,Flushing,113,Home Health,1,11,True,ats_unsupported,[hidden],,Administrator
+Account 0020,20,A,65,0.9,Brooklyn,112,Home Health,1,9,True,ats_unsupported,[hidden],,Administrator
+Account 0021,21,A,63,0.8,New York,100,Health,3,,True,ats_unsupported,[hidden],,Director of Operations or COO
+Account 0022,22,A,62,0.9,New York,100,Home Health,1,19,True,ats_unsupported,[hidden],,Administrator
+Account 0023,23,A,62,0.9,Brooklyn,112,Home Health,3,20,True,offsite_listings,,,Director of Operations or COO
+Account 0024,24,A,62,0.9,Brooklyn,112,Home Health,1,19,True,ats_unsupported,[hidden],,Administrator
+Account 0025,25,A,62,0.9,Bronx,104,Home Health,1,14,True,ats_unsupported,[hidden],,Administrator
 Account 0026,26,A,62,0.9,Brooklyn,112,Home Health,1,19,True,ats_unsupported,[hidden],,Administrator
-Account 0027,27,A,62,0.9,Bronx,104,Home Health,1,14,True,ats_unsupported,[hidden],,Administrator
-Account 0028,28,A,62,0.9,Brooklyn,112,Home Health,1,19,True,ats_unsupported,[hidden],,Administrator
-Account 0029,29,A,62,0.9,Brooklyn,112,Home Health,1,13,True,ats_unsupported,[hidden],,Administrator
-Account 0030,30,A,60,0.9,New York,100,Home Health,1,11,True,ats_unsupported,[hidden],,Administrator
-Account 0031,31,A,60,0.9,Brooklyn,112,Home Health,3,9,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0032,32,A,60,0.9,Brooklyn,112,Home Health,14,12,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0033,33,A,60,0.9,Staten Island,103,In Home Supportive Care,1,11,True,ats_unsupported,[hidden],,Owner or Operator
-Account 0034,34,B,57,0.9,Brooklyn,112,Home Health,1,4,True,offsite_listings,,,Administrator
-Account 0035,35,B,57,0.9,Brooklyn,112,Home Health,1,18,True,ats_unsupported,[hidden],,Administrator
-Account 0036,36,B,57,0.9,Queens,114,Health,1,,True,listings_found,,1-4,Owner or Operator
-Account 0037,37,B,57,0.9,Brooklyn,112,Home Health,3,14,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0038,38,B,57,0.9,Brooklyn,112,Home Health,2,10,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0039,39,B,57,0.9,Brooklyn,112,Home Health,4,16,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0040,40,B,57,0.9,New York,100,Home Health,1,20,True,ats_unsupported,[hidden],,Administrator
-Account 0041,41,B,55,0.8,Brooklyn,112,Health,1,,True,ats_unsupported,[hidden],,Owner or Operator
-Account 0042,42,B,54,0.9,Brooklyn,112,Home Health,2,15,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0043,43,B,54,0.9,Brooklyn,112,Home Health,2,17,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0044,44,B,54,0.9,Rego Park,113,Home Health,3,2,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0045,45,B,54,0.9,Long Island City,111,"Hospice Care, Community Based",1,20,True,offsite_listings,,,Executive Director
-Account 0046,46,B,54,0.9,New York,100,Home Health,7,2,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0047,47,B,54,0.9,Brooklyn,112,Home Health,2,18,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0048,48,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
-Account 0049,49,B,52,0.9,Bronx,104,Home Health,1,8,True,careers_page_no_listings,,,Administrator
+Account 0027,27,A,62,0.9,Brooklyn,112,Home Health,1,13,True,ats_unsupported,[hidden],,Administrator
+Account 0028,28,A,60,0.9,New York,100,Home Health,1,11,True,ats_unsupported,[hidden],,Administrator
+Account 0029,29,A,60,0.9,Brooklyn,112,Home Health,3,9,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0030,30,A,60,0.9,Brooklyn,112,Home Health,14,12,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0031,31,A,60,0.9,Staten Island,103,In Home Supportive Care,1,11,True,ats_unsupported,[hidden],,Owner or Operator
+Account 0032,32,B,57,0.9,Brooklyn,112,Home Health,1,4,True,offsite_listings,,,Administrator
+Account 0033,33,B,57,0.9,Brooklyn,112,Home Health,1,18,True,ats_unsupported,[hidden],,Administrator
+Account 0034,34,B,57,0.9,Queens,114,Health,1,,True,listings_found,,1-4,Owner or Operator
+Account 0035,35,B,57,0.9,Forest Hills,113,Home Health,3,20,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0036,36,B,57,0.9,Brooklyn,112,Home Health,3,14,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0037,37,B,57,0.9,Brooklyn,112,Home Health,2,10,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0038,38,B,57,0.9,Brooklyn,112,Home Health,4,16,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0039,39,B,57,0.9,New York,100,Home Health,1,20,True,ats_unsupported,[hidden],,Administrator
+Account 0040,40,B,55,0.8,Brooklyn,112,Health,1,,True,ats_unsupported,[hidden],,Owner or Operator
+Account 0041,41,B,54,0.9,Brooklyn,112,Home Health,2,15,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0042,42,B,54,0.9,Brooklyn,112,Home Health,2,17,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0043,43,B,54,0.9,Rego Park,113,Home Health,3,2,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0044,44,B,54,0.9,Long Island City,111,"Hospice Care, Community Based",1,20,True,offsite_listings,,,Executive Director
+Account 0045,45,B,54,0.9,Brooklyn,112,Home Health,2,18,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0046,46,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
+Account 0047,47,B,52,0.9,Bronx,104,Home Health,1,8,True,careers_page_no_listings,,,Administrator
+Account 0048,48,B,52,0.9,Brooklyn,112,Home Health,1,12,True,careers_page_no_listings,,,Administrator
+Account 0049,49,B,52,0.9,Brooklyn,112,Home Health,1,6,True,careers_page_no_listings,,,Administrator
 Account 0050,50,B,52,0.9,Brooklyn,112,Home Health,1,12,True,careers_page_no_listings,,,Administrator
-Account 0051,51,B,52,0.9,Brooklyn,112,Home Health,1,6,True,careers_page_no_listings,,,Administrator
-Account 0052,52,B,52,0.9,Brooklyn,112,Home Health,1,12,True,careers_page_no_listings,,,Administrator
-Account 0053,53,B,52,0.9,Staten Island,103,Home Health,1,9,True,careers_page_no_listings,,,Administrator
-Account 0054,54,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
-Account 0055,55,B,52,0.9,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0056,56,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0057,57,B,52,0.9,Jamaica,114,Home Health,1,3,True,careers_page_no_listings,,,Administrator
-Account 0058,58,B,52,0.9,Brooklyn,112,Home Health,1,4,True,careers_page_no_listings,,,Administrator
-Account 0059,59,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
-Account 0060,60,B,52,0.9,Astoria,111,Home Health,1,6,True,careers_page_no_listings,,,Administrator
-Account 0061,61,B,52,0.9,Rego Park,113,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0062,62,B,52,0.9,Brooklyn,112,Home Health,1,8,True,careers_page_no_listings,,,Administrator
-Account 0063,63,B,52,0.9,New York,100,Home Health,1,7,True,careers_page_no_listings,,,Administrator
-Account 0064,64,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0065,65,B,52,0.9,Forest Hills,113,Home Health,2,12,True,careers_page_no_listings,,,Director of Operations or COO
-Account 0066,66,B,52,0.9,Bronx,104,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0067,67,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0068,68,B,52,0.9,Brooklyn,112,Home Health,3,9,True,no_careers_page,,,Director of Operations or COO
-Account 0069,69,B,52,0.9,Kew Gardens,114,Home Health,1,5,True,careers_page_no_listings,,,Administrator
+Account 0051,51,B,52,0.9,Staten Island,103,Home Health,1,9,True,careers_page_no_listings,,,Administrator
+Account 0052,52,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
+Account 0053,53,B,52,0.9,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0054,54,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
+Account 0055,55,B,52,0.9,Jamaica,114,Home Health,1,3,True,careers_page_no_listings,,,Administrator
+Account 0056,56,B,52,0.9,Brooklyn,112,Home Health,1,4,True,careers_page_no_listings,,,Administrator
+Account 0057,57,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
+Account 0058,58,B,52,0.9,Astoria,111,Home Health,1,6,True,careers_page_no_listings,,,Administrator
+Account 0059,59,B,52,0.9,Rego Park,113,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0060,60,B,52,0.9,Brooklyn,112,Home Health,1,8,True,careers_page_no_listings,,,Administrator
+Account 0061,61,B,52,0.9,New York,100,Home Health,1,7,True,careers_page_no_listings,,,Administrator
+Account 0062,62,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
+Account 0063,63,B,52,0.9,Forest Hills,113,Home Health,2,12,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0064,64,B,52,0.9,Bronx,104,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0065,65,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
+Account 0066,66,B,52,0.9,Brooklyn,112,Home Health,3,9,True,no_careers_page,,,Director of Operations or COO
+Account 0067,67,B,52,0.9,Kew Gardens,114,Home Health,1,5,True,careers_page_no_listings,,,Administrator
+Account 0068,68,B,52,0.9,Brooklyn,112,Home Health,1,8,True,careers_page_no_listings,,,Administrator
+Account 0069,69,B,52,0.9,Brooklyn,112,Home Health,1,6,True,careers_page_no_listings,,,Administrator
 Account 0070,70,B,52,0.9,Brooklyn,112,Home Health,1,8,True,careers_page_no_listings,,,Administrator
-Account 0071,71,B,52,0.9,Brooklyn,112,Home Health,1,6,True,careers_page_no_listings,,,Administrator
-Account 0072,72,B,52,0.9,Brooklyn,112,Home Health,1,8,True,careers_page_no_listings,,,Administrator
-Account 0073,73,B,52,0.9,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0074,74,B,52,0.9,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0075,75,B,52,0.9,Brooklyn,112,Home Health,1,7,True,careers_page_no_listings,,,Administrator
-Account 0076,76,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0077,77,B,52,0.9,New York,100,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0078,78,B,52,0.9,Rego Park,113,Home Health,1,5,True,careers_page_no_listings,,,Administrator
-Account 0079,79,B,52,0.9,Brooklyn,112,Home Health,1,8,True,careers_page_no_listings,,,Administrator
+Account 0071,71,B,52,0.9,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0072,72,B,52,0.9,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0073,73,B,52,0.9,Brooklyn,112,Home Health,1,7,True,careers_page_no_listings,,,Administrator
+Account 0074,74,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
+Account 0075,75,B,52,0.9,New York,100,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0076,76,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
+Account 0077,77,B,52,0.9,Rego Park,113,Home Health,1,5,True,careers_page_no_listings,,,Administrator
+Account 0078,78,B,52,0.9,Brooklyn,112,Home Health,1,8,True,careers_page_no_listings,,,Administrator
+Account 0079,79,B,52,0.9,Hollis,114,Home Health,1,9,True,careers_page_no_listings,,,Administrator
 Account 0080,80,B,52,0.9,Brooklyn,112,Home Health,1,8,True,careers_page_no_listings,,,Administrator
 Account 0081,81,B,52,0.9,New York,100,Home Health,1,9,True,careers_page_no_listings,,,Administrator
 Account 0082,82,B,52,0.9,Brooklyn,112,Home Health,1,6,True,careers_page_no_listings,,,Administrator
@@ -93,187 +93,187 @@ Account 0091,91,B,52,0.9,Brooklyn,112,In Home Supportive Care,1,10,True,careers_
 Account 0092,92,B,52,0.9,Staten Island,103,Home Health,1,7,True,careers_page_no_listings,,,Administrator
 Account 0093,93,B,52,0.9,Far Rockaway,116,Home Health,1,9,True,careers_page_no_listings,,,Administrator
 Account 0094,94,B,52,0.9,Ridgewood,113,Home Health,1,8,True,careers_page_no_listings,,,Administrator
-Account 0095,95,B,52,0.9,Brooklyn,112,Home Health,4,7,True,no_careers_page,,,Director of Operations or COO
-Account 0096,96,B,52,0.9,Brooklyn,112,Home Health,1,7,True,careers_page_no_listings,,,Administrator
-Account 0097,97,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
-Account 0098,98,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0099,99,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0100,100,B,52,0.8,Brooklyn,112,Home Health,1,6,True,offsite_listings,,,Administrator
-Account 0101,101,B,52,0.8,Brooklyn,112,Home Health,1,11,True,offsite_listings,,,Administrator
-Account 0102,102,B,49,0.9,Brooklyn,112,Home Health,2,7,True,no_careers_page,,,Director of Operations or COO
-Account 0103,103,B,49,0.9,Brooklyn,112,Home Health,1,18,True,careers_page_no_listings,,,Administrator
-Account 0104,104,B,49,0.9,Brooklyn,112,Home Health,1,14,True,careers_page_no_listings,,,Administrator
-Account 0105,105,B,49,0.9,Brooklyn,112,Home Health,1,17,True,careers_page_no_listings,,,Administrator
+Account 0095,95,B,52,0.9,Brooklyn,112,Home Health,1,7,True,careers_page_no_listings,,,Administrator
+Account 0096,96,B,52,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
+Account 0097,97,B,52,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
+Account 0098,98,B,52,0.8,Brooklyn,112,Home Health,1,6,True,offsite_listings,,,Administrator
+Account 0099,99,B,52,0.8,Brooklyn,112,Home Health,1,11,True,offsite_listings,,,Administrator
+Account 0100,100,B,49,0.9,Brooklyn,112,Home Health,2,7,True,no_careers_page,,,Director of Operations or COO
+Account 0101,101,B,49,0.9,Brooklyn,112,Home Health,1,18,True,careers_page_no_listings,,,Administrator
+Account 0102,102,B,49,0.9,Brooklyn,112,Home Health,1,14,True,careers_page_no_listings,,,Administrator
+Account 0103,103,B,49,0.9,Brooklyn,112,Home Health,1,17,True,careers_page_no_listings,,,Administrator
+Account 0104,104,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0105,105,B,49,0.9,Far Rockaway,116,Home Health,1,11,True,careers_page_no_listings,,,Administrator
 Account 0106,106,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0107,107,B,49,0.9,Far Rockaway,116,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0108,108,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0109,109,B,49,0.9,Queens Village,114,Home Health,1,18,True,careers_page_no_listings,,,Administrator
-Account 0110,110,B,49,0.9,Brooklyn,112,Home Health,1,18,True,careers_page_no_listings,,,Administrator
-Account 0111,111,B,49,0.9,Kew Gardens,114,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0112,112,B,49,0.9,Brooklyn,112,Home Health,1,16,True,careers_page_no_listings,,,Administrator
-Account 0113,113,B,49,0.9,Bronx,104,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0114,114,B,49,0.9,Saint Albans,114,Home Health,1,15,True,careers_page_no_listings,,,Administrator
-Account 0115,115,B,49,0.9,Bronx,104,Home Health,1,16,True,careers_page_no_listings,,,Administrator
-Account 0116,116,B,49,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0117,117,B,49,0.9,Staten Island,103,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0118,118,B,49,0.9,Brooklyn,112,Home Health,1,14,True,careers_page_no_listings,,,Administrator
-Account 0119,119,B,49,0.9,Arverne,116,Home Health,1,18,True,careers_page_no_listings,,,Administrator
-Account 0120,120,B,49,0.9,Staten Island,103,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0121,121,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0122,122,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0123,123,B,49,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
-Account 0124,124,B,49,0.9,Bronx,104,Home Health,1,18,True,careers_page_no_listings,,,Administrator
-Account 0125,125,B,49,0.9,Rego Park,113,Home Health,1,13,True,careers_page_no_listings,,,Administrator
-Account 0126,126,B,49,0.9,New York,100,Home Health,1,13,True,careers_page_no_listings,,,Administrator
-Account 0127,127,B,49,0.9,Staten Island,103,Home Health,1,16,True,careers_page_no_listings,,,Administrator
-Account 0128,128,B,49,0.9,New York,100,Home Health,3,20,True,no_careers_page,,,Director of Operations or COO
-Account 0129,129,B,49,0.9,Bronx,104,Home Health,1,20,True,offsite_listings,,,Administrator
-Account 0130,130,B,49,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
-Account 0131,131,B,49,0.9,Brooklyn,112,Home Health,1,15,True,careers_page_no_listings,,,Administrator
-Account 0132,132,B,49,0.9,Brooklyn,112,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0133,133,B,49,0.9,New York,100,Home Health,1,18,True,careers_page_no_listings,,,Administrator
-Account 0134,134,B,49,0.9,Bronx,104,Home Health,1,15,True,careers_page_no_listings,,,Administrator
-Account 0135,135,B,49,0.9,Long Island City,111,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0136,136,B,49,0.9,Bronx,104,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0137,137,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0138,138,B,49,0.9,Brooklyn,112,In Home Supportive Care,1,14,True,careers_page_no_listings,,,Owner or Operator
-Account 0139,139,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0140,140,B,49,0.9,New York,100,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0141,141,B,49,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
-Account 0142,142,B,49,0.9,New York,100,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0143,143,B,49,0.9,Queens,114,Health,1,,True,listings_found,,1-4,Owner or Operator
-Account 0144,144,B,49,0.9,New York,100,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0145,145,B,48,1.0,Brooklyn,112,Home Health,1,5,True,counted,[hidden],0,Administrator
-Account 0146,146,B,47,0.9,Forest Hills,113,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0147,147,B,47,0.9,Bronx,104,In Home Supportive Care,1,9,True,careers_page_no_listings,,,Owner or Operator
-Account 0148,148,B,47,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0149,149,B,47,0.9,South Ozone Park,114,Home Health,1,9,True,careers_page_no_listings,,,Administrator
-Account 0150,150,B,47,0.9,Queens Village,114,Home Health,1,5,True,careers_page_no_listings,,,Administrator
-Account 0151,151,B,47,0.9,New York,100,In Home Supportive Care,1,11,True,careers_page_no_listings,,,Owner or Operator
-Account 0152,152,B,47,0.8,New York,100,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0153,153,B,47,0.8,New York,100,Health,1,,True,ats_unsupported,[hidden],,Owner or Operator
-Account 0154,154,B,47,0.8,Staten Island,103,Health,2,,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0107,107,B,49,0.9,Queens Village,114,Home Health,1,18,True,careers_page_no_listings,,,Administrator
+Account 0108,108,B,49,0.9,Brooklyn,112,Home Health,1,18,True,careers_page_no_listings,,,Administrator
+Account 0109,109,B,49,0.9,Kew Gardens,114,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0110,110,B,49,0.9,Brooklyn,112,Home Health,1,16,True,careers_page_no_listings,,,Administrator
+Account 0111,111,B,49,0.9,Bronx,104,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0112,112,B,49,0.9,Saint Albans,114,Home Health,1,15,True,careers_page_no_listings,,,Administrator
+Account 0113,113,B,49,0.9,Bronx,104,Home Health,1,16,True,careers_page_no_listings,,,Administrator
+Account 0114,114,B,49,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
+Account 0115,115,B,49,0.9,Staten Island,103,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0116,116,B,49,0.9,Brooklyn,112,Home Health,1,14,True,careers_page_no_listings,,,Administrator
+Account 0117,117,B,49,0.9,Arverne,116,Home Health,1,18,True,careers_page_no_listings,,,Administrator
+Account 0118,118,B,49,0.9,Staten Island,103,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0119,119,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0120,120,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0121,121,B,49,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
+Account 0122,122,B,49,0.9,Bronx,104,Home Health,1,18,True,careers_page_no_listings,,,Administrator
+Account 0123,123,B,49,0.9,Rego Park,113,Home Health,1,13,True,careers_page_no_listings,,,Administrator
+Account 0124,124,B,49,0.9,New York,100,Home Health,1,13,True,careers_page_no_listings,,,Administrator
+Account 0125,125,B,49,0.9,Staten Island,103,Home Health,1,16,True,careers_page_no_listings,,,Administrator
+Account 0126,126,B,49,0.9,New York,100,Home Health,3,20,True,no_careers_page,,,Director of Operations or COO
+Account 0127,127,B,49,0.9,Bronx,104,Home Health,1,20,True,offsite_listings,,,Administrator
+Account 0128,128,B,49,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
+Account 0129,129,B,49,0.9,Brooklyn,112,Home Health,1,15,True,careers_page_no_listings,,,Administrator
+Account 0130,130,B,49,0.9,Brooklyn,112,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0131,131,B,49,0.9,New York,100,Home Health,1,18,True,careers_page_no_listings,,,Administrator
+Account 0132,132,B,49,0.9,Long Island City,111,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0133,133,B,49,0.9,Bronx,104,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0134,134,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0135,135,B,49,0.9,Brooklyn,112,In Home Supportive Care,1,14,True,careers_page_no_listings,,,Owner or Operator
+Account 0136,136,B,49,0.9,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0137,137,B,49,0.9,New York,100,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0138,138,B,49,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
+Account 0139,139,B,49,0.9,New York,100,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0140,140,B,49,0.9,Queens,114,Health,1,,True,listings_found,,1-4,Owner or Operator
+Account 0141,141,B,49,0.9,New York,100,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0142,142,B,48,1.0,Brooklyn,112,Home Health,1,5,True,counted,[hidden],0,Administrator
+Account 0143,143,B,47,0.9,Forest Hills,113,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0144,144,B,47,0.9,Bronx,104,In Home Supportive Care,1,9,True,careers_page_no_listings,,,Owner or Operator
+Account 0145,145,B,47,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
+Account 0146,146,B,47,0.9,South Ozone Park,114,Home Health,1,9,True,careers_page_no_listings,,,Administrator
+Account 0147,147,B,47,0.9,Queens Village,114,Home Health,1,5,True,careers_page_no_listings,,,Administrator
+Account 0148,148,B,47,0.9,New York,100,In Home Supportive Care,1,11,True,careers_page_no_listings,,,Owner or Operator
+Account 0149,149,B,47,0.8,New York,100,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0150,150,B,47,0.8,New York,100,Health,1,,True,ats_unsupported,[hidden],,Owner or Operator
+Account 0151,151,B,47,0.8,Staten Island,103,Health,2,,True,careers_page_no_listings,,,Director of Operations or COO
+Account 0152,152,B,47,0.8,Bronx,104,Health,1,,True,ats_unsupported,[hidden],,Owner or Operator
+Account 0153,153,B,47,0.8,Bronx,104,Services,1,,True,ats_unsupported,[hidden],,Owner or Operator
+Account 0154,154,B,47,0.8,Rego Park,113,Home Health,3,10,True,no_careers_page,,,Director of Operations or COO
 Account 0155,155,B,47,0.8,Bronx,104,Health,1,,True,ats_unsupported,[hidden],,Owner or Operator
-Account 0156,156,B,47,0.8,Bronx,104,Services,1,,True,ats_unsupported,[hidden],,Owner or Operator
-Account 0157,157,B,47,0.8,Rego Park,113,Home Health,3,10,True,no_careers_page,,,Director of Operations or COO
-Account 0158,158,B,47,0.8,Bronx,104,Health,1,,True,ats_unsupported,[hidden],,Owner or Operator
-Account 0159,159,B,47,0.8,New York,100,Health,1,,True,offsite_listings,,,Owner or Operator
-Account 0160,160,B,47,0.8,Hollis,114,Home Health,1,9,True,careers_page_no_listings,,,Administrator
-Account 0161,161,B,47,0.8,Staten Island,103,Health,1,,True,offsite_listings,,,Owner or Operator
-Account 0162,162,B,47,0.8,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator
-Account 0163,163,B,47,0.55,Staten Island,103,Home Health,2,9,True,robots_disallowed,,,Director of Operations or COO
-Account 0164,164,B,46,0.9,Brooklyn,112,Home Health,2,13,True,no_careers_page,,,Director of Operations or COO
-Account 0165,165,B,46,0.9,Riverdale,104,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0166,166,B,46,0.9,Bronx,104,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0167,167,B,46,0.9,Brooklyn,112,Home Health,1,1,True,careers_page_no_listings,,,Administrator
-Account 0168,168,B,46,0.9,Brooklyn,112,Home Health,1,17,True,careers_page_no_listings,,,Administrator
-Account 0169,169,B,46,0.9,South Richmond Hill,114,Home Health,1,2,True,offsite_listings,,,Administrator
-Account 0170,170,B,46,0.8,New York,100,Home Health,1,2,True,offsite_listings,,,Administrator
-Account 0171,171,B,44,0.9,New York,100,Home Health,1,10,True,no_careers_page,,,Administrator
-Account 0172,172,B,44,0.9,Bronx,104,Home Health,1,11,True,no_careers_page,,,Administrator
-Account 0173,173,B,44,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,Administrator
-Account 0174,174,B,44,0.9,Brooklyn,112,Home Health,1,4,True,no_careers_page,,,Administrator
-Account 0175,175,B,44,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,Administrator
-Account 0176,176,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
-Account 0177,177,B,44,0.9,Jamaica,114,Home Health,1,9,True,no_careers_page,,,Administrator
-Account 0178,178,B,44,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,Administrator
-Account 0179,179,B,44,0.9,Bronx,104,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0180,180,B,44,0.9,Jamaica,114,Home Health,1,7,True,no_careers_page,,,Administrator
-Account 0181,181,B,44,0.9,East Elmhurst,113,Home Health,1,4,True,no_careers_page,,,Administrator
-Account 0182,182,B,44,0.9,New York,100,Home Health,1,10,True,no_careers_page,,,Administrator
-Account 0183,183,B,44,0.9,New York,100,Home Health,1,7,True,no_careers_page,,,Administrator
-Account 0184,184,B,44,0.9,Flushing,113,Home Health,1,12,True,no_careers_page,,,Administrator
-Account 0185,185,B,44,0.9,New York,100,Home Health,1,10,True,no_careers_page,,,Administrator
-Account 0186,186,B,44,0.9,Brooklyn,112,Home Health Aide,1,8,True,no_careers_page,,,Owner or Operator
-Account 0187,187,B,44,0.9,Bronx,104,Home Health,1,7,True,no_careers_page,,,Administrator
-Account 0188,188,B,44,0.9,New York,100,Home Health,1,11,True,no_careers_page,,,Administrator
-Account 0189,189,B,44,0.9,Jamaica,114,Home Health,1,7,True,no_careers_page,,,Administrator
-Account 0190,190,B,44,0.9,Bronx,104,Home Health,1,17,True,careers_page_no_listings,,,Administrator
-Account 0191,191,B,44,0.9,Jamaica,114,Home Health,1,7,True,no_careers_page,,,Administrator
-Account 0192,192,B,44,0.9,Bronx,104,Home Health,1,7,True,no_careers_page,,,Administrator
-Account 0193,193,B,44,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,Administrator
-Account 0194,194,B,44,0.9,Brooklyn,112,In Home Supportive Care,1,6,True,no_careers_page,,,Owner or Operator
-Account 0195,195,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
-Account 0196,196,B,44,0.9,Brooklyn,112,Home Health,1,8,True,no_careers_page,,,Administrator
-Account 0197,197,B,44,0.9,Brooklyn,112,Home Health,1,21,True,careers_page_no_listings,,,Administrator
-Account 0198,198,B,44,0.9,Brooklyn,112,Home Health,1,3,True,no_careers_page,,,Administrator
-Account 0199,199,B,44,0.9,New York,100,Home Health,1,11,True,no_careers_page,,,Administrator
-Account 0200,200,B,44,0.9,Brooklyn,112,Home Health,1,10,True,no_careers_page,,,Administrator
-Account 0201,201,B,44,0.9,New York,100,In Home Supportive Care,1,11,True,careers_page_no_listings,,,Owner or Operator
-Account 0202,202,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
-Account 0203,203,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
-Account 0204,204,B,44,0.9,Sunnyside,111,Home Health,1,9,True,no_careers_page,,,Administrator
-Account 0205,205,B,44,0.9,Saint Albans,114,Home Health,1,10,True,no_careers_page,,,Administrator
-Account 0206,206,B,44,0.9,Flushing,113,Home Health,1,6,True,no_careers_page,,,Administrator
-Account 0207,207,B,44,0.9,Flushing,113,Home Health,1,7,True,no_careers_page,,,Administrator
-Account 0208,208,B,44,0.9,New York,100,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0209,209,B,44,0.9,Brooklyn,112,Home Health,1,10,True,no_careers_page,,,Administrator
-Account 0210,210,B,44,0.9,Jackson Heights,113,Home Health,1,9,True,no_careers_page,,,Administrator
-Account 0211,211,B,44,0.9,Brooklyn,112,Home Health Aide,1,7,True,no_careers_page,,,Owner or Operator
-Account 0212,212,B,44,0.9,Kew Gardens,114,Home Health,1,7,True,no_careers_page,,,Administrator
-Account 0213,213,B,44,0.9,Bronx,104,Home Health,1,3,True,no_careers_page,,,Administrator
-Account 0214,214,B,44,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
-Account 0215,215,B,44,0.9,Jackson Heights,113,Home Health,1,10,True,no_careers_page,,,Administrator
-Account 0216,216,B,44,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
-Account 0217,217,B,44,0.9,Forest Hills,113,Home Health,1,6,True,no_careers_page,,,Administrator
-Account 0218,218,B,44,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
-Account 0219,219,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
-Account 0220,220,B,44,0.9,New York,100,Home Health,1,14,True,careers_page_no_listings,,,Administrator
-Account 0221,221,B,44,0.8,Flushing,113,Home Health,1,18,True,careers_page_no_listings,,,Administrator
-Account 0222,222,B,44,0.8,Hollis,114,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0223,223,B,44,0.8,Staten Island,103,Home Health,1,20,True,careers_page_no_listings,,,Administrator
-Account 0224,224,B,44,0.8,Bronx,104,Home Health,1,15,True,careers_page_no_listings,,,Administrator
-Account 0225,225,B,44,0.8,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
-Account 0226,226,B,43,0.55,Brooklyn,112,Home Health,3,8,True,site_unreachable,,,Director of Operations or COO
-Account 0227,227,B,43,0.55,New York,100,In Home Supportive Care,6,10,True,site_unreachable,,,Director of Operations or COO
-Account 0228,228,B,42,0.8,Brooklyn,112,Services,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0229,229,B,42,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0230,230,B,42,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0156,156,B,47,0.8,New York,100,Health,1,,True,offsite_listings,,,Owner or Operator
+Account 0157,157,B,47,0.8,Staten Island,103,Health,1,,True,offsite_listings,,,Owner or Operator
+Account 0158,158,B,47,0.8,Brooklyn,112,Home Health,1,11,True,careers_page_no_listings,,,Administrator
+Account 0159,159,B,47,0.8,Bronx,104,Health,1,,True,ats_unsupported,[hidden],,Owner or Operator
+Account 0160,160,B,47,0.55,Staten Island,103,Home Health,2,9,True,robots_disallowed,,,Director of Operations or COO
+Account 0161,161,B,46,0.9,Brooklyn,112,Home Health,2,13,True,no_careers_page,,,Director of Operations or COO
+Account 0162,162,B,46,0.9,Riverdale,104,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0163,163,B,46,0.9,Bronx,104,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0164,164,B,46,0.9,Brooklyn,112,Home Health,1,1,True,careers_page_no_listings,,,Administrator
+Account 0165,165,B,46,0.9,South Richmond Hill,114,Home Health,1,2,True,offsite_listings,,,Administrator
+Account 0166,166,B,46,0.8,New York,100,Home Health,1,2,True,offsite_listings,,,Administrator
+Account 0167,167,B,44,0.9,New York,100,Home Health,1,10,True,no_careers_page,,,Administrator
+Account 0168,168,B,44,0.9,Bronx,104,Home Health,1,11,True,no_careers_page,,,Administrator
+Account 0169,169,B,44,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,Administrator
+Account 0170,170,B,44,0.9,Brooklyn,112,Home Health,1,4,True,no_careers_page,,,Administrator
+Account 0171,171,B,44,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,Administrator
+Account 0172,172,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
+Account 0173,173,B,44,0.9,Jamaica,114,Home Health,1,9,True,no_careers_page,,,Administrator
+Account 0174,174,B,44,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,Administrator
+Account 0175,175,B,44,0.9,Bronx,104,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0176,176,B,44,0.9,Jamaica,114,Home Health,1,7,True,no_careers_page,,,Administrator
+Account 0177,177,B,44,0.9,East Elmhurst,113,Home Health,1,4,True,no_careers_page,,,Administrator
+Account 0178,178,B,44,0.9,New York,100,Home Health,1,10,True,no_careers_page,,,Administrator
+Account 0179,179,B,44,0.9,New York,100,Home Health,1,7,True,no_careers_page,,,Administrator
+Account 0180,180,B,44,0.9,Flushing,113,Home Health,1,12,True,no_careers_page,,,Administrator
+Account 0181,181,B,44,0.9,New York,100,Home Health,1,10,True,no_careers_page,,,Administrator
+Account 0182,182,B,44,0.9,Brooklyn,112,Home Health Aide,1,8,True,no_careers_page,,,Owner or Operator
+Account 0183,183,B,44,0.9,Bronx,104,Home Health,1,7,True,no_careers_page,,,Administrator
+Account 0184,184,B,44,0.9,New York,100,Home Health,1,11,True,no_careers_page,,,Administrator
+Account 0185,185,B,44,0.9,Jamaica,114,Home Health,1,7,True,no_careers_page,,,Administrator
+Account 0186,186,B,44,0.9,Bronx,104,Home Health,1,17,True,careers_page_no_listings,,,Administrator
+Account 0187,187,B,44,0.9,Jamaica,114,Home Health,1,7,True,no_careers_page,,,Administrator
+Account 0188,188,B,44,0.9,Bronx,104,Home Health,1,7,True,no_careers_page,,,Administrator
+Account 0189,189,B,44,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,Administrator
+Account 0190,190,B,44,0.9,Brooklyn,112,In Home Supportive Care,1,6,True,no_careers_page,,,Owner or Operator
+Account 0191,191,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
+Account 0192,192,B,44,0.9,Brooklyn,112,Home Health,1,8,True,no_careers_page,,,Administrator
+Account 0193,193,B,44,0.9,Brooklyn,112,Home Health,1,21,True,careers_page_no_listings,,,Administrator
+Account 0194,194,B,44,0.9,Brooklyn,112,Home Health,1,3,True,no_careers_page,,,Administrator
+Account 0195,195,B,44,0.9,Bronx,104,Home Health,1,5,True,no_careers_page,,,Administrator
+Account 0196,196,B,44,0.9,New York,100,Home Health,1,11,True,no_careers_page,,,Administrator
+Account 0197,197,B,44,0.9,Brooklyn,112,Home Health,1,10,True,no_careers_page,,,Administrator
+Account 0198,198,B,44,0.9,New York,100,In Home Supportive Care,1,11,True,careers_page_no_listings,,,Owner or Operator
+Account 0199,199,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
+Account 0200,200,B,44,0.9,Sunnyside,111,Home Health,1,9,True,no_careers_page,,,Administrator
+Account 0201,201,B,44,0.9,Saint Albans,114,Home Health,1,10,True,no_careers_page,,,Administrator
+Account 0202,202,B,44,0.9,Flushing,113,Home Health,1,6,True,no_careers_page,,,Administrator
+Account 0203,203,B,44,0.9,Flushing,113,Home Health,1,7,True,no_careers_page,,,Administrator
+Account 0204,204,B,44,0.9,New York,100,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0205,205,B,44,0.9,New York,100,Home Health,1,11,True,no_careers_page,,,Administrator
+Account 0206,206,B,44,0.9,Brooklyn,112,Home Health,1,10,True,no_careers_page,,,Administrator
+Account 0207,207,B,44,0.9,Jackson Heights,113,Home Health,1,9,True,no_careers_page,,,Administrator
+Account 0208,208,B,44,0.9,Brooklyn,112,Home Health Aide,1,7,True,no_careers_page,,,Owner or Operator
+Account 0209,209,B,44,0.9,Kew Gardens,114,Home Health,1,7,True,no_careers_page,,,Administrator
+Account 0210,210,B,44,0.9,Bronx,104,Home Health,1,3,True,no_careers_page,,,Administrator
+Account 0211,211,B,44,0.9,Brooklyn,112,Home Health,1,10,True,careers_page_no_listings,,,Administrator
+Account 0212,212,B,44,0.9,Jackson Heights,113,Home Health,1,10,True,no_careers_page,,,Administrator
+Account 0213,213,B,44,0.9,Brooklyn,112,Home Health,1,13,True,careers_page_no_listings,,,Administrator
+Account 0214,214,B,44,0.9,Forest Hills,113,Home Health,1,6,True,no_careers_page,,,Administrator
+Account 0215,215,B,44,0.9,Brooklyn,112,Home Health,1,9,True,careers_page_no_listings,,,Administrator
+Account 0216,216,B,44,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,Administrator
+Account 0217,217,B,44,0.9,New York,100,Home Health,1,14,True,careers_page_no_listings,,,Administrator
+Account 0218,218,B,44,0.9,Brooklyn,112,Home Health,1,10,True,no_careers_page,,,Administrator
+Account 0219,219,B,44,0.8,Flushing,113,Home Health,1,18,True,careers_page_no_listings,,,Administrator
+Account 0220,220,B,44,0.8,Hollis,114,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0221,221,B,44,0.8,Staten Island,103,Home Health,1,20,True,careers_page_no_listings,,,Administrator
+Account 0222,222,B,44,0.8,Bronx,104,Home Health,1,15,True,careers_page_no_listings,,,Administrator
+Account 0223,223,B,44,0.8,Brooklyn,112,Home Health,1,19,True,careers_page_no_listings,,,Administrator
+Account 0224,224,B,43,0.55,Brooklyn,112,Home Health,3,8,True,site_unreachable,,,Director of Operations or COO
+Account 0225,225,B,43,0.55,New York,100,In Home Supportive Care,6,10,True,site_unreachable,,,Director of Operations or COO
+Account 0226,226,B,43,0.55,Brooklyn,112,Home Health,4,7,True,site_unreachable,,,Director of Operations or COO
+Account 0227,227,B,42,0.8,Brooklyn,112,Services,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0228,228,B,42,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0229,229,B,42,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0230,230,B,42,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,Owner or Operator
 Account 0231,231,B,42,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0232,232,B,42,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0233,233,B,42,0.8,Brooklyn,112,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0234,234,B,42,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0235,235,B,42,0.8,New York,100,Health,3,,True,no_careers_page,,,Director of Operations or COO
-Account 0236,236,B,42,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0237,237,B,42,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0238,238,B,42,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0239,239,B,42,0.8,Brooklyn,112,Health,1,,True,careers_page_no_listings,,,Owner or Operator
-Account 0240,240,B,42,0.55,East Elmhurst,113,Home Health,1,8,True,site_unreachable,,,Administrator
-Account 0241,241,B,42,0.55,Ozone Park,114,Home Health,1,9,True,site_unreachable,,,Administrator
-Account 0242,242,B,42,0.55,Brooklyn,112,Home Health,1,5,True,site_unreachable,,,Administrator
-Account 0243,243,B,42,0.55,Flushing,113,Home Health,1,9,True,robots_disallowed,,,Administrator
-Account 0244,244,B,42,0.55,Brooklyn,112,Home Health,1,9,True,robots_disallowed,,,Administrator
-Account 0245,245,C,41,0.9,Brooklyn,112,Home Health,1,13,True,no_careers_page,,,
-Account 0246,246,C,41,0.9,New York,100,Home Health,1,18,True,no_careers_page,,,
-Account 0247,247,C,41,0.9,Brooklyn,112,Home Health,1,16,True,no_careers_page,,,
-Account 0248,248,C,41,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,
-Account 0249,249,C,41,0.9,Brooklyn,112,Home Health,1,20,True,no_careers_page,,,
-Account 0250,250,C,41,0.9,New York,100,Home Health Aide,1,2,True,careers_page_no_listings,,,
-Account 0251,251,C,41,0.9,Far Rockaway,116,Home Health,1,19,True,no_careers_page,,,
-Account 0252,252,C,41,0.9,Jamaica,114,Home Health,1,19,True,no_careers_page,,,
-Account 0253,253,C,41,0.9,Brooklyn,112,Home Health,1,20,True,no_careers_page,,,
-Account 0254,254,C,41,0.9,Bronx,104,Home Health,1,15,True,no_careers_page,,,
-Account 0255,255,C,41,0.9,Jamaica,114,Home Health,1,19,True,no_careers_page,,,
-Account 0256,256,C,41,0.9,New York,100,Home Health,1,11,True,no_careers_page,,,
-Account 0257,257,C,41,0.9,Bronx,104,Home Health,1,20,True,no_careers_page,,,
-Account 0258,258,C,41,0.9,Forest Hills,113,Home Health,1,16,True,no_careers_page,,,
-Account 0259,259,C,41,0.9,Brooklyn,112,Home Health,1,7,True,no_careers_page,,,
-Account 0260,260,C,41,0.9,Brooklyn,112,Home Health,1,19,True,no_careers_page,,,
-Account 0261,261,C,41,0.9,Rego Park,113,Home Health,1,11,True,no_careers_page,,,
-Account 0262,262,C,41,0.9,Brooklyn,112,Home Health,1,16,True,no_careers_page,,,
+Account 0232,232,B,42,0.8,Brooklyn,112,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0233,233,B,42,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0234,234,B,42,0.8,New York,100,Health,3,,True,no_careers_page,,,Director of Operations or COO
+Account 0235,235,B,42,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0236,236,B,42,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0237,237,B,42,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0238,238,B,42,0.8,Brooklyn,112,Health,1,,True,careers_page_no_listings,,,Owner or Operator
+Account 0239,239,B,42,0.55,East Elmhurst,113,Home Health,1,8,True,site_unreachable,,,Administrator
+Account 0240,240,B,42,0.55,Ozone Park,114,Home Health,1,9,True,site_unreachable,,,Administrator
+Account 0241,241,B,42,0.55,Brooklyn,112,Home Health,1,5,True,site_unreachable,,,Administrator
+Account 0242,242,B,42,0.55,Flushing,113,Home Health,1,9,True,robots_disallowed,,,Administrator
+Account 0243,243,B,42,0.55,Brooklyn,112,Home Health,1,9,True,robots_disallowed,,,Administrator
+Account 0244,244,C,41,0.9,Brooklyn,112,Home Health,1,13,True,no_careers_page,,,
+Account 0245,245,C,41,0.9,New York,100,Home Health,1,18,True,no_careers_page,,,
+Account 0246,246,C,41,0.9,Brooklyn,112,Home Health,1,16,True,no_careers_page,,,
+Account 0247,247,C,41,0.9,Brooklyn,112,Home Health,1,11,True,no_careers_page,,,
+Account 0248,248,C,41,0.9,Brooklyn,112,Home Health,1,20,True,no_careers_page,,,
+Account 0249,249,C,41,0.9,New York,100,Home Health Aide,1,2,True,careers_page_no_listings,,,
+Account 0250,250,C,41,0.9,Far Rockaway,116,Home Health,1,19,True,no_careers_page,,,
+Account 0251,251,C,41,0.9,Jamaica,114,Home Health,1,19,True,no_careers_page,,,
+Account 0252,252,C,41,0.9,Brooklyn,112,Home Health,1,20,True,no_careers_page,,,
+Account 0253,253,C,41,0.9,Bronx,104,Home Health,1,15,True,no_careers_page,,,
+Account 0254,254,C,41,0.9,Jamaica,114,Home Health,1,19,True,no_careers_page,,,
+Account 0255,255,C,41,0.9,Bronx,104,Home Health,1,20,True,no_careers_page,,,
+Account 0256,256,C,41,0.9,Forest Hills,113,Home Health,1,16,True,no_careers_page,,,
+Account 0257,257,C,41,0.9,Brooklyn,112,Home Health,1,7,True,no_careers_page,,,
+Account 0258,258,C,41,0.9,Bronx,104,Home Health,1,15,True,no_careers_page,,,
+Account 0259,259,C,41,0.9,Brooklyn,112,Home Health,1,19,True,no_careers_page,,,
+Account 0260,260,C,41,0.9,Rego Park,113,Home Health,1,11,True,no_careers_page,,,
+Account 0261,261,C,41,0.9,Brooklyn,112,Home Health,1,16,True,no_careers_page,,,
+Account 0262,262,C,41,0.9,Brooklyn,112,Home Health,1,17,True,no_careers_page,,,
 Account 0263,263,C,41,0.9,Staten Island,103,Home Health,1,19,True,no_careers_page,,,
 Account 0264,264,C,41,0.9,Bronx,104,Home Health,1,6,True,no_careers_page,,,
 Account 0265,265,C,41,0.9,Staten Island,103,Home Health,1,4,True,no_careers_page,,,
 Account 0266,266,C,41,0.9,Brooklyn,112,Home Health,1,14,True,no_careers_page,,,
 Account 0267,267,C,41,0.9,New York,100,Home Health,1,14,True,no_careers_page,,,
-Account 0268,268,C,39,0.9,Flushing,113,Home Health,1,10,True,no_careers_page,,,
-Account 0269,269,C,39,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,
-Account 0270,270,C,39,0.9,Fresh Meadows,113,Home Health,1,9,True,no_careers_page,,,
-Account 0271,271,C,39,0.9,Brooklyn,112,Home Health,1,6,True,no_careers_page,,,
-Account 0272,272,C,39,0.9,Far Rockaway,116,In Home Supportive Care,1,5,True,no_careers_page,,,
-Account 0273,273,C,39,0.9,Forest Hills,113,Home Health,1,10,True,no_careers_page,,,
-Account 0274,274,C,39,0.9,Hollis,114,Home Health,1,7,True,no_careers_page,,,
-Account 0275,275,C,39,0.9,Bronx,104,Home Health,1,5,True,no_careers_page,,,
+Account 0268,268,C,41,0.55,New York,100,Home Health,7,2,True,site_unreachable,,,
+Account 0269,269,C,39,0.9,Flushing,113,Home Health,1,10,True,no_careers_page,,,
+Account 0270,270,C,39,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,
+Account 0271,271,C,39,0.9,Fresh Meadows,113,Home Health,1,9,True,no_careers_page,,,
+Account 0272,272,C,39,0.9,Brooklyn,112,Home Health,1,6,True,no_careers_page,,,
+Account 0273,273,C,39,0.9,Far Rockaway,116,In Home Supportive Care,1,5,True,no_careers_page,,,
+Account 0274,274,C,39,0.9,Forest Hills,113,Home Health,1,10,True,no_careers_page,,,
+Account 0275,275,C,39,0.9,Hollis,114,Home Health,1,7,True,no_careers_page,,,
 Account 0276,276,C,39,0.9,Staten Island,103,Home Health,1,4,True,no_careers_page,,,
 Account 0277,277,C,39,0.9,Brooklyn,112,Home Health,1,8,True,no_careers_page,,,
 Account 0278,278,C,39,0.9,Brooklyn,112,Home Health,1,10,True,no_careers_page,,,
@@ -282,78 +282,78 @@ Account 0280,280,C,39,0.9,New York,100,Home Health,1,10,True,no_careers_page,,,
 Account 0281,281,C,39,0.9,New York,101,Home Health,1,6,True,no_careers_page,,,
 Account 0282,282,C,39,0.9,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,
 Account 0283,283,C,39,0.9,Kew Gardens Hills,113,Home Health,1,3,True,no_careers_page,,,
-Account 0284,284,C,39,0.9,Brooklyn,112,Home Health,1,10,True,no_careers_page,,,
-Account 0285,285,C,39,0.8,Brooklyn,112,Health,2,,True,careers_page_no_listings,,,
-Account 0286,286,C,39,0.8,Bronx,104,Home Health,1,19,True,careers_page_no_listings,,,
-Account 0287,287,C,39,0.8,Little Neck,113,Home Health,1,10,True,no_careers_page,,,
-Account 0288,288,C,39,0.8,New York,100,Health,1,,True,offsite_listings,,,
-Account 0289,289,C,39,0.8,Bronx,104,Home Health,1,5,True,no_careers_page,,,
-Account 0290,290,C,39,0.8,Bronx,104,Home Health,1,9,True,no_careers_page,,,
-Account 0291,291,C,39,0.8,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,
-Account 0292,292,C,39,0.8,Staten Island,103,Health,1,,True,offsite_listings,,,
-Account 0293,293,C,39,0.8,Bronx,104,Home Health,1,8,True,no_careers_page,,,
-Account 0294,294,C,39,0.8,Bronx,104,Health,1,,True,offsite_listings,,,
-Account 0295,295,C,39,0.55,Brooklyn,112,Home Health,1,17,True,site_unreachable,,,
-Account 0296,296,C,39,0.55,Brooklyn,112,Home Health,1,20,True,site_unreachable,,,
-Account 0297,297,C,39,0.55,Brooklyn,112,"Hospice Care, Community Based",1,20,True,site_unreachable,,,
-Account 0298,298,C,39,0.55,Brooklyn,112,Home Health,1,16,True,site_unreachable,,,
-Account 0299,299,C,39,0.55,Astoria,111,Home Health,1,12,True,site_unreachable,,,
+Account 0284,284,C,39,0.8,Brooklyn,112,Health,2,,True,careers_page_no_listings,,,
+Account 0285,285,C,39,0.8,Bronx,104,Home Health,1,19,True,careers_page_no_listings,,,
+Account 0286,286,C,39,0.8,Little Neck,113,Home Health,1,10,True,no_careers_page,,,
+Account 0287,287,C,39,0.8,New York,100,Health,1,,True,offsite_listings,,,
+Account 0288,288,C,39,0.8,Bronx,104,Home Health,1,9,True,no_careers_page,,,
+Account 0289,289,C,39,0.8,Brooklyn,112,Home Health,1,9,True,no_careers_page,,,
+Account 0290,290,C,39,0.8,Staten Island,103,Health,1,,True,offsite_listings,,,
+Account 0291,291,C,39,0.8,Bronx,104,Home Health,1,8,True,no_careers_page,,,
+Account 0292,292,C,39,0.8,Bronx,104,Health,1,,True,offsite_listings,,,
+Account 0293,293,C,39,0.55,Brooklyn,112,Home Health,1,17,True,site_unreachable,,,
+Account 0294,294,C,39,0.55,Brooklyn,112,Home Health,1,20,True,site_unreachable,,,
+Account 0295,295,C,39,0.55,Brooklyn,112,"Hospice Care, Community Based",1,20,True,site_unreachable,,,
+Account 0296,296,C,39,0.55,Brooklyn,112,Home Health,1,16,True,site_unreachable,,,
+Account 0297,297,C,39,0.55,Astoria,111,Home Health,1,12,True,site_unreachable,,,
+Account 0298,298,C,39,0.55,Brooklyn,112,Home Health,1,18,True,site_unreachable,,,
+Account 0299,299,C,39,0.55,Rego Park,113,Home Health,1,6,True,site_unreachable,,,
 Account 0300,300,C,39,0.55,Brooklyn,112,Home Health,1,18,True,site_unreachable,,,
-Account 0301,301,C,39,0.55,Rego Park,113,Home Health,1,6,True,site_unreachable,,,
-Account 0302,302,C,39,0.55,Brooklyn,112,Home Health,1,18,True,site_unreachable,,,
-Account 0303,303,C,39,0.55,Bronx,104,Home Health,1,19,True,site_unreachable,,,
-Account 0304,304,C,39,0.55,Brooklyn,112,Home Health,1,6,True,site_unreachable,,,
-Account 0305,305,C,39,0.55,Bay Side,113,Home Health,1,18,True,site_unreachable,,,
-Account 0306,306,C,38,0.9,Brooklyn,112,Home Health,1,1,True,no_careers_page,,,
-Account 0307,307,C,38,0.9,Cambria Heights,114,Home Health Aide,1,0,True,careers_page_no_listings,,,
-Account 0308,308,C,38,0.9,Forest Hills,113,Home Health,1,18,True,no_careers_page,,,
-Account 0309,309,C,38,0.9,Long Island City,111,Home Health,1,14,True,no_careers_page,,,
-Account 0310,310,C,38,0.9,Brooklyn,112,Home Health,1,17,True,no_careers_page,,,
-Account 0311,311,C,38,0.9,Brooklyn,112,Home Health,1,16,True,no_careers_page,,,
-Account 0312,312,C,38,0.9,Laurelton,114,Home Health,1,19,True,no_careers_page,,,
-Account 0313,313,C,37,0.8,New York,100,Medical Clinic,1,,True,offsite_listings,,,
-Account 0314,314,C,37,0.55,New York,100,In Home Supportive Care,1,9,True,site_unreachable,,,
-Account 0315,315,C,37,0.55,New York,100,Home Health,1,8,True,site_unreachable,,,
-Account 0316,316,C,36,0.9,New York,100,Home Health,1,20,True,no_careers_page,,,
-Account 0317,317,C,36,0.9,Brooklyn,112,In Home Supportive Care,1,11,True,no_careers_page,,,
-Account 0318,318,C,36,0.9,Bronx,104,Home Health,1,9,True,no_careers_page,,,
-Account 0319,319,C,36,0.9,Brooklyn,112,Home Health,1,16,True,no_careers_page,,,
-Account 0320,320,C,36,0.8,Bronx,104,Home Health,1,20,True,no_careers_page,,,
-Account 0321,321,C,36,0.55,Brooklyn,112,Home Health,1,19,True,site_unreachable,,,
-Account 0322,322,C,36,0.55,Brooklyn,112,Home Health,1,18,True,site_unreachable,,,
-Account 0323,323,C,36,0.55,Brooklyn,112,Home Health,1,20,True,site_unreachable,,,
-Account 0324,324,C,35,0.55,Bronx,104,Home Health,1,10,True,site_unreachable,,,
-Account 0325,325,C,35,0.55,New York,100,Home Health,1,9,True,site_unreachable,,,
-Account 0326,326,C,35,0.55,Brooklyn,112,Home Health,1,4,True,site_unreachable,,,
-Account 0327,327,C,34,0.8,New York,100,Health,1,,True,no_careers_page,,,
-Account 0328,328,C,34,0.8,Queens,113,Health,1,,True,no_careers_page,,,
-Account 0329,329,C,34,0.8,Queens,113,Health,1,,True,no_careers_page,,,
-Account 0330,330,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
-Account 0331,331,C,34,0.8,Queens,114,Health,1,,True,careers_page_no_listings,,,
-Account 0332,332,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
-Account 0333,333,C,34,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,
-Account 0334,334,C,34,0.8,South Richmond Hill,114,Home Health,1,5,True,no_careers_page,,,
-Account 0335,335,C,34,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,
-Account 0336,336,C,34,0.8,Bronx,104,Health,1,,True,no_careers_page,,,
-Account 0337,337,C,34,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,
-Account 0338,338,C,34,0.8,Queens,114,Health,1,,True,no_careers_page,,,
+Account 0301,301,C,39,0.55,Bronx,104,Home Health,1,19,True,site_unreachable,,,
+Account 0302,302,C,39,0.55,Brooklyn,112,Home Health,1,6,True,site_unreachable,,,
+Account 0303,303,C,39,0.55,Bay Side,113,Home Health,1,18,True,site_unreachable,,,
+Account 0304,304,C,38,0.9,Brooklyn,112,Home Health,1,1,True,no_careers_page,,,
+Account 0305,305,C,38,0.9,Cambria Heights,114,Home Health Aide,1,0,True,careers_page_no_listings,,,
+Account 0306,306,C,38,0.9,Forest Hills,113,Home Health,1,18,True,no_careers_page,,,
+Account 0307,307,C,38,0.9,Long Island City,111,Home Health,1,14,True,no_careers_page,,,
+Account 0308,308,C,38,0.9,Brooklyn,112,Home Health,1,17,True,no_careers_page,,,
+Account 0309,309,C,38,0.9,Brooklyn,112,Home Health,1,16,True,no_careers_page,,,
+Account 0310,310,C,38,0.9,Laurelton,114,Home Health,1,19,True,no_careers_page,,,
+Account 0311,311,C,37,0.8,New York,100,Medical Clinic,1,,True,offsite_listings,,,
+Account 0312,312,C,37,0.55,New York,100,In Home Supportive Care,1,9,True,site_unreachable,,,
+Account 0313,313,C,37,0.55,New York,100,Home Health,1,8,True,site_unreachable,,,
+Account 0314,314,C,36,0.9,New York,100,Home Health,1,20,True,no_careers_page,,,
+Account 0315,315,C,36,0.9,Brooklyn,112,In Home Supportive Care,1,11,True,no_careers_page,,,
+Account 0316,316,C,36,0.9,Bronx,104,Home Health,1,9,True,no_careers_page,,,
+Account 0317,317,C,36,0.9,Brooklyn,112,Home Health,1,10,True,no_careers_page,,,
+Account 0318,318,C,36,0.8,Bronx,104,Home Health,1,20,True,no_careers_page,,,
+Account 0319,319,C,36,0.55,Brooklyn,112,Home Health,1,19,True,site_unreachable,,,
+Account 0320,320,C,36,0.55,Brooklyn,112,Home Health,1,18,True,site_unreachable,,,
+Account 0321,321,C,36,0.55,Brooklyn,112,Home Health,1,20,True,site_unreachable,,,
+Account 0322,322,C,35,0.55,Bronx,104,Home Health,1,10,True,site_unreachable,,,
+Account 0323,323,C,35,0.55,New York,100,Home Health,1,9,True,site_unreachable,,,
+Account 0324,324,C,35,0.55,Brooklyn,112,Home Health,1,4,True,site_unreachable,,,
+Account 0325,325,C,34,0.8,New York,100,Health,1,,True,no_careers_page,,,
+Account 0326,326,C,34,0.8,Queens,113,Health,1,,True,no_careers_page,,,
+Account 0327,327,C,34,0.8,Queens,113,Health,1,,True,no_careers_page,,,
+Account 0328,328,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
+Account 0329,329,C,34,0.8,Queens,114,Health,1,,True,careers_page_no_listings,,,
+Account 0330,330,C,34,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,
+Account 0331,331,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
+Account 0332,332,C,34,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,
+Account 0333,333,C,34,0.8,South Richmond Hill,114,Home Health,1,5,True,no_careers_page,,,
+Account 0334,334,C,34,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,
+Account 0335,335,C,34,0.8,Bronx,104,Health,1,,True,no_careers_page,,,
+Account 0336,336,C,34,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,
+Account 0337,337,C,34,0.8,Queens,114,Health,1,,True,no_careers_page,,,
+Account 0338,338,C,34,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,
 Account 0339,339,C,34,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,
-Account 0340,340,C,34,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,
-Account 0341,341,C,34,0.8,Staten Island,103,Health,1,,True,no_careers_page,,,
-Account 0342,342,C,34,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,
-Account 0343,343,C,34,0.8,Brooklyn,112,In Home Supportive Care,1,10,True,no_careers_page,,,
+Account 0340,340,C,34,0.8,Staten Island,103,Health,1,,True,no_careers_page,,,
+Account 0341,341,C,34,0.8,Staten Island,103,Health,1,,True,careers_page_no_listings,,,
+Account 0342,342,C,34,0.8,Brooklyn,112,In Home Supportive Care,1,10,True,no_careers_page,,,
+Account 0343,343,C,34,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,
 Account 0344,344,C,34,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,
-Account 0345,345,C,34,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,
-Account 0346,346,C,34,0.8,Queens,114,Health,1,,True,careers_page_no_listings,,,
-Account 0347,347,C,34,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,
-Account 0348,348,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
-Account 0349,349,C,34,0.8,Brooklyn,112,Health,1,,True,no_careers_page,,,
-Account 0350,350,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
-Account 0351,351,C,34,0.8,Bronx,104,Health,1,,True,no_careers_page,,,
-Account 0352,352,C,34,0.8,Brooklyn,112,Health,1,,True,no_careers_page,,,
-Account 0353,353,C,34,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,
-Account 0354,354,C,34,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,
-Account 0355,355,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
+Account 0345,345,C,34,0.8,Queens,114,Health,1,,True,careers_page_no_listings,,,
+Account 0346,346,C,34,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,
+Account 0347,347,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
+Account 0348,348,C,34,0.8,Brooklyn,112,Health,1,,True,no_careers_page,,,
+Account 0349,349,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
+Account 0350,350,C,34,0.8,Bronx,104,Health,1,,True,no_careers_page,,,
+Account 0351,351,C,34,0.8,Brooklyn,112,Health,1,,True,no_careers_page,,,
+Account 0352,352,C,34,0.8,Queens,113,Health,1,,True,careers_page_no_listings,,,
+Account 0353,353,C,34,0.8,Bronx,104,Health,1,,True,careers_page_no_listings,,,
+Account 0354,354,C,34,0.8,New York,100,Health,1,,True,careers_page_no_listings,,,
+Account 0355,355,C,34,0.55,Bronx,104,Home Health,1,5,True,site_unreachable,,,
 Account 0356,356,C,34,0.55,Bronx,104,Home Health,1,10,True,site_unreachable,,,
 Account 0357,357,C,33,0.9,Brooklyn,112,Home Health,1,2,True,no_careers_page,,,
 Account 0358,358,C,33,0.9,Queens,114,Home Health,1,2,True,no_careers_page,,,
@@ -362,15 +362,15 @@ Account 0360,360,C,32,0.55,Brooklyn,112,Home Health,1,18,True,site_unreachable,,
 Account 0361,361,C,32,0.45,Bronx,104,Health,4,,True,site_unreachable,,,
 Account 0362,362,C,31,0.8,New York,100,Health,2,,True,no_careers_page,,,
 Account 0363,363,C,31,0.55,Bronx,104,In Home Supportive Care,1,1,True,robots_disallowed,,,
-Account 0364,364,C,30,0.9,Jamaica,114,Home Health Aide,1,0,True,no_careers_page,,,
-Account 0365,365,C,30,0.8,New York,100,Home Health,1,0,True,no_careers_page,,,
-Account 0366,366,C,30,0.45,New York,100,Home Health,1,9,True,site_unreachable,,,
-Account 0367,367,C,30,0.45,Brooklyn,112,In Home Supportive Care,1,6,True,site_unreachable,,,
-Account 0368,368,C,30,0.45,Bronx,104,Home Health,1,12,True,site_unreachable,,,
-Account 0369,369,C,30,0.45,Brooklyn,112,Home Health,1,7,True,site_unreachable,,,
-Account 0370,370,C,30,0.45,Brooklyn,112,Home Health,1,11,True,site_unreachable,,,
-Account 0371,371,C,30,0.45,Brooklyn,112,Home Health,1,10,True,site_unreachable,,,
-Account 0372,372,C,29,0.7,Bronx,104,Health,1,,True,careers_page_no_listings,,,
+Account 0364,364,C,31,0.55,Brooklyn,112,Home Health,1,16,True,site_unreachable,,,
+Account 0365,365,C,30,0.9,Jamaica,114,Home Health Aide,1,0,True,no_careers_page,,,
+Account 0366,366,C,30,0.8,New York,100,Home Health,1,0,True,no_careers_page,,,
+Account 0367,367,C,30,0.45,New York,100,Home Health,1,9,True,site_unreachable,,,
+Account 0368,368,C,30,0.45,Brooklyn,112,In Home Supportive Care,1,6,True,site_unreachable,,,
+Account 0369,369,C,30,0.45,Bronx,104,Home Health,1,12,True,site_unreachable,,,
+Account 0370,370,C,30,0.45,Brooklyn,112,Home Health,1,7,True,site_unreachable,,,
+Account 0371,371,C,30,0.45,Brooklyn,112,Home Health,1,11,True,site_unreachable,,,
+Account 0372,372,C,30,0.45,Brooklyn,112,Home Health,1,10,True,site_unreachable,,,
 Account 0373,373,C,28,0.55,Brooklyn,112,Home Health,1,1,True,site_unreachable,,,
 Account 0374,374,C,27,0.55,Bronx,104,"Hospice Care, Community Based",1,15,True,site_unreachable,,,
 Account 0375,375,C,27,0.55,Bronx,104,Home Health,1,17,True,site_unreachable,,,

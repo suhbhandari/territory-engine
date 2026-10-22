@@ -1,6 +1,6 @@
 # Report card
 
-Built 2026-10-22 from the pipeline's own output files. Signals collected: 2026-10-12 to 2026-10-13. Accounts discovered: 2026-10-12.
+Built 2026-10-22 from the pipeline's own output files. Signals collected: 2026-10-22. Accounts discovered: 2026-10-12.
 
 Measurements only: no grades, because no outcome data or human labels exist yet. The last two sections are written by hand in the vertical's evals.yaml.
 
@@ -19,14 +19,14 @@ Measurements only: no grades, because no outcome data or human labels exist yet.
 | Signal column | Accounts with a value |
 |---|---|
 | `jobs_status` | 100.0% |
-| `jobs_ats` | 3.3% |
-| `jobs_source_url` | 18.4% |
-| `jobs_total` | 1.5% |
-| `jobs_total_all_locations` | 1.5% |
-| `jobs_care_worker` | 1.5% |
-| `jobs_scheduling_ops` | 1.5% |
-| `jobs_admin_compliance` | 1.5% |
-| `jobs_titles_sample` | 1.5% |
+| `jobs_ats` | 3.1% |
+| `jobs_source_url` | 17.8% |
+| `jobs_total` | 1.3% |
+| `jobs_total_all_locations` | 1.3% |
+| `jobs_care_worker` | 1.3% |
+| `jobs_scheduling_ops` | 1.3% |
+| `jobs_admin_compliance` | 1.3% |
+| `jobs_titles_sample` | 1.2% |
 | `website_live` | 100.0% |
 | `website_has_ssl` | 33.4% |
 | `npi_enrolled_year` | 87.9% |
@@ -41,14 +41,14 @@ Measurements only: no grades, because no outcome data or human labels exist yet.
 | Status | Accounts |
 |---|---|
 | no_website | 999 |
-| careers_page_no_listings | 196 |
-| no_careers_page | 151 |
-| site_unreachable | 67 |
-| ats_unsupported | 38 |
+| careers_page_no_listings | 190 |
+| no_careers_page | 147 |
+| site_unreachable | 80 |
+| ats_unsupported | 39 |
 | offsite_listings | 19 |
-| counted | 12 |
 | listings_found | 11 |
 | robots_disallowed | 8 |
+| counted | 8 |
 
 `license_status` breakdown:
 
@@ -63,40 +63,40 @@ The rubric weights are a hypothesis. They have not been fitted to meetings booke
 
 | Tier | Minimum score | Accounts | Groups | Average data coverage |
 |---|---|---|---|---|
-| A | 60 | 44 | 33 | 91.8% |
-| B | 42 | 257 | 211 | 86.0% |
-| C | 25 | 181 | 152 | 74.3% |
+| A | 60 | 41 | 31 | 91.5% |
+| B | 42 | 255 | 212 | 86.0% |
+| C | 25 | 186 | 153 | 72.6% |
 | D | 0 | 1019 | 1019 | 35.2% |
 
 Data coverage is the share of the rubric judged on real data. A low score with low coverage means "could not find out", not "poor fit".
 
 | Criterion | Max points | Average points | Accounts scoring above zero |
 |---|---|---|---|
-| Hiring activity | 35 | 2.6 | 28.4% |
-| Back-office hiring | 10 | 0.1 | 1.5% |
+| Hiring activity | 35 | 2.5 | 27.6% |
+| Back-office hiring | 10 | 0.1 | 1.2% |
 | Web presence | 15 | 4.9 | 34.6% |
 | Multi-site | 10 | 1.3 | 33.4% |
 | Agency type | 10 | 6.5 | 99.3% |
 | Maturity | 10 | 7.4 | 87.9% |
-| Tech posture | 10 | 1.6 | 30.2% |
+| Tech posture | 10 | 1.6 | 30.8% |
 
 ## Briefs
 
-- 244 briefs written; 100.0% pass the source check. 0 more are out of date and are not counted or published until rewritten.
-- 1570 statements, 6.4 per brief, each citing at least one numbered fact.
-- 5.1 facts available per brief; 95.2% of available facts were cited.
+- 243 briefs written; 100.0% pass the source check. 0 more are out of date and are not counted or published until rewritten.
+- 1560 statements, 6.4 per brief, each citing at least one numbered fact.
+- 5.1 facts available per brief; 95.4% of available facts were cited.
 
 ## Sequences
 
-- 244 sequences (732 touches); 100.0% pass their checks. 0 more are out of date and are not counted or published until rewritten.
-- First-email closing questions: 84.8% are distinct; the most repeated one appears 7 times.
-- Written for: Administrator (176), Director of Operations or COO (37), Owner or Operator (30), Executive Director (1).
+- 243 sequences (729 touches); 100.0% pass their checks. 0 more are out of date and are not counted or published until rewritten.
+- First-email closing questions: 85.6% are distinct; the most repeated one appears 7 times.
+- Written for: Administrator (176), Director of Operations or COO (36), Owner or Operator (30), Executive Director (1).
 
 | Touch | Word limit | Average words | Longest |
 |---|---|---|---|
 | 1 | 90 | 65.2 | 77 |
-| 2 | 70 | 46.5 | 64 |
-| 3 | 60 | 43.7 | 54 |
+| 2 | 70 | 46.6 | 64 |
+| 3 | 60 | 43.6 | 54 |
 
 ## First-attempt results, by prompt version
 
@@ -125,6 +125,26 @@ Each row is the same measurement, run over the published drafts before and after
 | raw uppercase addresses in outreach touches | 35 | 0 |
 
 The before figures were measured with the same check definitions, applied to the drafts as they stood on 2026-10-13 before the prompt and code changes. The second prompt version was measured against stricter checks than the first, so its pass rate is not directly comparable with the first.
+
+## Week over week
+
+This run compared with the saved run `2026-10-13`. Signals before: 2026-10-12 to 2026-10-13; after: 2026-10-22. 1501 accounts are in both runs, 0 are new and 0 are gone.
+
+- 15 of 1501 accounts changed tier: B to C: 7, A to B: 3, C to B: 3, B to A: 1, A to C: 1.
+- 55 trigger events on 32 accounts; 14 of those accounts are now in tiers A or B.
+
+| Trigger | Events |
+|---|---|
+| Website responds | 22 |
+| Tier | 15 |
+| Hiring evidence | 9 |
+| Hiring system | 5 |
+| Open roles in area | 4 |
+
+- Briefs written in this run: 15 (12 rewritten because their facts changed, 3 for groups new to tiers A and B); $0.57. The rest were kept as they were.
+- Sequences written in this run: 15 (12 rewritten because their facts changed, 3 for groups new to tiers A and B); $0.31. The rest were kept as they were.
+
+Whether these changes are worth a rep acting on has not been judged by a rep.
 
 ## CRM push (HubSpot)
 

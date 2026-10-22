@@ -4,11 +4,11 @@ Generated 2026-10-22. Model costs are measured from the token usage logged for e
 
 | Step | Model | Items | Avg input tokens | Avg output tokens | Cost per item | Total |
 |---|---|---|---|---|---|---|
-| Briefs | claude-opus-5-5 | 289 | 2486 | 1216 | $0.0343 | $9.90 |
-| Sequences | claude-opus-5-5 | 292 | 2502 | 525 | $0.0205 | $5.99 |
-| **Model total** | | | | | | **$15.89** |
+| Briefs | claude-opus-5-5 | 292 | 2498 | 1209 | $0.0342 | $9.98 |
+| Sequences | claude-opus-5-5 | 295 | 2503 | 525 | $0.0205 | $6.05 |
+| **Model total** | | | | | | **$16.03** |
 
-The items logged include 45 briefs and 48 sequences that are not current (groups that have since left tiers A and B, or text held back as out of date); they were paid for. A draft that was rewritten replaces its earlier row, so the cost of the earlier version is not in these totals.
+The items logged include 49 briefs and 52 sequences that are not current (groups that have since left tiers A and B, or text held back as out of date); they were paid for. A draft that was rewritten replaces its earlier row, so the cost of the earlier version is not in these totals.
 
 ## Other costs (estimates written by hand)
 

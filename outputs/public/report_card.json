@@ -6,8 +6,8 @@
       "last": "2026-10-12"
     },
     "signals_checked": {
-      "first": "2026-10-12",
-      "last": "2026-10-13"
+      "first": "2026-10-22",
+      "last": "2026-10-22"
     }
   },
   "discovery": {
@@ -40,14 +40,14 @@
     },
     "filled_pct": {
       "jobs_status": 100.0,
-      "jobs_ats": 3.3,
-      "jobs_source_url": 18.4,
-      "jobs_total": 1.5,
-      "jobs_total_all_locations": 1.5,
-      "jobs_care_worker": 1.5,
-      "jobs_scheduling_ops": 1.5,
-      "jobs_admin_compliance": 1.5,
-      "jobs_titles_sample": 1.5,
+      "jobs_ats": 3.1,
+      "jobs_source_url": 17.8,
+      "jobs_total": 1.3,
+      "jobs_total_all_locations": 1.3,
+      "jobs_care_worker": 1.3,
+      "jobs_scheduling_ops": 1.3,
+      "jobs_admin_compliance": 1.3,
+      "jobs_titles_sample": 1.2,
       "website_live": 100.0,
       "website_has_ssl": 33.4,
       "npi_enrolled_year": 87.9,
@@ -60,14 +60,14 @@
     "status_breakdown": {
       "jobs_status": {
         "no_website": 999,
-        "careers_page_no_listings": 196,
-        "no_careers_page": 151,
-        "site_unreachable": 67,
-        "ats_unsupported": 38,
+        "careers_page_no_listings": 190,
+        "no_careers_page": 147,
+        "site_unreachable": 80,
+        "ats_unsupported": 39,
         "offsite_listings": 19,
-        "counted": 12,
         "listings_found": 11,
-        "robots_disallowed": 8
+        "robots_disallowed": 8,
+        "counted": 8
       },
       "license_status": {
         "not_found": 969,
@@ -80,23 +80,23 @@
       {
         "tier": "A",
         "min_score": 60,
-        "accounts": 44,
-        "groups": 33,
-        "avg_data_coverage_pct": 91.8
+        "accounts": 41,
+        "groups": 31,
+        "avg_data_coverage_pct": 91.5
       },
       {
         "tier": "B",
         "min_score": 42,
-        "accounts": 257,
-        "groups": 211,
+        "accounts": 255,
+        "groups": 212,
         "avg_data_coverage_pct": 86.0
       },
       {
         "tier": "C",
         "min_score": 25,
-        "accounts": 181,
-        "groups": 152,
-        "avg_data_coverage_pct": 74.3
+        "accounts": 186,
+        "groups": 153,
+        "avg_data_coverage_pct": 72.6
       },
       {
         "tier": "D",
@@ -106,22 +106,22 @@
         "avg_data_coverage_pct": 35.2
       }
     ],
-    "avg_data_coverage_pct": 50.2,
+    "avg_data_coverage_pct": 50.0,
     "median_score": 15.0,
     "criteria": [
       {
         "key": "hiring_activity",
         "label": "Hiring activity",
         "max_points": 35,
-        "avg_points": 2.6,
-        "accounts_scoring_above_zero_pct": 28.4
+        "avg_points": 2.5,
+        "accounts_scoring_above_zero_pct": 27.6
       },
       {
         "key": "back_office_hiring",
         "label": "Back-office hiring",
         "max_points": 10,
         "avg_points": 0.1,
-        "accounts_scoring_above_zero_pct": 1.5
+        "accounts_scoring_above_zero_pct": 1.2
       },
       {
         "key": "web_presence",
@@ -156,32 +156,32 @@
         "label": "Tech posture",
         "max_points": 10,
         "avg_points": 1.6,
-        "accounts_scoring_above_zero_pct": 30.2
+        "accounts_scoring_above_zero_pct": 30.8
       }
     ],
     "weights_fitted_to_outcomes": false
   },
   "briefs": {
-    "written": 244,
+    "written": 243,
     "out_of_date": 0,
     "out_of_date_reasons": {},
     "passed_source_check_pct": 100.0,
-    "statements": 1570,
+    "statements": 1560,
     "statements_per_brief": 6.4,
     "facts_per_brief": 5.1,
-    "facts_used_pct": 95.2,
-    "avg_cost_usd": 0.0343,
-    "total_cost_usd": 9.9,
-    "cost_items": 289,
-    "avg_input_tokens": 2486,
-    "avg_output_tokens": 1216,
+    "facts_used_pct": 95.4,
+    "avg_cost_usd": 0.0342,
+    "total_cost_usd": 9.98,
+    "cost_items": 292,
+    "avg_input_tokens": 2498,
+    "avg_output_tokens": 1209,
     "model": "claude-opus-5-5"
   },
   "sequences": {
-    "written": 244,
+    "written": 243,
     "out_of_date": 0,
     "out_of_date_reasons": {},
-    "touches": 732,
+    "touches": 729,
     "passed_checks_pct": 100.0,
     "touch_lengths": [
       {
@@ -193,28 +193,28 @@
       {
         "touch": 2,
         "limit_words": 70,
-        "avg_words": 46.5,
+        "avg_words": 46.6,
         "max_words": 64
       },
       {
         "touch": 3,
         "limit_words": 60,
-        "avg_words": 43.7,
+        "avg_words": 43.6,
         "max_words": 54
       }
     ],
-    "distinct_first_email_questions_pct": 84.8,
+    "distinct_first_email_questions_pct": 85.6,
     "most_repeated_first_email_question_count": 7,
     "personas": {
       "Administrator": 176,
-      "Director of Operations or COO": 37,
+      "Director of Operations or COO": 36,
       "Owner or Operator": 30,
       "Executive Director": 1
     },
     "avg_cost_usd": 0.0205,
-    "total_cost_usd": 5.99,
-    "cost_items": 292,
-    "avg_input_tokens": 2502,
+    "total_cost_usd": 6.05,
+    "cost_items": 295,
+    "avg_input_tokens": 2503,
     "avg_output_tokens": 525,
     "model": "claude-opus-5-5"
   },
@@ -330,6 +330,52 @@
       "unchanged": 396
     }
   ],
+  "refresh": {
+    "previous_run": "2026-10-13",
+    "previous_signals": {
+      "first": "2026-10-12",
+      "last": "2026-10-13"
+    },
+    "accounts_compared": 1501,
+    "accounts_new": 0,
+    "accounts_gone": 0,
+    "tier_changes": 15,
+    "tier_changes_by_direction": {
+      "B to C": 7,
+      "A to B": 3,
+      "C to B": 3,
+      "B to A": 1,
+      "A to C": 1
+    },
+    "trigger_rows": 55,
+    "trigger_rows_by_type": {
+      "Website responds": 22,
+      "Tier": 15,
+      "Hiring evidence": 9,
+      "Hiring system": 5,
+      "Open roles in area": 4
+    },
+    "accounts_with_trigger": 32,
+    "drafted_tiers": [
+      "A",
+      "B"
+    ],
+    "accounts_in_drafted_tiers_with_trigger": 14,
+    "drafts": {
+      "briefs": {
+        "written": 15,
+        "rewritten": 12,
+        "new_groups": 3,
+        "cost_usd": 0.57
+      },
+      "sequences": {
+        "written": 15,
+        "rewritten": 12,
+        "new_groups": 3,
+        "cost_usd": 0.31
+      }
+    }
+  },
   "checks_cover": [
     "Briefs: every statement cites at least one numbered fact, every cited fact exists, every number (in digits, or a number word from two up) appears in a cited fact, and every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact.",
     "Sequences: the same citation, number and wording rules, plus word limits, subject rules and allowed merge fields.",
