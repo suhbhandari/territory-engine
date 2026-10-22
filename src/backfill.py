@@ -34,13 +34,14 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 from src.discover import _name_key, _phone_key  # noqa: E402
 
-ACCOUNTS_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
-CACHE_PATH = ROOT / "outputs" / "raw" / "backfill_cache.csv"
-REJECTIONS_PATH = ROOT / "outputs" / "raw" / "website_rejections.csv"
+ACCOUNTS_PATH = RAW / "accounts_raw.csv"
+CACHE_PATH = RAW / "backfill_cache.csv"
+REJECTIONS_PATH = RAW / "website_rejections.csv"
 CACHE_COLS = ["entity_id", "lookup_source", "query", "match_reason", "matched_id", "matched_name", "looked_up_at"]
 
 _NAME_SIMILARITY = 0.85

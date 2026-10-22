@@ -27,11 +27,10 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW, PUBLIC  # noqa: E402
 from src.current import current_briefs, current_sequences  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
-RAW = ROOT / "outputs" / "raw"
-PUBLIC = ROOT / "outputs" / "public"
 
 
 def whole(value):

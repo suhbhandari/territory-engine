@@ -32,14 +32,15 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 from src.brief import _when, build_facts, check_statements, forbidden_words, render_fact, slug  # noqa: E402
 from src.current import current_sequences  # noqa: E402
 from src.llm import cost_usd, generate_json, load_prompt, make_client  # noqa: E402
 
-SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
-OUT_DIR = ROOT / "outputs" / "raw" / "sequences"
+SCORED_PATH = RAW / "accounts_scored.csv"
+OUT_DIR = RAW / "sequences"
 INDEX_PATH = OUT_DIR / "sequences_index.csv"
 TOUCHES_PATH = OUT_DIR / "sequences.csv"
 INDEX_COLS = ["account_group", "group_rank", "name", "tier", "score", "persona", "file", "check_status",

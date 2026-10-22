@@ -1,0 +1,47 @@
+# Per-signal run settings read by the enrichment step. Same modules as any vertical with
+# a website; only the job-title buckets are specific to these businesses.
+signals:
+  careers_page:
+    module: src.signals.careers_page
+    uses_website: true
+    description: Open job postings on the contractor's own careers page; hiring call-handling staff is the clearest sign the phones are a problem now
+    mode: parallel
+    role_keywords:
+      # Staff who answer the phone and book jobs: the workload the seller's product takes on.
+      call_handling:
+        - dispatch
+        - dispatcher
+        - customer service
+        - csr
+        - call center
+        - call centre
+        - receptionist
+        - scheduler
+        - scheduling
+        - booking
+        - office coordinator
+        - service coordinator
+      # Field staff: more technicians means more calls to answer and book.
+      technician:
+        - technician
+        - installer
+        - plumber
+        - electrician
+        - apprentice
+        - journeyman
+        - service tech
+        - techs
+        - hvac
+      office_admin:
+        - office manager
+        - administrator
+        - accounting
+        - bookkeeper
+        - estimator
+        - sales
+
+  http_check:
+    module: src.signals.http_check
+    uses_website: true
+    description: Website liveness and SSL as a proxy for tech posture
+    mode: parallel

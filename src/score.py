@@ -35,13 +35,14 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.exclusions import reviewed_exclusions, split  # noqa: E402
 from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
-ACCOUNTS_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
-SIGNALS_PATH = ROOT / "outputs" / "raw" / "signals_raw.csv"
-OUTPUT_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
-EXCLUDED_PATH = ROOT / "outputs" / "raw" / "accounts_excluded.csv"
+ACCOUNTS_PATH = RAW / "accounts_raw.csv"
+SIGNALS_PATH = RAW / "signals_raw.csv"
+OUTPUT_PATH = RAW / "accounts_scored.csv"
+EXCLUDED_PATH = RAW / "accounts_excluded.csv"
 
 ID_COL = "entity_id"
 

@@ -1,0 +1,34 @@
+# Discovery for residential HVAC, plumbing and electrical contractors.
+# Google Maps only: there is no free public register of these businesses that covers
+# a metro the way a provider registry does, so the list is as complete as Maps search is.
+
+sources:
+  google_maps:
+    # {city} and {state} come from the metro config; run once per metro.search_cities entry.
+    # Each template returns at most 60 places (3 pages of 20).
+    search_templates:
+      - "residential HVAC contractor {city} {state}"
+      - "residential plumber {city} {state}"
+      - "residential electrician {city} {state}"
+    # Places primary types that are not contractors (stores and wholesalers come back
+    # for "plumber" searches).
+    exclude_types:
+      - hardware_store
+      - home_improvement_store
+      - store
+
+# No backfill: Text Search returns the website with the listing, so a lookup per account
+# would only re-ask Google for what it already said.
+
+# Listing and directory sites a Maps listing sometimes gives as the business's website.
+not_own_website_domains:
+  - yelp.com
+  - facebook.com
+  - angi.com
+  - homeadvisor.com
+  - thumbtack.com
+  - nextdoor.com
+  - bbb.org
+  - instagram.com
+  - google.com
+  - business.site

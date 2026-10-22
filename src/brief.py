@@ -37,13 +37,14 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 from src.llm import cost_usd, generate_json, load_prompt, make_client  # noqa: E402
 from src.score import matches  # noqa: E402
 
-SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
-BRIEFS_DIR = ROOT / "outputs" / "raw" / "briefs"
+SCORED_PATH = RAW / "accounts_scored.csv"
+BRIEFS_DIR = RAW / "briefs"
 INDEX_PATH = BRIEFS_DIR / "briefs_index.csv"
 INDEX_COLS = ["account_group", "group_rank", "name", "tier", "score", "file", "check_status", "check_notes",
               "facts", "model", "input_tokens", "output_tokens", "cost_usd", "generated_at"]

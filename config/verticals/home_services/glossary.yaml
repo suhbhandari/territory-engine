@@ -1,0 +1,21 @@
+# Vertical glossary: human-readable labels.
+# src/anonymize.py reads vertical_name for the public site's title. The other keys are
+# not read by any code yet.
+
+vertical_name: Residential Home Services
+account_types:
+  - HVAC contractor
+  - Plumbing contractor
+  - Electrical contractor
+
+buyer_titles:
+  - Owner
+  - General Manager
+  - Operations Manager
+  - Call Center Manager
+
+pain_points:
+  - Missed calls and voicemail
+  - After-hours and overflow calls
+  - Dispatcher and CSR hiring and turnover
+  - Calls answered but not booked

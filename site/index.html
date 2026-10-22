@@ -120,13 +120,10 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const fmt = (n) => Number(n).toLocaleString("en-US");
   const pctText = (x) => Math.round(x * 100) + "%";
-  const STATUS = {
-    no_website: "No website", counted: "Roles counted", listings_found: "Some roles found",
-    ats_unsupported: "Hiring system, no count", offsite_listings: "External job board",
-    careers_page_no_listings: "Careers page, no listings read", no_careers_page: "No careers page",
-    site_unreachable: "Site unreachable", robots_disallowed: "Crawling disallowed",
-  };
-  const statusLabel = (s) => STATUS[s] || String(s || "").replace(/_/g, " ");
+  // Value labels come from the vertical's public.yaml (via site_data.js); anything unnamed
+  // is shown with underscores as spaces.
+  const LABELS = Object.assign({}, ...((window.SITE_DATA || {}).fields || []).map((f) => f.labels || {}));
+  const statusLabel = (s) => LABELS[s] || String(s || "").replace(/_/g, " ");
 
   if (!D || !R) {
     document.querySelector("main").innerHTML = '<p class="empty">No data found. Run <code>make public</code> to build <code>outputs/public/</code>, then reload.</p>';
@@ -137,7 +134,7 @@
   const sig = R.data_as_of && R.data_as_of.signals_checked;
   const sigText = sig ? (sig.first === sig.last ? sig.first : sig.first + " to " + sig.last) : "not recorded";
   $("subtitle").textContent = "Discovers accounts in a territory from public sources, scores them against a rubric, and drafts source-cited briefs and outreach. Signals collected " + sigText + "; page built " + D.generated_at + ".";
-  $("anon-note").textContent = "Public demo data. Account names, addresses, phone numbers and websites are replaced with placeholders, open-role counts are shown as ranges, and each account's hiring system is hidden. Scores, signals and generated text are real output from one run.";
+  $("anon-note").textContent = D.anon_note || "Public demo data. Account names, addresses, phone numbers and websites are replaced with placeholders.";
 
   // ---------- tooltip ----------
   const tip = $("tip");
@@ -167,8 +164,8 @@
   const maxTier = Math.max(...tierNames.map((t) => byTier[t].length));
   const withText = groups.filter((a) => a.brief).length;
   const steps = [
-    ["Discover", "Pull every matching business from a public registry and map listings, then merge duplicates."],
-    ["Enrich", "Check each account's own website for a careers page, hiring system and open roles."],
+    ["Discover", D.steps && D.steps.discover || "Pull every matching business from the vertical's sources, then merge duplicates."],
+    ["Enrich", D.steps && D.steps.enrich || "Check each account against the vertical's signals."],
     ["Score", "Apply a written rubric. Every point has a plain-language reason, and missing data is tracked separately."],
     ["Brief", "Code builds numbered facts with sources; a model phrases them and must cite a fact for each statement."],
     ["Sequence", "Draft an email, a follow-up and a call opener from the same facts, checked by code."],
@@ -215,18 +212,26 @@
     <p class="sub" style="margin-top:10px;font-size:13px">These weights are a starting hypothesis. They have not been fitted to meetings booked or deals won.</p>`;
 
   // ---------- accounts ----------
+  // Which signal fields become columns, the filter, sort options and search: the vertical's public.yaml.
+  const FIELDS = D.fields || [];
+  const COLS = FIELDS.filter((f) => f.column);
+  const FILTER = FIELDS.find((f) => f.filter);
+  const SORTS = FIELDS.filter((f) => f.sort);
+  const SEARCH = FIELDS.filter((f) => f.search);
   const state = { tiers: new Set(), q: "", status: "", sort: "rank", page: 0 };
   const PAGE = 50;
-  const statuses = [...new Set(groups.map((a) => a.hiring_status))].filter(Boolean).sort();
+  const statuses = FILTER ? [...new Set(groups.map((a) => a[FILTER.key]))].filter(Boolean).sort() : [];
+  const cell = (a, f) => a[f.key] === "" || a[f.key] == null ? `<span class="sub">${esc(f.unknown || "")}</span>` : esc(statusLabel(a[f.key]));
+  const num = (v) => v === "" || v == null ? -1 : parseInt(v, 10) || 0;
   $("tab-accounts").innerHTML = `
     <div class="filters">
       ${tierNames.map((t) => `<button class="chip" data-tier="${esc(t)}" aria-pressed="false">Tier ${esc(t)}</button>`).join("")}
-      <input id="q" type="search" placeholder="Search id, city or type" aria-label="Search accounts">
-      <select id="status" aria-label="Hiring check status"><option value="">Any hiring status</option>${statuses.map((s) => `<option value="${esc(s)}">${esc(statusLabel(s))}</option>`).join("")}</select>
-      <select id="sort" aria-label="Sort"><option value="rank">Sort: rank</option><option value="coverage">Sort: data coverage</option><option value="roles">Sort: open roles</option><option value="locations">Sort: locations</option></select>
+      <input id="q" type="search" placeholder="Search id, city${SEARCH.map((f) => " or " + esc(f.label.toLowerCase())).join("")}" aria-label="Search accounts">
+      ${FILTER ? `<select id="status" aria-label="${esc(FILTER.label)}"><option value="">Any ${esc(FILTER.label.toLowerCase())}</option>${statuses.map((s) => `<option value="${esc(s)}">${esc(statusLabel(s))}</option>`).join("")}</select>` : ""}
+      <select id="sort" aria-label="Sort"><option value="rank">Sort: rank</option><option value="coverage">Sort: data coverage</option>${SORTS.map((f) => `<option value="f:${esc(f.key)}">Sort: ${esc(f.label.toLowerCase())}</option>`).join("")}<option value="locations">Sort: locations</option></select>
     </div>
     <div class="card table-scroll"><table>
-      <thead><tr><th class="num">Rank</th><th>Account</th><th>City</th><th>Tier</th><th>Score</th><th class="num">Coverage</th><th>Type</th><th class="num">Locations</th><th class="num">Open roles</th><th>Hiring status</th></tr></thead>
+      <thead><tr><th class="num">Rank</th><th>Account</th><th>City</th><th>Tier</th><th>Score</th><th class="num">Coverage</th><th class="num">Locations</th>${COLS.map((f) => `<th${f.sort ? ' class="num"' : ""}>${esc(f.label)}</th>`).join("")}</tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
     <div class="pager"><span id="count"></span><button id="prev">Previous</button><button id="next">Next</button></div>`;
@@ -235,9 +240,10 @@
     const q = state.q.toLowerCase();
     let rows = groups.filter((a) =>
       (!state.tiers.size || state.tiers.has(a.tier)) &&
-      (!state.status || a.hiring_status === state.status) &&
-      (!q || (a.id + " " + a.city + " " + a.type).toLowerCase().includes(q)));
-    const key = { coverage: (a) => -a.data_coverage, roles: (a) => -(a.open_roles === "" ? -1 : parseInt(a.open_roles, 10)), locations: (a) => -a.locations }[state.sort];
+      (!state.status || a[FILTER.key] === state.status) &&
+      (!q || [a.id, a.city, ...SEARCH.map((f) => a[f.key])].join(" ").toLowerCase().includes(q)));
+    const key = state.sort.startsWith("f:") ? ((a) => -num(a[state.sort.slice(2)]))
+      : { coverage: (a) => -a.data_coverage, locations: (a) => -a.locations }[state.sort];
     if (key) rows = rows.slice().sort((a, b) => key(a) - key(b) || a.rank - b.rank);
     return rows;
   }
@@ -251,9 +257,9 @@
         <td class="num">${a.rank}</td><td class="nw">${esc(a.id)}${a.brief ? "" : ' <span class="sub" style="font-size:12px">(no brief)</span>'}</td><td>${esc(a.city)}</td>
         <td><span class="badge ${esc(a.tier)}">${esc(a.tier)}</span></td>
         <td class="nw"><span class="mini"><i style="width:${a.score}%"></i></span>${a.score}</td>
-        <td class="num">${pctText(a.data_coverage)}</td><td>${esc(a.type)}</td><td class="num">${a.locations}</td>
-        <td class="num">${a.open_roles === "" ? '<span class="sub">unknown</span>' : esc(a.open_roles)}</td><td>${esc(statusLabel(a.hiring_status))}</td>
-      </tr>`).join("") || '<tr><td colspan="10" class="empty">No accounts match these filters.</td></tr>';
+        <td class="num">${pctText(a.data_coverage)}</td><td class="num">${a.locations}</td>
+        ${COLS.map((f) => `<td${f.sort ? ' class="num"' : ""}>${cell(a, f)}</td>`).join("")}
+      </tr>`).join("") || `<tr><td colspan="${7 + COLS.length}" class="empty">No accounts match these filters.</td></tr>`;
     $("count").textContent = rows.length ? `${state.page * PAGE + 1}–${state.page * PAGE + slice.length} of ${fmt(rows.length)}` : "0 accounts";
     $("prev").disabled = state.page === 0; $("next").disabled = state.page >= pages - 1;
   }
@@ -262,7 +268,7 @@
     c.setAttribute("aria-pressed", state.tiers.has(t)); state.page = 0; drawRows();
   }));
   $("q").addEventListener("input", (e) => { state.q = e.target.value; state.page = 0; drawRows(); });
-  $("status").addEventListener("change", (e) => { state.status = e.target.value; state.page = 0; drawRows(); });
+  if (FILTER) $("status").addEventListener("change", (e) => { state.status = e.target.value; state.page = 0; drawRows(); });
   $("sort").addEventListener("change", (e) => { state.sort = e.target.value; state.page = 0; drawRows(); });
   $("prev").addEventListener("click", () => { state.page--; drawRows(); });
   $("next").addEventListener("click", () => { state.page++; drawRows(); });

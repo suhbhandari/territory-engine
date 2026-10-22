@@ -20,13 +20,14 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
 from src.exclusions import out_of_territory  # noqa: E402
 from src.sources.base import SCHEMA  # noqa: E402
 
-OUTPUT_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
-SUMMARY_PATH = ROOT / "outputs" / "raw" / "discover_summary.json"
+OUTPUT_PATH = RAW / "accounts_raw.csv"
+SUMMARY_PATH = RAW / "discover_summary.json"
 
 
 def load_yaml(path: Path) -> dict:

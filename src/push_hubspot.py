@@ -37,16 +37,17 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW, PUBLIC  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
 load_dotenv(ROOT / ".env")
 
 API = "https://api.hubapi.com"
 SOURCES = {
-    "public": ROOT / "outputs" / "public" / "accounts_public.csv",
-    "raw": ROOT / "outputs" / "raw" / "accounts_scored.csv",
+    "public": PUBLIC / "accounts_public.csv",
+    "raw": RAW / "accounts_scored.csv",
 }
-LOG_PATH = ROOT / "outputs" / "raw" / "hubspot_push_log.json"
+LOG_PATH = RAW / "hubspot_push_log.json"
 BATCH_SIZE = 100
 MAX_ATTEMPTS = 6
 

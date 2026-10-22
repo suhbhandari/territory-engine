@@ -2,7 +2,7 @@
 
 A territory engine for a sales team. Give it a metro and a vertical, and it finds the accounts there from public sources, ranks them by public signs that they need help now, and drafts a short brief and a first outreach sequence for the top accounts. Every statement in a brief or email cites a numbered fact with its source, and code (not the model) checks that.
 
-The shipped demo targets **home care, home health and hospice agencies in New York City**, for a seller of workforce-operations software. A new vertical or metro is a new config folder or file, not new code.
+The shipped demo targets **home care, home health and hospice agencies in New York City**, for a seller of workforce-operations software. A new vertical or metro is a new config folder or file, not new code. That was tested once: a second vertical (residential HVAC, plumbing and electrical contractors in Phoenix) ran on config alone after two fixes to the core that it exposed; `docs/second-vertical.md` lists every core file that changed.
 
 ## What a sales leader gets
 

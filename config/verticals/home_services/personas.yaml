@@ -1,0 +1,29 @@
+# Who each sequence is written for. The first persona whose `when` holds is used (same
+# condition syntax as rubric.yaml); the last has no `when` and is the default.
+#
+# Role-level guesses from what the contractor's public pages show. The engine does not
+# collect contact names or confirm who holds the role.
+
+personas:
+  - title: Call Center Manager
+    when: {column: jobs_call_handling, op: gte, value: 2}
+    cares_about: >
+      Answer rate and hold times at peak, how many calls become booked jobs, and keeping
+      enough dispatchers and CSRs on the schedule while roles are open.
+
+  - title: Operations Manager
+    when: {column: domain_account_count, op: gte, value: 2}
+    cares_about: >
+      Keeping booking and dispatch consistent across locations, technician utilisation,
+      and how after-hours and overflow calls are handled.
+
+  - title: Operations Manager
+    when: {column: jobs_total, op: gte, value: 5}
+    cares_about: >
+      Filling the schedule for a growing technician team, and making sure inbound calls
+      are answered and booked while the office is stretched.
+
+  - title: Owner or General Manager
+    cares_about: >
+      Calls missed while everyone is on a job or after hours, the cost of office staff to
+      answer the phone, and turning more of the calls they already get into booked work.

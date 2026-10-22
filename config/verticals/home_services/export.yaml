@@ -1,0 +1,60 @@
+# Export targets: read by src/export.py. See the first vertical's export.yaml for the format.
+merge_field_map:
+  "{{sender_first_name}}": "{{sender.first_name}}"
+script_placeholders:
+  "{{first_name}}": "[their first name]"
+  "{{sender_first_name}}": "[your first name]"
+
+targets:
+  salesforce_accounts:
+    file: salesforce_accounts.csv
+    rows: accounts
+    tiers: [A, B, C]
+    unique_key: Territory Engine ID
+    required: [Account Name, Territory Engine ID]
+    columns:
+      - {header: Account Name, value: "{name}"}
+      - {header: Phone, value: "{phone}"}
+      - {header: Website, value: "{website}"}
+      - {header: Billing Street, value: "{address}"}
+      - {header: Billing City, value: "{city}"}
+      - {header: Billing State/Province, value: "{state}"}
+      - {header: Billing Zip/Postal Code, value: "{zip}"}
+      - {header: Description, value: "{score_reasons}"}
+      - {header: Territory Engine ID, value: "{entity_id}"}
+      - {header: Territory Tier, value: "{tier}"}
+      - {header: Territory Score, value: "{score}"}
+      - {header: Territory Data Coverage, value: "{data_coverage}"}
+      - {header: Territory Group Rank, value: "{group_rank}"}
+      - {header: Locations In Group, value: "{group_size}"}
+      - {header: Dispatch Or CSR Roles, value: "{jobs_call_handling}"}
+      - {header: Technician Roles, value: "{jobs_technician}"}
+      - {header: Open Roles In Area, value: "{jobs_total}"}
+      - {header: Hiring System, value: "{jobs_ats}"}
+      - {header: Hiring Check Status, value: "{jobs_status}"}
+      - {header: Careers Page, value: "{jobs_source_url}"}
+      - {header: Maps Category, value: "{license_type}"}
+      - {header: Signals Checked On, value: "{signals_fetched_at:.10}"}
+
+  outreach_accounts:
+    file: outreach_accounts.csv
+    rows: groups
+    tiers: [A, B]
+    require: email_1_core
+    unique_key: Territory Engine ID
+    required: [Account Name, Email 1 Subject, Email 1 Body, Email 2 Body, Call Opener]
+    no_merge_fields: true
+    columns:
+      - {header: Account Name, value: "{name}"}
+      - {header: Domain, value: "{website_domain}"}
+      - {header: Website, value: "{website}"}
+      - {header: Phone, value: "{phone}"}
+      - {header: Territory Engine ID, value: "{entity_id}"}
+      - {header: Territory Tier, value: "{tier}"}
+      - {header: Write To Role, value: "{persona}"}
+      - {header: Email 1 Subject, value: "{email_1_subject}"}
+      - {header: Email 1 Body, value: "{email_1_core}"}
+      - {header: Email 2 Body, value: "{email_2_core}"}
+      - {header: Call Opener, value: "{call_1_script}"}
+      - {header: Why This Account, value: "{score_reasons}"}
+      - {header: Brief File, value: "{brief_file}"}

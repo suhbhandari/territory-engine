@@ -1,0 +1,161 @@
+# Scoring rubric: residential HVAC, plumbing and electrical contractors, for a seller of
+# AI phone answering and booking.
+#
+# Read by src/score.py. Each criterion has max_points and an ordered list of rules; the
+# FIRST rule that matches wins. `known: false` means "could not judge": it awards its
+# points but lowers data_coverage instead of counting against the account.
+#
+# These weights are my judgment, a starting hypothesis, not a fitted model. There is no
+# outcome data for this vertical at all.
+
+tiers:
+  - {name: A, min_score: 60}
+  - {name: B, min_score: 42}
+  - {name: C, min_score: 25}
+  - {name: D, min_score: 0}
+
+criteria:
+
+  call_handling_hiring:
+    label: Call-handling hiring
+    why: >
+      a contractor hiring dispatchers, customer service reps or a call center is paying people to answer and book calls right now, which is exactly the work the product takes on. This is the strongest "needs help now" signal.
+    max_points: 30
+    rules:
+      - when: {column: jobs_call_handling, op: gte, value: 2}
+        points: 30
+        reason: "{jobs_call_handling} open dispatch or customer service roles"
+      - when: {column: jobs_call_handling, op: eq, value: 1}
+        points: 24
+        reason: "1 open dispatch or customer service role"
+      - when: {column: jobs_total, op: gte, value: 1}
+        points: 4
+        reason: "Hiring, but no dispatch or customer service roles listed"
+      - when: {column: jobs_total, op: eq, value: 0}
+        points: 0
+      - points: 0
+        known: false
+
+  hiring_activity:
+    label: Hiring activity
+    why: >
+      a contractor adding technicians is adding jobs to book and calls to answer, and a business that is hiring at all has the busy season or the backlog that makes missed calls expensive.
+    max_points: 25
+    rules:
+      - when: {column: jobs_technician, op: gte, value: 5}
+        points: 25
+        reason: "{jobs_technician} open technician roles"
+      - when: {column: jobs_technician, op: between, value: [1, 4]}
+        points: 20
+        reason: "{jobs_technician} open technician role(s)"
+      - when: {column: jobs_total, op: gte, value: 1}
+        points: 16
+        reason: "{jobs_total} open role(s) posted"
+      - when: {column: jobs_status, op: eq, value: ats_unsupported}
+        points: 14
+        reason: "Runs hiring through {jobs_ats} (open-role count not readable)"
+      - when: {column: jobs_status, op: eq, value: offsite_listings}
+        points: 12
+        reason: "Careers page sends applicants to an external job board"
+      - when: {column: jobs_status, op: eq, value: careers_page_no_listings}
+        points: 8
+        reason: "Has a careers page (no structured listings)"
+      - when: {column: jobs_status, op: in, value: [counted, listings_found]}
+        points: 4
+        reason: "Job board live, no open roles in area right now"
+      - when: {column: jobs_status, op: eq, value: no_careers_page}
+        points: 1
+        reason: "Website has no careers page"
+      - when: {column: jobs_status, op: in, value: [no_website, site_unreachable, robots_disallowed]}
+        points: 0
+        known: false
+
+  multi_site:
+    label: Multi-site
+    why: >
+      a contractor with several locations takes calls for several service areas, and one deal covers all of them.
+    max_points: 15
+    rules:
+      - when: {column: domain_account_count, op: gte, value: 3}
+        points: 15
+        reason: "{domain_account_count} listings in this metro share {website_domain}"
+      - when: {column: domain_account_count, op: eq, value: 2}
+        points: 10
+        reason: "2 listings in this metro share {website_domain}"
+      - when: {column: domain_account_count, op: eq, value: 1}
+        points: 3
+      - points: 0
+        known: false
+
+  web_presence:
+    label: Web presence
+    why: >
+      a live website means an operating business taking inbound calls from customers who found it online; those are the calls that go to voicemail after hours.
+    max_points: 10
+    rules:
+      - when:
+          - {column: website, op: not_blank}
+          - {column: website_live, op: eq, value: "True"}
+        points: 10
+        reason: "Live website"
+      # The liveness check is a bare ping some sites refuse; if the careers lookup loaded the site, it is live.
+      - when:
+          - {column: website, op: not_blank}
+          - column: jobs_status
+            op: in
+            value: [counted, listings_found, ats_unsupported, offsite_listings, careers_page_no_listings, no_careers_page]
+        points: 10
+        reason: "Live website"
+      - when: {column: website, op: not_blank}
+        points: 5
+        reason: "Website listed but did not respond to our check"
+      - points: 2
+        reason: "Google Maps listing, no website"
+
+  business_type:
+    label: Business type
+    why: >
+      confirms the listing is a residential trade contractor, not a supply house, manufacturer or adjacent business the search returned. Google's category is self-chosen by the business, so it is evidence, not proof.
+    max_points: 10
+    rules:
+      # One rule per trade word, matched anywhere in Google's category name, any case.
+      - {when: {column: license_type, op: contains, value: hvac}, points: 10, reason: "Listed on Google Maps as {license_type}"}
+      - {when: {column: license_type, op: contains, value: plumb}, points: 10, reason: "Listed on Google Maps as {license_type}"}
+      - {when: {column: license_type, op: contains, value: electric}, points: 10, reason: "Listed on Google Maps as {license_type}"}
+      - {when: {column: license_type, op: contains, value: air condition}, points: 10, reason: "Listed on Google Maps as {license_type}"}
+      - {when: {column: license_type, op: contains, value: heating}, points: 10, reason: "Listed on Google Maps as {license_type}"}
+      # Google Places has no HVAC category: HVAC shops are filed as "General Contractor"
+      # (40 of 47 in the first Phoenix run had a heating or air word in their name). A name
+      # that states the trade is the next-best evidence.
+      - {when: {column: name, op: contains, value: hvac}, points: 8, reason: "Listed as {license_type}; the business name names the trade"}
+      - {when: {column: name, op: contains, value: air condition}, points: 8, reason: "Listed as {license_type}; the business name names the trade"}
+      - {when: {column: name, op: contains, value: heating}, points: 8, reason: "Listed as {license_type}; the business name names the trade"}
+      - {when: {column: name, op: contains, value: cooling}, points: 8, reason: "Listed as {license_type}; the business name names the trade"}
+      - {when: {column: name, op: contains, value: " air"}, points: 8, reason: "Listed as {license_type}; the business name names the trade"}
+      - {when: {column: name, op: contains, value: plumb}, points: 8, reason: "Listed as {license_type}; the business name names the trade"}
+      - {when: {column: name, op: contains, value: electric}, points: 8, reason: "Listed as {license_type}; the business name names the trade"}
+      - {when: {column: name, op: contains, value: mechanical}, points: 8, reason: "Listed as {license_type}; the business name names the trade"}
+      - {when: {column: license_type, op: contains, value: contractor}, points: 6, reason: "Listed on Google Maps as {license_type}"}
+      - {when: {column: license_type, op: contains, value: water heater}, points: 6, reason: "Listed on Google Maps as {license_type}"}
+      - when: {column: license_type, op: in, value: ["Unknown", ""]}
+        points: 0
+        known: false
+      - points: 0
+        reason: "Listed as {license_type}, likely not a trade contractor"
+
+  tech_posture:
+    label: Tech posture
+    why: >
+      a contractor already paying for hiring software buys tools to fix operational problems, so a software conversation is not a first.
+    max_points: 10
+    rules:
+      - when: {column: jobs_ats, op: not_blank}
+        points: 10
+        reason: "Uses {jobs_ats} for hiring"
+      - when: {column: website_has_ssl, op: eq, value: "True"}
+        points: 5
+      - when: {column: website_live, op: eq, value: "True"}
+        points: 2
+        reason: "Website has no secure connection"
+      - points: 0
+        known: false

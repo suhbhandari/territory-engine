@@ -30,9 +30,9 @@ import yaml
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
-RAW = ROOT / "outputs" / "raw"
 OUTPUT_PATH = RAW / "triggers.csv"
 COLS = ["group_rank", "tier", "name", "city", "entity_id", "change", "what", "before", "after", "because",
         "before_checked", "after_checked"]

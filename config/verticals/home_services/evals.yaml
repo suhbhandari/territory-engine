@@ -1,0 +1,26 @@
+# Statements the report card prints alongside its measurements. Read by src/evals.py.
+
+checks_cover:
+  - "Briefs: every statement cites at least one numbered fact, every cited fact exists, every number appears in a cited fact, and every capitalised word inside a sentence appears in a cited fact."
+  - "Sequences: the same citation, number and wording rules, plus word limits, subject rules and allowed merge fields."
+  - "Guessed claims: a hedge word followed in the same sentence by a claim of frequency, timing, ownership, or how calls are answered today (missed calls, voicemail)."
+  - "Outreach wording: the engine's own vocabulary (territory, account, tier, score, ranked) is rejected in any subject or body."
+  - "Public dataset: each published record is searched for that business's own name words, domain, phone number and IDs, and the leak test searches every published file for every business's identifiers."
+
+not_measured:
+  - "Whether the top tiers are the best prospects. No human has labelled a sample and no outcome data exists for this vertical."
+  - "Recall of discovery. There is no public register of these contractors to measure against; the list is whatever three Google Maps searches for one city returned, capped at 60 results each."
+  - "Whether a contractor's Google Maps category is right. It is chosen by the business."
+  - "Call volume, answer rate, or how calls are handled today. No public source shows them."
+  - "Job-posting accuracy. Counts were read from each contractor's own careers page once and not cross-checked."
+  - "Reply rates. Nothing has been sent."
+
+other_costs:
+  - item: "Google Places discovery searches"
+    requests: "up to 9 per run (3 searches x 3 pages, 1 city)"
+    estimate: "about $0.35"
+    basis: "Text Search with website and phone fields, list price about $35 per 1,000 requests, before any free monthly allowance"
+  - item: "Contractor websites"
+    requests: "about 150"
+    estimate: "$0"
+    basis: "Free, no key"

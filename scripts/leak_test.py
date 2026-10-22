@@ -87,8 +87,14 @@ def load_allowlist(raw: Path, names: set) -> dict:
     return allowed
 
 
-def identifiers(root: Path) -> dict:
-    raw = root / "outputs" / "raw"
+def raw_dirs(root: Path) -> list:
+    """The private folder of every run: outputs/raw/ and any outputs/raw/<run>/ with accounts."""
+    base = root / "outputs" / "raw"
+    runs = sorted(d for d in base.glob("*/") if d.name != "runs" and (d / "accounts_raw.csv").exists()) if base.exists() else []
+    return ([base] if (base / "accounts_raw.csv").exists() else []) + runs
+
+
+def identifiers(raw: Path) -> dict:
     accounts = _read(raw / "accounts_raw.csv")
     signals = _read(raw / "signals_raw.csv")
     cache = _read(raw / "backfill_cache.csv")
@@ -116,7 +122,7 @@ def identifiers(root: Path) -> dict:
                 if len(name) >= 4 and words and not all(w in generic or w in places for w in words):
                     names.add(name.lower())
 
-    urls = set(accounts["website"]) | set(signals.get("jobs_source_url", []))
+    urls = set(accounts["website"]).union(*(signals[c] for c in signals.columns if c.endswith("_url")))
     return {
         "names": names,
         "allowed_phrases": load_allowlist(raw, names),
@@ -130,8 +136,21 @@ def identifiers(root: Path) -> dict:
 
 
 def find_leaks(root: Path) -> tuple:
-    ids = identifiers(root)
+    """Every run's identifiers against every published file, since runs publish side by side."""
+    raws = raw_dirs(root)
+    if not raws:
+        raise SystemExit(f"no account file under {root / 'outputs' / 'raw'}; nothing to test against")
     texts = published_files(root)
+    hits, merged = [], {}
+    for raw in raws:
+        ids = identifiers(raw)
+        hits += _scan(ids, texts)
+        for k, v in ids.items():
+            merged[k] = {**merged.get(k, {}), **v} if isinstance(v, dict) else merged.get(k, set()) | v
+    return hits, merged, texts
+
+
+def _scan(ids: dict, texts: dict) -> list:
     hits = []
     for f, text in texts.items():
         lowered = text.lower()
@@ -151,7 +170,7 @@ def find_leaks(root: Path) -> tuple:
         hits += [("phones", p, f) for p in found_phones & ids["phones"]]
         found_ids = {m.group(1) for m in _ID.finditer(text)}
         hits += [("ids", i, f) for i in found_ids & ids["ids"]]
-    return hits, ids, texts
+    return hits
 
 
 def main(root: Path) -> int:

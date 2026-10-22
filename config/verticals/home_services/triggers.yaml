@@ -1,0 +1,9 @@
+# What counts as a change worth a rep's attention between two runs. Read by src/triggers.py.
+watch:
+  - {column: tier, label: Tier}
+  - {column: jobs_status, label: Hiring evidence}
+  - {column: jobs_call_handling, label: Dispatch or CSR roles, bands: [1, 2, 5]}
+  - {column: jobs_total, label: Open roles in area, bands: [1, 5, 20, 50, 100]}
+  - {column: jobs_ats, label: Hiring system}
+  - {column: website_live, label: Website responds}
+ignore_values: ["site_unreachable", "robots_disallowed"]

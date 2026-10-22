@@ -1,0 +1,38 @@
+# What the public build publishes from this vertical's signals, and how the site shows it.
+# Read by src/anonymize.py. See the first vertical's public.yaml for every option.
+
+fields:
+  - {key: type, from: license_type, column: true, label: Type, search: true}
+  - {key: call_roles, from: jobs_call_handling, publish: band, column: true, label: Dispatch/CSR roles, unknown: unknown, sort: true}
+  - key: hiring_system
+    from: jobs_ats
+    publish: hidden
+    hide_in_text: true
+    placeholder: "[hiring system]"
+  - {key: open_roles, from: jobs_total, publish: band, column: true, label: Open roles, unknown: unknown, sort: true}
+  - key: hiring_status
+    from: jobs_status
+    column: true
+    label: Hiring status
+    filter: true
+    labels:
+      no_website: No website
+      counted: Roles counted
+      listings_found: Some roles found
+      ats_unsupported: Hiring system, no count
+      offsite_listings: External job board
+      careers_page_no_listings: Careers page, no listings read
+      no_careers_page: No careers page
+      site_unreachable: Site unreachable
+      robots_disallowed: Crawling disallowed
+
+text_columns: [license_type]
+
+steps:
+  discover: Pull every matching contractor from Google Maps searches, then merge duplicates.
+  enrich: Check each contractor's own website for a careers page, open dispatch, customer service and technician roles, and the hiring system.
+
+anon_note: >-
+  Public demo data. Business names, addresses, phone numbers and websites are replaced with
+  placeholders, role counts are shown as ranges, and each business's hiring system is
+  hidden. Scores, signals and generated text are real output from one sample run.

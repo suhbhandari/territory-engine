@@ -18,10 +18,12 @@ Design:
     generated text of many different groups (ordinary language like "open"), does not
   - A leak check then searches every published text for that group's own identifiers.
     Any hit fails the build, so a scrub gap cannot ship silently
-  - Open-role counts are published as ranges (1-4, 5-19, 20-49, 50-99, 100+), in the
-    open_roles field and in the text, because an exact count plus a city points to one employer
-  - The account's hiring system (applicant-tracking vendor) is not published, in the field or
-    in the text: with a city it narrows an account down to a handful of employers
+  - Counts are published as ranges (1-4, 5-19, 20-49, 50-99, 100+), in a banded field and
+    in the text, because an exact count plus a city points to one employer
+  - Which signal columns are published, under what name and in what form (copied, banded,
+    or hidden in the field and the text) is the vertical's public.yaml; this file names none.
+    A vendor-style signal, such as a hiring system, should be hidden: with a city it narrows
+    an account down to a handful of businesses
   - Limits: this removes names and contact details, blurs counts and hides the hiring system.
     It does not make an account impossible to re-identify from its combination of facts
     (city, number of locations, years registered)
@@ -40,12 +42,11 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW, PUBLIC  # noqa: E402
 from src.brief import parse_fact_line  # noqa: E402
 from src.current import current_briefs, current_sequences  # noqa: E402
 from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
-RAW = ROOT / "outputs" / "raw"
-PUBLIC = ROOT / "outputs" / "public"
 
 GENERIC_NAME_SHARE = 8  # a name word used by at least this many accounts is not identifying
 GENERIC_TEXT_SHARE = 10  # nor is a word that appears in the generated text of this many groups
@@ -63,9 +64,11 @@ _PATTERNS = [
     (re.compile(r"\b(\d{3})\d{2}(?:-\d{4})?\b"), r"\1xx"),
 ]
 _COUNT_BANDS = [(100, "100+"), (50, "50-99"), (20, "20-49"), (5, "5-19"), (1, "1-4"), (0, "0")]
-# A number followed within a few words by a word for job openings, or a total "across all locations".
-_ROLE_COUNT = re.compile(r"\b\d[\d,]*(?=(?:\s+[\w/'-]+){0,6}?\s+(?:roles?|postings?|openings?|positions?|jobs?|titles?)\b"
-                         r"|\s+across\s+all\s+locations)", re.I)
+# A number followed within a few words by a word for job openings, or a total "across all
+# locations" or "located in". An alias's own number ("Account 0001", "Account 0001-2") is not a count.
+_ROLE_COUNT = re.compile(r"(?<!Account )(?<!Account \d{4}-)\b\d[\d,]*"
+                         r"(?=(?:\s+[\w/'-]+){0,6}?\s+(?:roles?|postings?|openings?|positions?|jobs?|titles?)\b"
+                         r"|\s+across\s+all\s+locations|\s+located\b)", re.I)
 
 
 def band(count: str) -> str:
@@ -74,6 +77,17 @@ def band(count: str) -> str:
         return ""
     n = int(float(str(count).replace(",", "")))
     return next(label for floor, label in _COUNT_BANDS if n >= floor)
+
+
+def public_value(row: dict, field: dict) -> str:
+    """One published signal field, as the vertical's public.yaml says to publish it."""
+    value = row.get(field["from"], "")
+    mode = field.get("publish", "copy")
+    if mode == "band":
+        return band(value)
+    if mode == "hidden":
+        return "[hidden]" if value else ""
+    return value
 
 
 def hide_terms(text: str, terms, replacement: str) -> str:
@@ -167,6 +181,7 @@ def main(vertical: str, metro_path: str) -> None:
     glossary = yaml.safe_load(open(vdir / "glossary.yaml"))
     geo = yaml.safe_load(open(ROOT / metro_path))
     seq_cfg = yaml.safe_load(open(vdir / "sequence.yaml"))
+    public_cfg = yaml.safe_load(open(vdir / "public.yaml"))
 
     scored = pd.read_csv(RAW / "accounts_scored.csv", dtype=str, keep_default_na=False)
     briefs = pd.read_csv(RAW / "briefs" / "briefs_index.csv", dtype=str, keep_default_na=False)
@@ -192,7 +207,8 @@ def main(vertical: str, metro_path: str) -> None:
                   .groupby("account_group")["_text"].apply(" ".join).to_dict())
     text_counts = Counter()
     for group_key, frame in scored.groupby("account_group", sort=False):
-        own = " ".join(frame["score_reasons"]) + " " + " ".join(frame["license_type"])
+        own = " ".join(frame["score_reasons"]) + " " + " ".join(
+            " ".join(frame[c]) for c in public_cfg.get("text_columns", []) if c in frame)
         # Fact lines quote names and addresses verbatim, so only the written sections count.
         written = brief_text.get(group_key, "").split("## Locations")[0].split("## Contact")[0]
         text_counts.update(set(_tokens(own + " " + written + " " + touch_text.get(group_key, ""))))
@@ -205,8 +221,14 @@ def main(vertical: str, metro_path: str) -> None:
         lead = members[0]
         alias = f"Account {int(lead['group_rank']):04d}"
         words = identifying_words(members, generic, place_words)
-        systems = {m["jobs_ats"] for m in members if m.get("jobs_ats")}
-        clean = lambda text: hide_terms(scrub(text, alias, members, words), systems, "[hiring system]")
+        hidden = [(f["placeholder"], {m[f["from"]] for m in members if m.get(f["from"])})
+                  for f in public_cfg["fields"] if f.get("hide_in_text")]
+
+        def clean(text):
+            text = scrub(text, alias, members, words)
+            for placeholder, terms in hidden:
+                text = hide_terms(text, terms, placeholder)
+            return text
 
         record = {
             "id": alias,
@@ -216,13 +238,9 @@ def main(vertical: str, metro_path: str) -> None:
             "data_coverage": float(lead["data_coverage"]),
             "city": lead["city"],
             "zip3": lead["zip"][:3],
-            "type": lead["license_type"],
             "locations": int(lead["group_size"]),
-            "years_registered": lead["npi_age_years"],
             "has_website": lead["website"] != "",
-            "hiring_status": lead["jobs_status"],
-            "hiring_system": "[hidden]" if lead["jobs_ats"] else "",
-            "open_roles": band(lead["jobs_total"]),
+            **{f["key"]: public_value(lead, f) for f in public_cfg["fields"]},
             "points": {c: int(lead[f"pts_{c}"]) for c in criteria},
             "reasons": [clean(r) for r in lead["score_reasons"].split("; ") if r],
         }
@@ -268,6 +286,10 @@ def main(vertical: str, metro_path: str) -> None:
         "tiers": rubric["tiers"],
         "criteria": [{"key": k, "label": c.get("label", k), "max_points": c["max_points"], "why": c.get("why", "").strip()[:1].upper() + c.get("why", "").strip()[1:]}
                      for k, c in rubric["criteria"].items()],
+        "fields": [{k: v for k, v in f.items() if k not in ("from", "publish", "hide_in_text", "placeholder")}
+                   for f in public_cfg["fields"]],
+        "anon_note": public_cfg.get("anon_note", ""),
+        "steps": public_cfg.get("steps", {}),
         "touches": [{"id": t["id"], "channel": t["channel"], "day": t["day"], "max_words": t["max_words"]} for t in seq_cfg["touches"]],
         "accounts": accounts,
     }

@@ -1,0 +1,54 @@
+# What the public build publishes from this vertical's signals, and how the site shows it.
+# Read by src/anonymize.py, which copies it into site_data.json for site/index.html.
+#
+# Core fields (id, rank, tier, score, data coverage, city, zip3, locations, has_website)
+# are always published. Each entry here adds one field:
+#   key       name in the public data (site_data.json, accounts_public.csv)
+#   from      column in the scored file
+#   publish   copy (default) | band (open-role style ranges) | hidden ("[hidden]" if set)
+#   hide_in_text  also remove this column's values from published text, as `placeholder`
+#   column    show as a column in the site's account table, with `label`
+#   unknown   what the table shows for a blank value
+#   filter    offer a drop-down filter on this field; `labels` names its values
+#   sort      offer "Sort: <label>" on this field, highest first
+#   search    include in the table's text search
+
+fields:
+  - {key: type, from: license_type, column: true, label: Type, search: true}
+  - {key: years_registered, from: npi_age_years}
+  - key: hiring_system
+    from: jobs_ats
+    publish: hidden
+    hide_in_text: true
+    placeholder: "[hiring system]"
+  - {key: open_roles, from: jobs_total, publish: band, column: true, label: Open roles, unknown: unknown, sort: true}
+  - key: hiring_status
+    from: jobs_status
+    column: true
+    label: Hiring status
+    filter: true
+    labels:
+      no_website: No website
+      counted: Roles counted
+      listings_found: Some roles found
+      ats_unsupported: Hiring system, no count
+      offsite_listings: External job board
+      careers_page_no_listings: Careers page, no listings read
+      no_careers_page: No careers page
+      site_unreachable: Site unreachable
+      robots_disallowed: Crawling disallowed
+
+# Columns whose words are ordinary language for this vertical rather than identifying,
+# counted alongside the score reasons when deciding which name words identify an account.
+text_columns: [license_type]
+
+# The site's "how it works" lines for the steps that differ by vertical.
+steps:
+  discover: Pull every matching business from a public registry and map listings, then merge duplicates.
+  enrich: Check each account's own website for a careers page, hiring system and open roles.
+
+# Shown on the site above the account table.
+anon_note: >-
+  Public demo data. Account names, addresses, phone numbers and websites are replaced with
+  placeholders, open-role counts are shown as ranges, and each account's hiring system is
+  hidden. Scores, signals and generated text are real output from one run.

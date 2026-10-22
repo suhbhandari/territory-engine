@@ -30,10 +30,11 @@ import yaml
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 from src.signals.open_data_match import _table, find_matches, name_key, phone_key  # noqa: E402
 
-SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
+SCORED_PATH = RAW / "accounts_scored.csv"
 
 
 def in_territory(record: dict, zip_field: str, prefixes: list) -> bool:

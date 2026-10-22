@@ -105,15 +105,18 @@ A metro file holds geography only. Copy `config/metro/nyc.yaml` to `config/metro
 
 **Run it.**
 
+Give the run a name with `RUN=`, and pass the same `RUN`, `VERTICAL` and `METRO` to every step. Every file then goes to `outputs/raw/<RUN>/` and `outputs/public/<RUN>/`, so the shipped run in `outputs/raw/` and `outputs/public/` is not touched. Without `RUN=`, a step reads and writes the shipped run's folders.
+
 ```
-python3 src/discover.py --metro config/metro/<name>.yaml
-python3 src/backfill.py --limit 30
-python3 src/backfill.py
-python3 src/enrich.py --limit 10
-python3 src/enrich.py
+R="RUN=<metro>-<vertical> VERTICAL=<vertical> METRO=config/metro/<name>.yaml"
+make discover $R
+make backfill $R            # only if discovery.yaml has a backfill: block
+make enrich-sample $R
+make enrich score brief sequence export public $R
+make checks
 ```
 
-Discover always writes to `outputs/raw/accounts_raw.csv`, so copy the previous metro's account file elsewhere first. Enrich adds to whatever signals file it finds, so give each metro its own with `--accounts <path>` and `--output <path>`, or move the old `signals_raw.csv` aside. `enrich.py` also accepts `--metro` but does not use it; it enriches whatever account file it is given. Score, brief, sequence, export and public read and write fixed paths under `outputs/raw/` and `outputs/public/`, so only one metro's results can sit there at a time (`V2.md`).
+`make checks` takes no `RUN`: the leak test checks every run's private identifiers against every published file, because runs publish side by side. The site at `site/` shows the shipped run only; a named run's public files are in `outputs/public/<RUN>/` (report card included) but have no page yet. `enrich.py` also accepts `--metro` but does not use it.
 
 ## 4. Adding a new vertical
 
@@ -132,11 +135,13 @@ Files in the shipped vertical's folder today:
 | `evals.yaml` | The plain-language statements the report card prints: what the checks cover, what has not been measured, and cost estimates the pipeline does not log itself. Keep these current by hand. |
 | `export.yaml` | The export files: which rows and tiers each holds, its columns, and how merge fields are translated for the sending tool. |
 | `sequence.yaml`, `sequence_prompt.md`, `personas.yaml` | The touches in a sequence and their limits, the writing instructions, and the rules that pick which role a sequence is written for. |
+| `public.yaml` | Which signal columns the public build publishes, under what name, and in what form (copied, banded into ranges, or hidden); which become columns, the filter and sort options on the site, and the labels for their values; and the site's anonymization note and "how it works" lines for discover and enrich. |
+| `triggers.yaml` | Which columns the weekly trigger list watches, and values that mean "could not check". |
 
 
 To add a vertical, create the folder, write those files, and pass `VERTICAL=<name>` to the make targets (or `--vertical <name>` to each script), or change `config/defaults.yaml`. Each key under `sources:` in `discovery.yaml` must match a module in `src/sources/` (today `nppes` and `google_maps`). A source that does not exist yet is new code for a developer, and it must follow the shared `fetch(params, geo)` interface and stay generic.
 
-`make check-generic` enforces the rule. It fails if a term on its list appears in core code or in a doc like this one. A PASS is required before a phase can be called complete. Its term list is written for the shipped vertical, so a new vertical needs its own terms added to `scripts/check_generic.py`.
+`make check-generic` enforces the rule. It fails if a term on its list appears in core code or in a doc like this one. A PASS is required before a phase can be called complete. Its term list holds both verticals' terms, so a new vertical needs its own terms added to `scripts/check_generic.py`. `docs/second-vertical.md` records what adding the second one took.
 
 ## 5. Failure modes and fixes
 

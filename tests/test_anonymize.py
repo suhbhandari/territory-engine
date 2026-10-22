@@ -66,3 +66,20 @@ def test_counts_a_few_words_before_a_role_word_are_banded():
         "100+ open roles, 20-49 of them with scheduling or coordination titles."
     assert band_counts("First enrolled in 2015 (11 years ago); 3 accounts share a domain.") == \
         "First enrolled in 2015 (11 years ago); 3 accounts share a domain."
+
+
+def test_public_fields_follow_the_vertical_config():
+    from src.anonymize import public_value
+    row = {"a": "161", "b": "Vendor", "c": ""}
+    assert public_value(row, {"key": "x", "from": "a", "publish": "band"}) == "100+"
+    assert public_value(row, {"key": "x", "from": "b", "publish": "hidden"}) == "[hidden]"
+    assert public_value(row, {"key": "x", "from": "c", "publish": "hidden"}) == ""
+    assert public_value(row, {"key": "x", "from": "b"}) == "Vendor"
+    assert public_value(row, {"key": "x", "from": "missing"}) == ""  # a signal this vertical lacks
+
+
+def test_counts_are_banded_but_an_alias_number_is_not():
+    from src.anonymize import band_counts
+    assert band_counts("I saw Account 0001 has 7 open roles.") == "I saw Account 0001 has 5-19 open roles."
+    assert band_counts("Account 0012-2 lists 3 open roles") == "Account 0012-2 lists 1-4 open roles"
+    assert band_counts("lists 9 open roles, all 7 located in AZ") == "lists 5-19 open roles, all 5-19 located in AZ"

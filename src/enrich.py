@@ -37,10 +37,11 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.settings import DEFAULT_METRO, DEFAULT_VERTICAL  # noqa: E402
 
-ACCOUNTS_PATH = ROOT / "outputs" / "raw" / "accounts_raw.csv"
-OUTPUT_PATH = ROOT / "outputs" / "raw" / "signals_raw.csv"
+ACCOUNTS_PATH = RAW / "accounts_raw.csv"
+OUTPUT_PATH = RAW / "signals_raw.csv"
 
 ID_COL = "entity_id"
 FETCHED_COL = "signals_fetched_at"

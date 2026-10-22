@@ -7,12 +7,17 @@ Accounts left out of scoring, and why. Two kinds:
     or a blank one, are kept.
 """
 
+import sys
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).parent.parent
-REVIEW_PATH = ROOT / "outputs" / "raw" / "exclusions.csv"
+sys.path.insert(0, str(ROOT))
+
+from src.paths import RAW  # noqa: E402
+
+REVIEW_PATH = RAW / "exclusions.csv"
 
 
 def out_of_territory(accounts: pd.DataFrame, geo: dict) -> pd.Series:

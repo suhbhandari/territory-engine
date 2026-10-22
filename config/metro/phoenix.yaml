@@ -1,0 +1,16 @@
+metro: Phoenix
+state: AZ
+city: Phoenix
+
+# Cities each discovery search template is run for (google_maps source). One city keeps
+# the first run to a sample of about 150 accounts; add Mesa, Chandler, Scottsdale,
+# Glendale, Tempe and Gilbert for the whole valley.
+search_cities:
+  - Phoenix
+
+# Zip prefixes kept after the query. 850: Phoenix | 852: East Valley (Mesa, Tempe,
+# Chandler, Scottsdale, Gilbert) | 853: West Valley (Glendale, Peoria, Surprise).
+zip_prefixes:
+  - "850"
+  - "852"
+  - "853"

@@ -4,6 +4,11 @@
 #   make score VERTICAL=<name> METRO=config/metro/<name>.yaml
 VERTICAL ?=
 METRO ?=
+# A named run keeps its files in outputs/raw/<RUN>/ and outputs/public/<RUN>/ (src/paths.py),
+# so a second metro or vertical does not overwrite the first. Unset: the shipped run.
+#   make discover RUN=<metro>-<vertical> VERTICAL=<name> METRO=config/metro/<name>.yaml
+RUN ?=
+export TE_RUN = $(RUN)
 V = $(if $(VERTICAL),--vertical $(VERTICAL))
 M = $(if $(METRO),--metro $(METRO))
 

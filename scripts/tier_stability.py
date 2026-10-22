@@ -37,10 +37,11 @@ import yaml
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.score import assign_tier  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
-SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
+SCORED_PATH = RAW / "accounts_scored.csv"
 
 
 def rank_groups(df: pd.DataFrame, score: pd.Series) -> pd.Series:

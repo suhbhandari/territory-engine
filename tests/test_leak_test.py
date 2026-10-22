@@ -104,3 +104,24 @@ def test_allowlist_name_must_be_an_account(tmp_path):
     allow(root, name="not an account", phrase="a not an account phrase")
     with pytest.raises(SystemExit):
         leak_test.find_leaks(root)
+
+
+def test_a_second_runs_identifiers_are_checked_against_every_published_file(tmp_path):
+    root = build(tmp_path, "Account 0001 in Brooklyn.")
+    run = root / "outputs" / "raw" / "other-run"
+    run.mkdir()
+    pd.DataFrame([{"name": "Copperline Heating Co", "address": "9 Elm Road", "city": "Mesa", "state": "AZ",
+                   "phone": "480-555-0199", "website": "https://copperline.example", "entity_id": "ChIJzyxwvutsrqpo"}]
+                 ).to_csv(run / "accounts_raw.csv", index=False)
+    (root / "outputs" / "public" / "other-run").mkdir()
+    (root / "outputs" / "public" / "other-run" / "data.json").write_text("Copperline Heating Co in Mesa")
+    hits, ids, _ = leak_test.find_leaks(root)
+    assert {(k, f) for k, _, f in hits} >= {("names", "outputs/public/other-run/data.json")}
+    assert "copperline heating co" in ids["names"] and "bluebird wellness llc" in ids["names"]
+
+
+def test_snapshot_runs_folder_is_not_treated_as_a_run(tmp_path):
+    root = build(tmp_path, "clean")
+    (root / "outputs" / "raw" / "runs" / "2026-01-01").mkdir(parents=True)
+    (root / "outputs" / "raw" / "runs" / "accounts_raw.csv").write_text("name\n")
+    assert leak_test.raw_dirs(root) == [root / "outputs" / "raw"]

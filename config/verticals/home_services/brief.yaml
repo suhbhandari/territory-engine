@@ -1,0 +1,126 @@
+# Brief settings: residential HVAC, plumbing and electrical contractors. Read by src/brief.py.
+
+model: claude-opus-5-5
+effort: medium
+# Used only to log cost per brief. Check current rates before quoting these.
+price_per_mtok: {input: 4.00, output: 20.00}
+
+# One brief per account group whose best account is in these tiers.
+tiers: [A, B]
+
+sources:
+  listing:
+    label: "Google Maps listing"
+    url: "https://www.google.com/maps/place/?q=place_id:{entity_id}"
+    date_column: discovered_at
+  careers:
+    label: "Careers page"
+    url: "{jobs_source_url}"
+    date_column: signals_fetched_at
+  website:
+    label: "Company website"
+    url: "{website}"
+    date_column: signals_fetched_at
+  # Derived by the engine from its own list, so there is no outside page to link.
+  metro_list:
+    label: "This list of {source} results"
+    url: ""
+    date_column: discovered_at
+
+title_case_columns: [address]
+
+# A hedge word followed in the same sentence by one of these claim words is rejected.
+# The facts are a snapshot of public pages: they cannot show how OFTEN something happens,
+# that it is happening NOW, or WHO OWNS WHOM.
+hedges: ["which suggests", "suggests", "suggesting", "likely", "appears to", "appear to",
+         "indicates", "indicating", "implies", "implying", "points to", "presumably", "probably"]
+claim_words:
+  - ongoing
+  - continuous
+  - continually
+  - regularly
+  - regular basis
+  - actively
+  - consistently
+  - steadily
+  - frequently
+  - routinely
+  - constantly
+  - from time to time
+  - some of the time
+  - day to day
+  - all the time
+  - year-round
+  - common ownership
+  - same owner
+  - sister
+  - parent company
+  - one operator
+  - single operator
+  - under one roof
+  - affiliate
+  # Call handling: a careers page cannot show how calls are answered today.
+  - missing calls
+  - missed calls
+  - voicemail
+  - overwhelmed
+
+# Capitalised words a brief or sequence may use without a fact containing them.
+allowed_words: [Street, Avenue, Road, Boulevard, Parkway, Place, Lane, Highway, Drive, Court,
+                Plaza, Terrace, East, West, North, South, URL]
+
+# Each template becomes one numbered fact when its `when` holds (same condition syntax
+# as rubric.yaml). The model may only use these facts.
+facts:
+  - text: "Listed on Google Maps as \"{license_type}\" at {address}, {city}, {state} {zip}. Phone {phone}."
+    source: listing
+  - text: "Has a company website: {website}"
+    when: {column: website, op: not_blank}
+    source: website
+  - text: "{domain_account_count} Google Maps listings in this list use the website domain {website_domain}, counting this one. Listings share a domain when one business has several locations, and also when separate businesses trade under one brand's website, so this does not show common ownership."
+    when: {column: domain_account_count, op: gte, value: 2}
+    source: metro_list
+  - text: "Its job board ({jobs_ats}) lists {jobs_total} open roles located in {state}, out of {jobs_total_all_locations} across all locations."
+    when:
+      - {column: jobs_status, op: eq, value: counted}
+      - {column: jobs_ats, op: not_blank}
+    source: careers
+  - text: "Its careers pages show at least {jobs_total} open role(s) in {state}; this is a partial count."
+    when: {column: jobs_status, op: eq, value: listings_found}
+    source: careers
+  - text: "Of the open roles in {state}: {jobs_call_handling} are dispatch, customer service or scheduling roles, {jobs_technician} are technician or installer roles, {jobs_office_admin} are office, estimating or sales roles (by job-title keyword)."
+    when: {column: jobs_total, op: gte, value: 1}
+    source: careers
+  - text: "Sample of open role titles: {jobs_titles_sample}"
+    when: {column: jobs_titles_sample, op: not_blank}
+    source: careers
+  - text: "Runs hiring through the applicant-tracking system {jobs_ats}."
+    when: {column: jobs_ats, op: not_blank}
+    source: careers
+  - text: "Its careers page sends applicants to an external job board."
+    when: {column: jobs_status, op: eq, value: offsite_listings}
+    source: careers
+  - text: "Has a careers page on its website. We could not read any job listings from it, so whether it is hiring right now is unknown; listings may exist in a form we do not parse."
+    when: {column: jobs_status, op: eq, value: careers_page_no_listings}
+    source: careers
+  - text: "Its website has no careers or jobs page that we could find."
+    when: {column: jobs_status, op: eq, value: no_careers_page}
+    source: website
+
+# Written into the brief by code, not by the model.
+unknowns:
+  - text: "Number of open roles: the hiring system ({jobs_ats}) does not publish a feed we read."
+    when: {column: jobs_status, op: eq, value: ats_unsupported}
+  - text: "Number of open roles: listings are on an external job board we do not read."
+    when: {column: jobs_status, op: eq, value: offsite_listings}
+  - text: "Whether it is hiring right now: it has a careers page, but we could not read listings from it. Check the page before the call."
+    when: {column: jobs_status, op: eq, value: careers_page_no_listings}
+  - text: "Whether it is hiring right now: its website has no careers page we could find."
+    when: {column: jobs_status, op: eq, value: no_careers_page}
+  - text: "Number of open roles is a floor, not a full count."
+    when: {column: jobs_status, op: eq, value: listings_found}
+  - text: "Hiring activity: the website could not be read ({jobs_status})."
+    when: {column: jobs_status, op: in, value: [site_unreachable, robots_disallowed, no_website]}
+  - text: "Licence, years in business, headcount, call volume and revenue: no source for these is in the engine for this vertical."
+  - text: "How calls are answered today (in-house staff, an answering service, voicemail): not collected."
+  - text: "Decision-maker names and titles: not collected."

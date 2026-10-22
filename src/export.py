@@ -32,14 +32,15 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.paths import RAW  # noqa: E402
 from src.current import current_briefs, current_sequences  # noqa: E402
 from src.settings import DEFAULT_VERTICAL  # noqa: E402
 
-SCORED_PATH = ROOT / "outputs" / "raw" / "accounts_scored.csv"
-TOUCHES_PATH = ROOT / "outputs" / "raw" / "sequences" / "sequences.csv"
-BRIEFS_INDEX_PATH = ROOT / "outputs" / "raw" / "briefs" / "briefs_index.csv"
-SEQ_INDEX_PATH = ROOT / "outputs" / "raw" / "sequences" / "sequences_index.csv"
-OUT_DIR = ROOT / "outputs" / "raw" / "exports"
+SCORED_PATH = RAW / "accounts_scored.csv"
+TOUCHES_PATH = RAW / "sequences" / "sequences.csv"
+BRIEFS_INDEX_PATH = RAW / "briefs" / "briefs_index.csv"
+SEQ_INDEX_PATH = RAW / "sequences" / "sequences_index.csv"
+OUT_DIR = RAW / "exports"
 
 _GREETING = re.compile(r"^\s*(?:hi|hello|hey)?\s*\{\{[^}]+\}\}\s*[,.:]?\s*", re.I)
 _SIGN_OFF = re.compile(r"\n+\s*\{\{[^}]+\}\}\s*$")

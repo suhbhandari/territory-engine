@@ -23,7 +23,10 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).parent.parent
-RAW = ROOT / "outputs" / "raw"
+sys.path.insert(0, str(ROOT))
+
+from src.paths import RAW  # noqa: E402
+
 FILES = ["accounts_raw.csv", "signals_raw.csv", "accounts_scored.csv", "accounts_excluded.csv",
          "discover_summary.json", "exclusions.csv", "website_rejections.csv",
          "exports/salesforce_accounts.csv", "exports/outreach_accounts.csv",

@@ -26,6 +26,8 @@ EXCLUDED_PREFIXES = [
     "CLAUDE.md",
     "README.md",  # describes the shipped demo run (its vertical and metro) for readers
     "docs/demo-script.md",  # a script for presenting the shipped demo, so it names that demo
+    "docs/spec-ship-week.md",  # the phase spec, which names the second vertical it asks for
+    "docs/second-vertical.md",  # the write-up of adding that vertical, so it names it
     ".env",
 ]
 
@@ -45,6 +47,13 @@ TERMS_ICASE = [
     r"visiting\s+angels",
     r"\barya\b",
     r"post\s+acute",
+    # Second vertical: residential home services contractors
+    r"\bhvac\b",
+    r"\bplumbers?\b",
+    r"\belectricians?\b",
+    r"\bdispatchers?\b",
+    r"answering\s+service",
+    r"home\s+services",
 ]
 
 # Case-sensitive terms: acronyms that need exact casing to avoid URL false-positives
@@ -63,6 +72,9 @@ TERMS_CODE = [
     r"home[_-]+(?:care|health)",
     r"post[_-]+acute",
     r"\bhospice",
+    r"home[_-]+services",
+    r"\btechnicians?\b",
+    r"\bcontractors?\b",
 ]
 
 pattern_icase = re.compile("|".join(TERMS_ICASE), re.IGNORECASE)
