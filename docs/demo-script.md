@@ -99,8 +99,9 @@ This is the whole demo. Slow down.
 > It finds 75.8% of the licensed providers the state register lists in these zip codes. One
 > in four is missing, and I know that because I measured it rather than assuming it.
 >
-> A blind grader rated the briefs 4.5 out of 5 for accuracy and 2.1 out of 5 for usefulness.
-> It would call one of the fifteen it read.
+> A model grading blind rated the briefs 4.5 out of 5 for accuracy. I graded the same
+> fifteen myself and gave them 2.7, and the emails 2.0, because I opened the source pages and
+> found what the briefs left out. On usefulness we agreed: under 3 out of 5.
 >
 > And that criterion I asked you to hold on to. Hiring activity, the heaviest thing in my
 > rubric, is readable for about 1.5% of accounts. I found that three separate ways: the
@@ -134,16 +135,18 @@ top of the file: the engine saves a failing draft with the reason and refuses to
 
 ## The ninety-second version, for a recording
 
-Cut to four beats. No terminal.
+Cut to five beats, about 100 seconds. No terminal; one cut to HubSpot.
 
 1. **0:00** The problem sentence, on the Overview tab.
 2. **0:15** The four tiles, one breath. Then: "Look at coverage next to each tier. The bottom
    tier is what we could not assess, not what scored badly."
 3. **0:35** One account open. The bracketed fact ids and the "What we don't know" section.
    "A model wrote the prose. It was not trusted with the facts."
-4. **1:05** The close, trimmed to: 75.8% recall, 2.1 out of 5 usefulness, and the heaviest
-   criterion readable for 1.5% of accounts, found three ways. "The limit is the data, not the
-   writing."
+4. **1:05** Cut to HubSpot, the company list filtered to tier A, for ten seconds: "The same
+   list, loaded into a CRM. I pushed it twice; the second push changed nothing."
+5. **1:15** The close, trimmed to: 75.8% recall; I graded fifteen briefs myself and they scored
+   under 3 out of 5 for usefulness, and lower than the model thought on accuracy; the heaviest
+   criterion is readable for 1.5% of accounts. "The limit is the data, not the writing."
 
 End on the honest number, not on a feature.
 

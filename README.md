@@ -1,6 +1,14 @@
 # Territory Engine
 
-A territory engine for a sales team. Give it a metro and a vertical, and it finds the accounts there from public sources, ranks them by public signs that they need help now, and drafts a short brief and a first outreach sequence for the top accounts. Every statement in a brief or email cites a numbered fact with its source, and code (not the model) checks that.
+Finds the accounts in a sales territory from public data, ranks them by public signs that they need help now, and drafts a brief and first outreach for the best ones, with every claim cited and checked in code.
+
+**[Live demo](https://suhbhandari.github.io/territory-engine/site/)**<!-- · **[90-second walkthrough](LOOM_URL)** : add after recording -->
+
+- **1,501** home care, home health and hospice agencies found in New York City from two public sources.
+- **75.8%** of the licensed providers on New York State's register in the same zip codes are on the list (`make recall`); the rest are the measured gap.
+- **396** accounts pushed into a HubSpot test account as companies; an identical second push created 0 and changed 0.
+
+Give it a metro and a vertical, and it finds the accounts there, scores them against a written rubric, and drafts a short brief and a first outreach sequence for the top accounts. Every statement in a brief or email cites a numbered fact with its source, and code (not the model) checks that.
 
 The shipped demo targets **home care, home health and hospice agencies in New York City**, for a seller of workforce-operations software. A new vertical or metro is a new config folder or file, not new code. That was tested once: a second vertical (residential HVAC, plumbing and electrical contractors in Phoenix) ran on config alone after two fixes to the core that it exposed; `docs/second-vertical.md` lists every core file that changed.
 
@@ -37,10 +45,23 @@ The shipped demo targets **home care, home health and hospice agencies in New Yo
 - **No contacts.** The engine finds accounts, not people. A sequence needs a named contact from another tool.
 - **Nothing has been sent, and only one CRM load is proven.** Reply rates are unknown. On 2026-10-21 the 396 tier A to C accounts of the anonymized build were pushed to a HubSpot developer test account as companies, and an identical second push created 0 and changed 0. That proves the HubSpot company push only: the Salesforce and Outreach files have still not been imported into a live workspace, and no contacts were loaded anywhere.
 - **One weekly refresh, not a history.** `make refresh` ran once, on 2026-10-22, about a week after the 2026-10-12 to 2026-10-13 collection: 15 of 1,501 accounts changed tier, the trigger list fired 55 events on 32 accounts, and 12 briefs and 12 sequences were rewritten. One pair is not a rate, part of the change may be noise (a website that did not answer one week), and no rep has said whether the triggers are worth acting on. The Monday playbook is a draft that no sales team has used.
+- **The second vertical is a sample, not a usable list.** It proves the config-not-code claim on 137 Phoenix contractors from three Google searches. Its main signal, hiring dispatchers or customer service staff, is readable for 6 of 137, so that list mostly ranks web presence and business type. There is no register to measure its recall against, and the site does not show it yet (its public files are in `outputs/public/phoenix-home_services/`).
 - **The licence check matches by name and phone only.** `not_found` means no match, not that the account is unlicensed: it may trade under another name. A spot check found 8 of 8 matches correct and 6 of 6 `not_found` accounts absent from the state list; that is 14 accounts, not a measured error rate. Accounts that are not home care providers may remain, mostly in the lower tiers.
 - **Anonymization is not a guarantee.** Names, addresses, phones, websites, IDs and hiring systems are removed and counts are shown as ranges, but a combination of facts (city, number of locations, years registered) may still point to an account.
 
 The report card's "Not measured" section has the full list, and `outputs/public/project_review.md` is a full review of what this project does and does not prove.
+
+## How I built this
+
+- **Spec first.** I wrote a spec for each phase, with a definition of done and a checkpoint, and the rules in `CLAUDE.md`: no industry-specific logic in core code, and nothing claimed that was not measured. `docs/spec-ship-week.md` is the most recent.
+- **Built with Claude Code.** Claude Code wrote the code against those specs. Each phase stopped at its checkpoint for my review before the next one started.
+- **Code checks what a model would otherwise be trusted with.** A build fails if any of these fail:
+  - *Citations:* every statement in a brief or email cites a numbered fact, and the fact exists.
+  - *Numbers:* every number, in digits or as a word, appears in a fact the statement cites.
+  - *Proper nouns:* every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact.
+  - *Leaks:* every published file is searched for every account's name, address, phone, website and ID.
+  - *Industry terms in core code:* `make check-generic` fails if a vertical's vocabulary appears outside `config/verticals/`.
+- **What I checked by hand.** I graded 15 briefs and their drafts blind, then compared my grades with the model's (`make agreement`). That is where accuracy turned out lower than the model said, because I opened the source pages and it did not (see Limits). I ran the HubSpot pushes and checked the tier A list in HubSpot, and I reviewed each phase against its definition of done before closing it.
 
 ## Run it
 
