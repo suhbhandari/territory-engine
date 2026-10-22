@@ -1,4 +1,4 @@
-.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh stability recall hubspot-setup push-hubspot
+.PHONY: discover backfill enrich enrich-sample score brief brief-sample sequence sequence-sample export public site check-generic test leak-test checks snapshot fresh triggers refresh stability recall hubspot-setup push-hubspot agreement
 
 # Defaults come from config/defaults.yaml. Override for one run, for example:
 #   make score VERTICAL=<name> METRO=config/metro/<name>.yaml
@@ -95,6 +95,12 @@ stability:
 # meant to be complete for it. Downloads the register, so it needs network access.
 recall:
 	python3 scripts/recall_check.py $(V)
+
+# A person's grades of the briefs against each model grading round: exact and within-one
+# agreement. Reads outputs/private/ (real names); writes numbers only, then rebuilds the report card.
+agreement:
+	python3 scripts/agreement.py
+	python3 src/evals.py $(V)
 
 # What changed since the last snapshot: outputs/raw/triggers.csv (private).
 triggers:

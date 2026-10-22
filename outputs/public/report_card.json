@@ -376,6 +376,91 @@
       }
     }
   },
+  "agreement": {
+    "hand_items": 15,
+    "rounds": [
+      {
+        "round": "round 1",
+        "same_text": false,
+        "items": 15,
+        "dimensions": {
+          "brief_accuracy": {
+            "label": "Brief accuracy",
+            "exact_pct": 26.7,
+            "within_one_pct": 53.3,
+            "hand_mean": 2.67,
+            "model_mean": 3.67
+          },
+          "brief_usefulness": {
+            "label": "Brief usefulness",
+            "exact_pct": 46.7,
+            "within_one_pct": 100.0,
+            "hand_mean": 2.73,
+            "model_mean": 2.6
+          },
+          "draft_accuracy": {
+            "label": "Draft accuracy",
+            "exact_pct": 0.0,
+            "within_one_pct": 26.7,
+            "hand_mean": 2.0,
+            "model_mean": 3.93
+          },
+          "draft_sendability": {
+            "label": "Draft sendability",
+            "exact_pct": 40.0,
+            "within_one_pct": 86.7,
+            "hand_mean": 2.33,
+            "model_mean": 3.07
+          }
+        },
+        "first_this_week": {
+          "exact_pct": 53.3,
+          "hand_yes": 3,
+          "model_yes": 1
+        }
+      },
+      {
+        "round": "round 2",
+        "same_text": true,
+        "items": 15,
+        "dimensions": {
+          "brief_accuracy": {
+            "label": "Brief accuracy",
+            "exact_pct": 6.7,
+            "within_one_pct": 26.7,
+            "hand_mean": 2.67,
+            "model_mean": 4.47
+          },
+          "brief_usefulness": {
+            "label": "Brief usefulness",
+            "exact_pct": 46.7,
+            "within_one_pct": 93.3,
+            "hand_mean": 2.73,
+            "model_mean": 2.13
+          },
+          "draft_accuracy": {
+            "label": "Draft accuracy",
+            "exact_pct": 0.0,
+            "within_one_pct": 33.3,
+            "hand_mean": 2.0,
+            "model_mean": 4.0
+          },
+          "draft_sendability": {
+            "label": "Draft sendability",
+            "exact_pct": 26.7,
+            "within_one_pct": 73.3,
+            "hand_mean": 2.33,
+            "model_mean": 3.33
+          }
+        },
+        "first_this_week": {
+          "exact_pct": 53.3,
+          "hand_yes": 3,
+          "model_yes": 1
+        }
+      }
+    ]
+  },
   "checks_cover": [
     "Briefs: every statement cites at least one numbered fact, every cited fact exists, every number (in digits, or a number word from two up) appears in a cited fact, and every capitalised word inside a sentence (a place, an organisation, a job title) appears in a cited fact.",
     "Sequences: the same citation, number and wording rules, plus word limits, subject rules and allowed merge fields.",

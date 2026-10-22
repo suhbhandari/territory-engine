@@ -259,6 +259,9 @@ def main(vertical: str) -> None:
                   for r in json.loads(push_log.read_text()) if r.get("mode") == "write"] if push_log.exists() else []
 
     refresh = refresh_summary(scored, briefs_all, seqs_all)
+    # Hand grades versus each model grading round, from scripts/agreement.py. Numbers only.
+    agreement_path = RAW / "agreement.json"
+    agreement = json.loads(agreement_path.read_text()) if agreement_path.exists() else None
 
     card = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
@@ -271,6 +274,7 @@ def main(vertical: str) -> None:
         "first_attempts": first_attempts,
         "crm_pushes": crm_pushes,
         "refresh": refresh,
+        "agreement": agreement,
         "checks_cover": evals_cfg["checks_cover"],
         "not_measured": evals_cfg["not_measured"],
         "other_costs": evals_cfg.get("other_costs", []),
@@ -290,8 +294,11 @@ def render_card(c: dict) -> str:
     out = [f"# Report card", "", f"Built {c['generated_at']} from the pipeline's own output files. "
            f"Signals collected: {_date_range(c['data_as_of']['signals_checked'])}. "
            f"Accounts discovered: {_date_range(c['data_as_of']['discovered'])}.", "",
-           "Measurements only: no grades, because no outcome data or human labels exist yet. "
-           "The last two sections are written by hand in the vertical's evals.yaml.", "",
+           ("Measurements only. No outcome data exists, and no person has labelled which accounts are best, so the "
+            "ranking is not graded. A person has graded a sample of briefs; see \"A person's grades against the model's\". "
+            if c.get("agreement") else
+            "Measurements only: no grades, because no outcome data or human labels exist yet. ")
+           + "The last two sections are written by hand in the vertical's evals.yaml.", "",
            "## Discovery", "",
            f"- {d['accounts']} accounts in {d['groups']} groups (accounts sharing a website count as one group).",
            f"- By source: " + ", ".join(f"{k}: {v}" for k, v in d["by_source"].items()) + ".",
@@ -377,6 +384,21 @@ def render_card(c: dict) -> str:
                        f"${v['cost_usd']:.2f}. The rest were kept as they were."
                        for k, v in r["drafts"].items()]
         out += ["", "Whether these changes are worth a rep acting on has not been judged by a rep."]
+    a = c.get("agreement")
+    if a and a.get("rounds"):
+        out += ["", "## A person's grades against the model's", "",
+                f"The same {a['hand_items']} briefs and drafts, graded by hand on the scale the model was given, "
+                "without seeing the model's grades. Exact means the same number; within one means at most one point apart. "
+                "One person and 15 items, so treat these as a first reading, not a rate.", "",
+                "| Model round | Dimension | Exact | Within one | Mean (person) | Mean (model) |", "|---|---|---|---|---|---|"]
+        for r in a["rounds"]:
+            name = r["round"] + ("" if r["same_text"] else " (earlier text)")
+            out += [f"| {name} | {d['label']} | {d['exact_pct']}% | {d['within_one_pct']}% | {d['hand_mean']} | {d['model_mean']} |"
+                    for d in r["dimensions"].values()]
+            f = r["first_this_week"]
+            out += [f"| {name} | First this week | {f['exact_pct']}% | | {f['hand_yes']} yes | {f['model_yes']} yes |"]
+        if any(not r["same_text"] for r in a["rounds"]):
+            out += ["", "A round marked \"earlier text\" graded the drafts before they were rewritten, so it is not the same text the person graded."]
     if c.get("crm_pushes"):
         out += ["", "## CRM push (HubSpot)", "",
                 "Each run that wrote to HubSpot, from the push log. Unchanged accounts are not sent, so a "

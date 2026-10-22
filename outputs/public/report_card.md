@@ -2,7 +2,7 @@
 
 Built 2026-10-22 from the pipeline's own output files. Signals collected: 2026-10-22. Accounts discovered: 2026-10-12.
 
-Measurements only: no grades, because no outcome data or human labels exist yet. The last two sections are written by hand in the vertical's evals.yaml.
+Measurements only. No outcome data exists, and no person has labelled which accounts are best, so the ranking is not graded. A person has graded a sample of briefs; see "A person's grades against the model's". The last two sections are written by hand in the vertical's evals.yaml.
 
 ## Discovery
 
@@ -145,6 +145,25 @@ This run compared with the saved run `2026-10-13`. Signals before: 2026-10-12 to
 - Sequences written in this run: 15 (12 rewritten because their facts changed, 3 for groups new to tiers A and B); $0.31. The rest were kept as they were.
 
 Whether these changes are worth a rep acting on has not been judged by a rep.
+
+## A person's grades against the model's
+
+The same 15 briefs and drafts, graded by hand on the scale the model was given, without seeing the model's grades. Exact means the same number; within one means at most one point apart. One person and 15 items, so treat these as a first reading, not a rate.
+
+| Model round | Dimension | Exact | Within one | Mean (person) | Mean (model) |
+|---|---|---|---|---|---|
+| round 1 (earlier text) | Brief accuracy | 26.7% | 53.3% | 2.67 | 3.67 |
+| round 1 (earlier text) | Brief usefulness | 46.7% | 100.0% | 2.73 | 2.6 |
+| round 1 (earlier text) | Draft accuracy | 0.0% | 26.7% | 2.0 | 3.93 |
+| round 1 (earlier text) | Draft sendability | 40.0% | 86.7% | 2.33 | 3.07 |
+| round 1 (earlier text) | First this week | 53.3% | | 3 yes | 1 yes |
+| round 2 | Brief accuracy | 6.7% | 26.7% | 2.67 | 4.47 |
+| round 2 | Brief usefulness | 46.7% | 93.3% | 2.73 | 2.13 |
+| round 2 | Draft accuracy | 0.0% | 33.3% | 2.0 | 4.0 |
+| round 2 | Draft sendability | 26.7% | 73.3% | 2.33 | 3.33 |
+| round 2 | First this week | 53.3% | | 3 yes | 1 yes |
+
+A round marked "earlier text" graded the drafts before they were rewritten, so it is not the same text the person graded.
 
 ## CRM push (HubSpot)
 
