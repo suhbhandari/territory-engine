@@ -12,3 +12,6 @@ outputs/raw/
 outputs/private/
 .pytest_cache/
 *.duckdb
+
+# Presenting notes, kept local.
+docs/demo-script.md

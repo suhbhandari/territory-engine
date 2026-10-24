@@ -25,7 +25,7 @@ EXCLUDED_PREFIXES = [
     "scripts/check_generic.py",
     "CLAUDE.md",
     "README.md",  # describes the shipped demo run (its vertical and metro) for readers
-    "docs/demo-script.md",  # a script for presenting the shipped demo, so it names that demo
+    "docs/demo-script.md",  # presenting notes, kept local (git-ignored), and they name the shipped demo
     "docs/spec-ship-week.md",  # the phase spec, which names the second vertical it asks for
     "docs/second-vertical.md",  # the write-up of adding that vertical, so it names it
     ".env",
